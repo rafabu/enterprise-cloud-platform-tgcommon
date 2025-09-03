@@ -2,7 +2,6 @@ locals {
   library_path_shared = format("%s/lib/ecp-lib", get_repo_root())
   library_path_unit = "${get_terragrunt_dir()}/lib"
 
-
   ################# named location artefacts #################
   library_namedLocation_path_shared = "${local.library_path_shared}/platform/ecp-artefacts/ms-entra/entraid-policies/namedLocations"
   library_namedLocation_path_unit= "${local.library_path_unit}/namedLocations"
@@ -36,11 +35,14 @@ locals {
     local.policy_ca_definition_shared,
     local.policy_ca_definition_unit
   )
+
+  unit_common_azure_tags = {
+     "_ecpTgUnitCommon" = format("%s/unit-common.hcl", get_parent_terragrunt_dir())
+  }
 }
 
 inputs = {
   # named location and CA policy artefacts (merged - unit definitions can override the library ones)
   named_location_definitions =   local.policy_named_location_definition_merged
   conditional_access_policy_definitions =   local.policy_ca_definition_merged
- 
 }
