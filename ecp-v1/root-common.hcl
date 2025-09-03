@@ -47,6 +47,8 @@ locals {
 
   root_common_azure_tags = {
     "_ecpTgUnitRootCommon" = format("%s/root-common.hcl", get_parent_terragrunt_dir())
+
+    createdBy = "ecp-terraform"
   }
 
 }
