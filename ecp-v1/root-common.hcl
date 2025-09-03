@@ -15,17 +15,27 @@ locals {
       local.unit_common_vars.locals
     )
 
-  launchpad_subscription_id      = local.merged_locals.launchpad_subscription_id # from env.hcl normally
-  launchpad_resource_group_name  = local.merged_locals.launchpad_resource_group_name # from level.hcl normally
-  launchpad_storage_account_name = local.merged_locals.launchpad_storage_account_name # from level.hcl normally
+  ecp_launchpad_subscription_id      = local.merged_locals.ecp_launchpad_subscription_id # from env.hcl normally
+  ecp_launchpad_resource_group_name  = local.merged_locals.ecp_launchpad_resource_group_name # from level.hcl normally
+  ecp_launchpad_storage_account_name = local.merged_locals.ecp_launchpad_storage_account_name # from level.hcl normally
 
-  environment_name = lower("${local.merged_locals.deployment_code}-${substr(local.merged_locals.deployment_env, 0, 1)}${local.merged_locals.deployment_number}")
+  ecp_environment_name = lower("${local.merged_locals.ecp_deployment_code}-${substr(local.merged_locals.ecp_deployment_env, 0, 1)}${local.merged_locals.ecp_deployment_number}")
 
   azure_modules_repo = "github.com/rafabu/enterprise-cloud-platform-azure.git"
   azure_modules_repo_version      = "main"
 
   tfplan_path                    = get_env("TF_PLAN_PATH", "./")
 
+############ Versions ############
+  tf_version = ">= 1.13"
+  tf_provider_azuread_version = "~> 3.5"
+  tf_provider_azurerm_version = "~> 4.42"
+  tf_provider_azapi_version = "~> 2.6"
+  tf_provider_azuredevops_version = "~> 1.11"
+  tf_provider_random_version = "~> 3.7"
+  tf_provider_msgraph_version = "~> 0.1"
+
+############ Tags ############
   merged_azure_tags = merge(
     local.root_common_azure_tags,
     local.root_vars.locals.root_azure_tags,
@@ -48,9 +58,9 @@ remote_state {
     if_exists = "overwrite"
   }
   config = {
-    subscription_id      = local.launchpad_subscription_id
-    resource_group_name  = local.launchpad_resource_group_name
-    storage_account_name = local.launchpad_storage_account_name
+    subscription_id      = local.ecp_launchpad_subscription_id
+    resource_group_name  = local.ecp_launchpad_resource_group_name
+    storage_account_name = local.ecp_launchpad_storage_account_name
     container_name       = "tfstate"
     use_azuread_auth     = true
     key                  = "${basename(path_relative_to_include())}.tfstate"
@@ -76,6 +86,60 @@ terraform {
       "--out=${local.tfplan_path}${basename(path_relative_to_include())}.tfplan"
     ]
   }
+}
+
+generate "provider" {
+  path      = "providers.tf"
+  if_exists = "overwrite"
+  contents  = <<EOF
+
+provider "azuread" {
+  tenant_id = "${local.merged_locals.ecp_entra_tenant_id}"
+}
+
+provider "msgraph" {
+  tenant_id = "${local.merged_locals.ecp_entra_tenant_id}"
+}
+
+EOF
+}
+
+generate "versions" {
+  path      = "versions.tf"
+  if_exists = "overwrite"
+  contents  = <<EOF
+terraform {
+  required_version = "${local.tf_version}"
+
+  required_providers {
+    azuread = {
+      source  = "hashicorp/azuread"
+      version = "${local.tf_provider_azuread_version}"
+    }
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "${local.tf_provider_azurerm_version}"
+    }
+    azapi = {
+      source  = "azure/azapi"
+      version = "${local.tf_provider_azapi_version}"
+    }
+    azuredevops = {
+      source  = "microsoft/azuredevops"
+      version = "${local.tf_provider_azuredevops_version}"
+    }
+    random = {
+      source  = "hashicorp/random"
+      version = "${local.tf_provider_random_version}"
+    }
+    msgraph = {
+      source  = "Microsoft/msgraph"
+      version = "${local.tf_provider_msgraph_version}"
+    }
+  }
+}
+
+EOF
 }
 
 inputs = {
