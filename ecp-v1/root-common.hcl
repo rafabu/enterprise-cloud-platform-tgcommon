@@ -17,6 +17,8 @@ locals {
 
   ecp_azure_main_location = "WestEurope"
 
+  ecp_network_main_ipv4_address_base = try(local.merged_locals.ecp_network_main_ipv4_address_base, "10.0.0.0")
+
   ecp_launchpad_subscription_id      = local.merged_locals.ecp_launchpad_subscription_id # from env.hcl normally
   ecp_launchpad_resource_group_name  = local.merged_locals.ecp_launchpad_resource_group_name # from level.hcl normally
   ecp_launchpad_storage_account_name = local.merged_locals.ecp_launchpad_storage_account_name # from level.hcl normally
@@ -166,7 +168,6 @@ EOF
 }
 
 inputs = {
-
   azure_location = try(local.merged_locals.ecp_azure_main_location, local.ecp_azure_main_location)
   azure_resource_name_elements = {
     prefixes = [local.ecp_environment_name]
@@ -175,4 +176,5 @@ inputs = {
     random_length = try(local.merged_locals.ecp_resource_name_random_length, 0)
     }
 
+  ecp_network_main_ipv4_address_base = local.ecp_network_main_ipv4_address_base
 }
