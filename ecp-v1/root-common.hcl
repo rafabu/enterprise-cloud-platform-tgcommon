@@ -15,6 +15,8 @@ locals {
       local.unit_common_vars.locals
     )
 
+  ecp_azure_main_location = "WestEurope"
+
   ecp_launchpad_subscription_id      = local.merged_locals.ecp_launchpad_subscription_id # from env.hcl normally
   ecp_launchpad_resource_group_name  = local.merged_locals.ecp_launchpad_resource_group_name # from level.hcl normally
   ecp_launchpad_storage_account_name = local.merged_locals.ecp_launchpad_storage_account_name # from level.hcl normally
@@ -29,6 +31,7 @@ locals {
 ############ Versions ############
   tf_version = ">= 1.13"
   tf_provider_azuread_version = "~> 3.5"
+  tf_provider_azurecaf_version = "~> 1.2"
   tf_provider_azurerm_version = "~> 4.42"
   tf_provider_azapi_version = "~> 2.6"
   tf_provider_azuredevops_version = "~> 1.11"
@@ -71,7 +74,7 @@ remote_state {
 }
 
 terraform {
-   source = "git::${local.azure_modules_repo}/modules-tf//entraid-policies" # ?ref=${include.root.locals.azure_modules_repo_version}"
+   source = "git::${local.azure_modules_repo}/modules-tf//${local.unit_common_vars.locals.azure_tf_module_folder}" # ?ref=${include.root.locals.azure_modules_repo_version}"
 
   # Force Terraform to keep trying to acquire a lock for
   # up to 20 minutes if someone else already has the lock
@@ -99,6 +102,20 @@ provider "azuread" {
   tenant_id = "${local.merged_locals.ecp_entra_tenant_id}"
 }
 
+provider "azurecaf" {}
+
+provider "azurerm" {
+  alias  = "lauchpad"
+
+  tenant_id       = "${local.merged_locals.ecp_entra_tenant_id}"
+  subscription_id = "${local.ecp_launchpad_subscription_id}"
+
+  environment         = "public"
+  storage_use_azuread = true
+
+  features {}
+}
+
 provider "msgraph" {
   tenant_id = "${local.merged_locals.ecp_entra_tenant_id}"
 }
@@ -117,6 +134,10 @@ terraform {
     azuread = {
       source  = "hashicorp/azuread"
       version = "${local.tf_provider_azuread_version}"
+    }
+    azurecaf = {
+      source  = "aztfmod/azurecaf"
+      version = "${local.tf_provider_azurecaf_version}"
     }
     azurerm = {
       source  = "hashicorp/azurerm"
@@ -145,4 +166,13 @@ EOF
 }
 
 inputs = {
+
+  azure_location = try(local.merged_locals.ecp_azure_main_location, local.ecp_azure_main_location)
+  azure_resource_name_elements = {
+    prefixes = [local.ecp_environment_name]
+    name = local.merged_locals.ecp_deployment_area
+    suffixes = [try(local.merged_locals.ecp_deployment_unit, "main")]
+    random_length = try(local.merged_locals.ecp_resource_name_random_length, 0)
+    }
+
 }
