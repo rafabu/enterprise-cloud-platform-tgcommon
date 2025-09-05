@@ -17,4 +17,5 @@ locals {
 }
 
 inputs = {
+    azure_tags = local.unit_common_azure_tags
 }

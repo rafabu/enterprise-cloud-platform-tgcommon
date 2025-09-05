@@ -179,16 +179,6 @@ terraform {
 EOF
 }
 
-# generate "ecp_deployment_data" {
-#   path = format("%s/lib/terragrunt-common/ecp-v1/ecp_deployment_data.json", get_repo_root())
-#   # path      = "ecp_deployment_data.json"
-#   if_exists = "overwrite"
-#   disable_signature = true
-#   contents  = <<EOF
-# ${jsonencode(local.ecp_deployment_data_object)}
-# EOF
-# }
-
 inputs = {
   azure_location = local.ecp_azure_main_location
   azure_resource_name_elements = {
