@@ -7,6 +7,7 @@ locals {
     level_vars = read_terragrunt_config(format("%s/../../level.hcl", get_original_terragrunt_dir()))
     area_vars = read_terragrunt_config(format("%s/../area.hcl", get_original_terragrunt_dir()))
     unit_common_vars = read_terragrunt_config(format("%s/lib/terragrunt-common/ecp-v1/%s/unit-common.hcl", get_repo_root(), regexall("^.*/(.+?/.+?/.+?)$", get_original_terragrunt_dir())[0][0]))
+    # unit_common_vars = {locals = {unit_common_azure_tags = {}}}
     merged_locals = merge(
       local.root_vars.locals,
       local.env_vars.locals,
@@ -15,9 +16,29 @@ locals {
       local.unit_common_vars.locals
     )
 
-  ecp_azure_main_location = "WestEurope"
+  ######## ECP Defaults ########
 
-  ecp_network_main_ipv4_address_base = try(local.merged_locals.ecp_network_main_ipv4_address_base, "10.0.0.0")
+  ecp_azure_main_location = "WestEurope"
+  ecp_network_main_ipv4_address_space = "10.0.0.0/16"
+  deployment_unit_default = "main"
+
+  ######## Merged ECP Data Object ########
+  ecp_deployment_data_object = {
+    deployment_code   = local.merged_locals.ecp_deployment_code
+    deployment_env    = local.merged_locals.ecp_deployment_env
+    deployment_number = local.merged_locals.ecp_deployment_number
+    deployment_area   = local.merged_locals.ecp_deployment_area
+    deployment_unit   = try(local.merged_locals.ecp_deployment_unit, local.deployment_unit_default)
+    environment_name = lower("${local.merged_locals.ecp_deployment_code}-${substr(local.merged_locals.ecp_deployment_env, 0, 1)}${local.merged_locals.ecp_deployment_number}")
+    launchpad_subscription_id      = local.merged_locals.ecp_launchpad_subscription_id
+    launchpad_resource_group_name  = local.merged_locals.ecp_launchpad_resource_group_name
+    launchpad_storage_account_name = local.merged_locals.ecp_launchpad_storage_account_name
+    # network_main_ipv4_address_space = try(local.merged_locals.ecp_network_main_ipv4_address_space, local.ecp_network_main_ipv4_address_space_default)
+  }
+
+  ######## Launchpad ########
+
+  # ecp_launchpad_vnet_address_space = cidrsubnet(local.ecp_deployment_data_object.network_main_ipv4_address_space, 8, 12)# e.g.
 
   ecp_launchpad_subscription_id      = local.merged_locals.ecp_launchpad_subscription_id # from env.hcl normally
   ecp_launchpad_resource_group_name  = local.merged_locals.ecp_launchpad_resource_group_name # from level.hcl normally
@@ -41,17 +62,8 @@ locals {
   tf_provider_msgraph_version = "~> 0.1"
 
 ############ Tags ############
-  merged_azure_tags = merge(
-    local.root_common_azure_tags,
-    local.root_vars.locals.root_azure_tags,
-    local.env_vars.locals.env_azure_tags,
-    local.level_vars.locals.level_azure_tags,
-    local.area_vars.locals.area_azure_tags,
-    local.unit_common_vars.locals.unit_common_azure_tags
-  )
-
   root_common_azure_tags = {
-    "_ecpTgUnitRootCommon" = format("%s/root-common.hcl", get_parent_terragrunt_dir())
+    "hidden-ecpTgUnitRootCommon" = format("%s/root-common.hcl", get_parent_terragrunt_dir())
 
     createdBy = "ecp-terraform"
   }
@@ -167,14 +179,25 @@ terraform {
 EOF
 }
 
+# generate "ecp_deployment_data" {
+#   path = format("%s/lib/terragrunt-common/ecp-v1/ecp_deployment_data.json", get_repo_root())
+#   # path      = "ecp_deployment_data.json"
+#   if_exists = "overwrite"
+#   disable_signature = true
+#   contents  = <<EOF
+# ${jsonencode(local.ecp_deployment_data_object)}
+# EOF
+# }
+
 inputs = {
-  azure_location = try(local.merged_locals.ecp_azure_main_location, local.ecp_azure_main_location)
+  azure_location = local.ecp_azure_main_location
   azure_resource_name_elements = {
     prefixes = [local.ecp_environment_name]
     name = local.merged_locals.ecp_deployment_area
     suffixes = [try(local.merged_locals.ecp_deployment_unit, "main")]
     random_length = try(local.merged_locals.ecp_resource_name_random_length, 0)
     }
+  azure_tags = local.root_common_azure_tags
 
-  ecp_network_main_ipv4_address_base = local.ecp_network_main_ipv4_address_base
+  ecp_network_main_ipv4_address_space = local.ecp_network_main_ipv4_address_space
 }

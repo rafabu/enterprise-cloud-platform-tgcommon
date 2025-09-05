@@ -58,11 +58,12 @@ locals {
   )
 
   unit_common_azure_tags = {
-     "_ecpTgUnitCommon" = format("%s/unit-common.hcl", get_parent_terragrunt_dir())
+     "hidden-ecpTgUnitCommon" = format("%s/unit-common.hcl", get_parent_terragrunt_dir())
   }
 }
 
 inputs = {
+  azure_tags = local.unit_common_azure_tags
   # named location and CA policy artefacts (merged - unit definitions can override the library ones)
   named_location_definitions =   local.policy_named_location_definition_merged
   conditional_access_policy_definitions =   local.policy_ca_definition_merged
