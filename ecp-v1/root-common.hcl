@@ -20,6 +20,9 @@ locals {
 
   ecp_azure_main_location = "WestEurope"
   ecp_network_main_ipv4_address_space = "10.0.0.0/16"
+  ecp_azure_devops_organization_name = "<not_defined>"
+  ecp_azure_root_parent_management_group_id = "ecp-root"
+  
   deployment_unit_default = "main"
 
   ######## Merged ECP Data Object ########
@@ -33,7 +36,6 @@ locals {
     launchpad_subscription_id      = local.merged_locals.ecp_launchpad_subscription_id
     launchpad_resource_group_name  = local.merged_locals.ecp_launchpad_resource_group_name
     launchpad_storage_account_name = local.merged_locals.ecp_launchpad_storage_account_name
-    # network_main_ipv4_address_space = try(local.merged_locals.ecp_network_main_ipv4_address_space, local.ecp_network_main_ipv4_address_space_default)
   }
 
   ######## Launchpad ########
@@ -107,6 +109,7 @@ terraform {
   }
 }
 
+# add providers conditionally based on module name
 generate "provider" {
   path      = "providers.tf"
   if_exists = "overwrite"
@@ -117,6 +120,12 @@ provider "azuread" {
 }
 
 provider "azurecaf" {}
+
+%{if contains(["ado-mpool"], regexall("^.*/(.+?)$", get_terragrunt_dir())[0][0])}
+provider "azuredevops" {
+  org_service_url = "https://dev.azure.com/$${var.ecp_azure_devops_organization_name}"
+}
+%{endif}
 
 provider "azurerm" {
   alias  = "lauchpad"
@@ -161,10 +170,12 @@ terraform {
       source  = "azure/azapi"
       version = "${local.tf_provider_azapi_version}"
     }
+  %{if contains(["ado-mpool"], regexall("^.*/(.+?)$", get_terragrunt_dir())[0][0])}
     azuredevops = {
       source  = "microsoft/azuredevops"
       version = "${local.tf_provider_azuredevops_version}"
     }
+  %{endif}
     random = {
       source  = "hashicorp/random"
       version = "${local.tf_provider_random_version}"
@@ -190,4 +201,6 @@ inputs = {
   azure_tags = local.root_common_azure_tags
 
   ecp_network_main_ipv4_address_space = local.ecp_network_main_ipv4_address_space
+  ecp_azure_devops_organization_name = local.ecp_azure_devops_organization_name
+  ecp_azure_root_parent_management_group_id = local.ecp_azure_root_parent_management_group_id
 }
