@@ -202,5 +202,6 @@ inputs = {
 
   ecp_network_main_ipv4_address_space = local.ecp_network_main_ipv4_address_space
   ecp_azure_devops_organization_name = local.ecp_azure_devops_organization_name
+  ecp_azure_devops_billing_subscription_id = null
   ecp_azure_root_parent_management_group_id = local.ecp_azure_root_parent_management_group_id
 }
