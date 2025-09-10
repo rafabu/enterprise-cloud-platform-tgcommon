@@ -83,4 +83,6 @@ inputs = {
   subnet_artefact_names = [
     "l0-lauchpad-ado-mpool-platform"
   ]
+
+  workload_identity_type = "userAssignedIdentity" # "serviceprincipal"
 }
