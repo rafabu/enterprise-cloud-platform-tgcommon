@@ -21,6 +21,7 @@ locals {
   ecp_azure_main_location = "WestEurope"
   ecp_network_main_ipv4_address_space = "10.0.0.0/16"
   ecp_azure_devops_organization_name = "<not_defined>"
+  ecp_azure_devops_project_name = "<not_defined>"
   ecp_azure_root_parent_management_group_id = "ecp-root"
   
   deployment_unit_default = "main"
@@ -121,7 +122,7 @@ provider "azuread" {
 
 provider "azurecaf" {}
 
-%{if contains(["ado-mpool", "ado-organization"], regexall("^.*/(.+?)$", get_terragrunt_dir())[0][0])}
+%{if contains(["ado-mpool", "ado-project"], regexall("^.*/(.+?)$", get_terragrunt_dir())[0][0])}
 provider "azuredevops" {
   org_service_url = "https://dev.azure.com/$${var.ecp_azure_devops_organization_name}"
 }
@@ -170,7 +171,7 @@ terraform {
       source  = "azure/azapi"
       version = "${local.tf_provider_azapi_version}"
     }
-  %{if contains(["ado-mpool", "ado-organization"], regexall("^.*/(.+?)$", get_terragrunt_dir())[0][0])}
+  %{if contains(["ado-mpool", "ado-project"], regexall("^.*/(.+?)$", get_terragrunt_dir())[0][0])}
     azuredevops = {
       source  = "microsoft/azuredevops"
       version = "${local.tf_provider_azuredevops_version}"
@@ -202,6 +203,6 @@ inputs = {
 
   ecp_network_main_ipv4_address_space = local.ecp_network_main_ipv4_address_space
   ecp_azure_devops_organization_name = local.ecp_azure_devops_organization_name
-  ecp_azure_devops_billing_subscription_id = null
+  ecp_azure_devops_project_name = local.ecp_azure_devops_project_name
   ecp_azure_root_parent_management_group_id = local.ecp_azure_root_parent_management_group_id
 }

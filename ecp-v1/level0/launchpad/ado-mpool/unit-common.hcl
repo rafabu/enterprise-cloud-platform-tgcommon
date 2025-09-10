@@ -26,8 +26,8 @@ dependency "l0-lp-net" {
   }
 }
 
-dependency "l0-lp-ado-organization" {
-  config_path = format("%s/../ado-organization", get_original_terragrunt_dir())
+dependency "l0-lp-ado-project" {
+  config_path = format("%s/../ado-project", get_original_terragrunt_dir())
   mock_outputs = {}
 }
 
