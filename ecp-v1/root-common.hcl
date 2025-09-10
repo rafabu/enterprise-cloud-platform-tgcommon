@@ -121,7 +121,7 @@ provider "azuread" {
 
 provider "azurecaf" {}
 
-%{if contains(["ado-mpool"], regexall("^.*/(.+?)$", get_terragrunt_dir())[0][0])}
+%{if contains(["ado-mpool", "ado-organization"], regexall("^.*/(.+?)$", get_terragrunt_dir())[0][0])}
 provider "azuredevops" {
   org_service_url = "https://dev.azure.com/$${var.ecp_azure_devops_organization_name}"
 }
@@ -170,7 +170,7 @@ terraform {
       source  = "azure/azapi"
       version = "${local.tf_provider_azapi_version}"
     }
-  %{if contains(["ado-mpool"], regexall("^.*/(.+?)$", get_terragrunt_dir())[0][0])}
+  %{if contains(["ado-mpool", "ado-organization"], regexall("^.*/(.+?)$", get_terragrunt_dir())[0][0])}
     azuredevops = {
       source  = "microsoft/azuredevops"
       version = "${local.tf_provider_azuredevops_version}"
