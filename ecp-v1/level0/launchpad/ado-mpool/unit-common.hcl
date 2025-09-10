@@ -26,6 +26,11 @@ dependency "l0-lp-net" {
   }
 }
 
+dependency "l0-lp-ado-organization" {
+  config_path = format("%s/../ado-organization", get_original_terragrunt_dir())
+  mock_outputs = {}
+}
+
 locals {
   ecp_deployment_unit = "ado-mpool"
   ecp_resource_name_random_length = 0
