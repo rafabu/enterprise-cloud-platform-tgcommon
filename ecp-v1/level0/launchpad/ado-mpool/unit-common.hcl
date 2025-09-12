@@ -43,9 +43,9 @@ dependency "l0-lp-devcenter" {
     dev_center_project = {
       mock = {
         id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.DevCenter/projects/mock-project"
-      name = "mock-project "
-      location = "nowhere"
-      resource_group_name = "mock-rg"
+        name = "mock-project "
+        location = "nowhere"
+        resource_group_name = "mock-rg"
       }
     }
   }
@@ -110,4 +110,6 @@ inputs = {
   ]
 
   workload_identity_type = "userAssignedIdentity" # "serviceprincipal"
+
+  dev_center_project_resource_id = dependency.l0-lp-devcenter.outputs.dev_center_project.id
 }
