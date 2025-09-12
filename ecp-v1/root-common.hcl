@@ -116,13 +116,27 @@ generate "provider" {
   if_exists = "overwrite"
   contents  = <<EOF
 
-provider "azuread" {
-  tenant_id = "${local.merged_locals.ecp_entra_tenant_id}"
+%{if contains(
+  [
+    "ado-devcenter"
+  ], regexall("^.*/(.+?)$", get_terragrunt_dir()
+)[0][0])}
+provider "azapi" {
+  tenant_id       = "${local.merged_locals.ecp_entra_tenant_id}"
+  subscription_id = "${local.ecp_launchpad_subscription_id}"
+
+  environment         = "public"
 }
+%{endif}
 
 provider "azurecaf" {}
 
-%{if contains(["ado-mpool", "ado-project"], regexall("^.*/(.+?)$", get_terragrunt_dir())[0][0])}
+%{if contains(
+  [
+    "ado-mpool",
+    "ado-project"
+  ], regexall("^.*/(.+?)$", get_terragrunt_dir()
+)[0][0])}
 provider "azuredevops" {
   org_service_url = "https://dev.azure.com/$${var.ecp_azure_devops_organization_name}"
 }
@@ -167,16 +181,27 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "${local.tf_provider_azurerm_version}"
     }
+%{if contains(
+  [
+    "ado-devcenter"
+  ], regexall("^.*/(.+?)$", get_terragrunt_dir()
+)[0][0])}
     azapi = {
       source  = "azure/azapi"
       version = "${local.tf_provider_azapi_version}"
     }
-  %{if contains(["ado-mpool", "ado-project"], regexall("^.*/(.+?)$", get_terragrunt_dir())[0][0])}
+%{endif}
+%{if contains(
+  [
+    "ado-mpool",
+    "ado-project"
+  ], regexall("^.*/(.+?)$", get_terragrunt_dir()
+)[0][0])}
     azuredevops = {
       source  = "microsoft/azuredevops"
       version = "${local.tf_provider_azuredevops_version}"
     }
-  %{endif}
+%{endif}
     random = {
       source  = "hashicorp/random"
       version = "${local.tf_provider_random_version}"
