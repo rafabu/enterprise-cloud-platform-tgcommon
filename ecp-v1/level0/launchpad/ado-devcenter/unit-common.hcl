@@ -1,5 +1,5 @@
 dependency "l0-lp-net" {
-  config_path = format("%s/../network", get_original_terragrunt_dir())
+  config_path = format("%s/../launchpad-network", get_original_terragrunt_dir())
   mock_outputs = {
     virtual_networks = {
       mock = {

@@ -117,10 +117,8 @@ generate "provider" {
   contents  = <<EOF
 
 %{if contains(
-  [
-    "ado-devcenter"
-  ], regexall("^.*/(.+?)$", get_terragrunt_dir()
-)[0][0])}
+  ["ado-devcenter"],
+  regexall("^.*/(.+?)$", get_terragrunt_dir())[0][0])}
 provider "azapi" {
   tenant_id       = "${local.merged_locals.ecp_entra_tenant_id}"
   subscription_id = "${local.ecp_launchpad_subscription_id}"
@@ -129,19 +127,30 @@ provider "azapi" {
 }
 %{endif}
 
+%{if contains(
+  ["ado-mpool", "entraid-policies"],
+  regexall("^.*/(.+?)$", get_terragrunt_dir()
+)[0][0])}
+provider "azuread" {
+  tenant_id       = "${local.merged_locals.ecp_entra_tenant_id}"
+}
+%{endif}
+
 provider "azurecaf" {}
 
 %{if contains(
-  [
-    "ado-mpool",
-    "ado-project"
-  ], regexall("^.*/(.+?)$", get_terragrunt_dir()
+  ["ado-mpool", "ado-project"],
+  regexall("^.*/(.+?)$", get_terragrunt_dir()
 )[0][0])}
 provider "azuredevops" {
   org_service_url = "https://dev.azure.com/$${var.ecp_azure_devops_organization_name}"
 }
 %{endif}
 
+%{if contains(
+  ["ado-mpool", "launchpad-network"],
+  regexall("^.*/(.+?)$", get_terragrunt_dir()
+)[0][0])}
 provider "azurerm" {
   alias  = "lauchpad"
 
@@ -153,10 +162,16 @@ provider "azurerm" {
 
   features {}
 }
+%{endif}
 
+%{if contains(
+  ["entraid-policies"],
+  regexall("^.*/(.+?)$", get_terragrunt_dir()
+)[0][0])}
 provider "msgraph" {
   tenant_id = "${local.merged_locals.ecp_entra_tenant_id}"
 }
+%{endif}
 
 EOF
 }
@@ -169,22 +184,31 @@ terraform {
   required_version = "${local.tf_version}"
 
   required_providers {
+%{if contains(
+  ["ado-mpool", "entraid-policies"],
+  regexall("^.*/(.+?)$", get_terragrunt_dir()
+)[0][0])}
     azuread = {
       source  = "hashicorp/azuread"
       version = "${local.tf_provider_azuread_version}"
     }
+%{endif}
     azurecaf = {
       source  = "aztfmod/azurecaf"
       version = "${local.tf_provider_azurecaf_version}"
     }
+%{if contains(
+  ["ado-mpool", "launchpad-network"],
+  regexall("^.*/(.+?)$", get_terragrunt_dir()
+)[0][0])}
     azurerm = {
       source  = "hashicorp/azurerm"
       version = "${local.tf_provider_azurerm_version}"
     }
+%{endif}
 %{if contains(
-  [
-    "ado-devcenter"
-  ], regexall("^.*/(.+?)$", get_terragrunt_dir()
+  ["ado-devcenter"],
+  regexall("^.*/(.+?)$", get_terragrunt_dir()
 )[0][0])}
     azapi = {
       source  = "azure/azapi"
@@ -192,10 +216,8 @@ terraform {
     }
 %{endif}
 %{if contains(
-  [
-    "ado-mpool",
-    "ado-project"
-  ], regexall("^.*/(.+?)$", get_terragrunt_dir()
+  ["ado-mpool", "ado-project"],
+  regexall("^.*/(.+?)$", get_terragrunt_dir()
 )[0][0])}
     azuredevops = {
       source  = "microsoft/azuredevops"
@@ -206,10 +228,15 @@ terraform {
       source  = "hashicorp/random"
       version = "${local.tf_provider_random_version}"
     }
+%{if contains(
+  ["entraid-policies"],
+  regexall("^.*/(.+?)$", get_terragrunt_dir()
+)[0][0])}
     msgraph = {
       source  = "Microsoft/msgraph"
       version = "${local.tf_provider_msgraph_version}"
     }
+%{endif}
   }
 }
 
