@@ -18,7 +18,7 @@ dependency "l0-lp-net" {
       }
     }
     virtual_networks_subnets = {
-      mock = {
+      l0-launchpad-main-default = {
         id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualNetworks/mock-vnet/subnets/mock"
         name = "mock"
         resource_group_name = "mock-rg"
