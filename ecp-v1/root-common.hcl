@@ -148,7 +148,7 @@ provider "azuredevops" {
 %{endif}
 
 %{if contains(
-  ["launchpad-network"],
+  ["ado-mpool", "launchpad-network"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
 )[0][0])}
 provider "azurerm" {
@@ -198,7 +198,7 @@ terraform {
       version = "${local.tf_provider_azurecaf_version}"
     }
 %{if contains(
-  ["launchpad-network"],
+  ["ado-mpool", "launchpad-network"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
 )[0][0])}
     azurerm = {
