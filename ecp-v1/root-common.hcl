@@ -117,7 +117,7 @@ generate "provider" {
   contents  = <<EOF
 
 %{if contains(
-  ["ado-devcenter"],
+  ["devcenter"],
   regexall("^.*/(.+?)$", get_terragrunt_dir())[0][0])}
 provider "azapi" {
   tenant_id       = "${local.merged_locals.ecp_entra_tenant_id}"
@@ -207,7 +207,7 @@ terraform {
     }
 %{endif}
 %{if contains(
-  ["ado-devcenter"],
+  ["devcenter"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
 )[0][0])}
     azapi = {

@@ -31,6 +31,26 @@ dependency "l0-lp-net" {
   }
 }
 
+dependency "l0-lp-devcenter" {
+  config_path = format("%s/../devcenter", get_original_terragrunt_dir())
+  mock_outputs = {
+    dev_center = {
+      id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.DevCenter/devcenters/mock-devcenter"
+      name = "mock-devcenter"
+      location = "nowhere"
+      resource_group_name = "mock-rg"
+    }
+    dev_center_project = {
+      mock = {
+        id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.DevCenter/projects/mock-project"
+      name = "mock-project "
+      location = "nowhere"
+      resource_group_name = "mock-rg"
+      }
+    }
+  }
+}
+
 dependency "l0-lp-ado-project" {
   config_path = format("%s/../ado-project", get_original_terragrunt_dir())
   mock_outputs = {}
