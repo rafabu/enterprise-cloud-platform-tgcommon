@@ -1,6 +1,11 @@
 dependency "l0-lp-net" {
   config_path = format("%s/../launchpad-network", get_original_terragrunt_dir())
   mock_outputs = {
+    resource_group = {
+      id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg"
+      name = "mock-rg"
+      location = "nowhere"
+    }
     virtual_networks = {
       mock = {
         id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualNetworks/mock-vnet"
