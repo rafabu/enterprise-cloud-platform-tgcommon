@@ -99,14 +99,14 @@ locals {
 inputs = {
   azure_tags = local.unit_common_azure_tags
    
-  virtual_network_id = dependency.l0-lp-net.outputs.virtual_networks.l0-lauchpad-main.id
+  virtual_network_id = dependency.l0-lp-net.outputs.virtual_networks.l0-launchpad-main.id
   
   # load merged vnet artefact objects
   virtual_network_subnet_definitions = local.virtualNetworkSubnet_definition_merged
 
   # define which artefacts from the libraries we need to create
   subnet_artefact_names = [
-    "l0-lauchpad-ado-mpool-platform"
+    "l0-launchpad-ado-mpool-platform"
   ]
 
   workload_identity_type = "userAssignedIdentity" # "serviceprincipal"

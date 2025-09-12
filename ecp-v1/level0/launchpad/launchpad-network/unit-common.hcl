@@ -4,7 +4,7 @@ locals {
   ecp_deployment_unit = "main"
   ecp_resource_name_random_length = 0
 
-  azure_tf_module_folder = "lauchpad-network"
+  azure_tf_module_folder = "launchpad-network"
 
   library_path_shared = format("%s/lib/ecp-lib", get_repo_root())
   library_path_unit = "${get_terragrunt_dir()}/lib"
@@ -74,9 +74,9 @@ inputs = {
 
   # define which artefacts from the libraries we need to create
   virtual_network_artefact_names = [
-    "l0-lauchpad-main"
+    "l0-launchpad-main"
   ]
   subnet_artefact_names = [
-    "l0-lauchpad-main-default"
+    "l0-launchpad-main-default"
   ]
 }

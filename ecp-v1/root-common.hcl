@@ -152,7 +152,7 @@ provider "azuredevops" {
   regexall("^.*/(.+?)$", get_terragrunt_dir()
 )[0][0])}
 provider "azurerm" {
-  alias  = "lauchpad"
+  alias  = "launchpad"
 
   tenant_id       = "${local.merged_locals.ecp_entra_tenant_id}"
   subscription_id = "${local.ecp_launchpad_subscription_id}"
