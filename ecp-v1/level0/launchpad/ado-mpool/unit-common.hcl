@@ -7,7 +7,7 @@ dependency "l0-lp-net" {
       location = "nowhere"
     }
     virtual_networks = {
-      mock = {
+      l0-launchpad-main = {
         id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualNetworks/mock-vnet"
         name = "mock-vnet"
         resource_group_name = "mock-rg"
@@ -41,13 +41,11 @@ dependency "l0-lp-devcenter" {
       resource_group_name = "mock-rg"
     }
     dev_center_project = {
-      mock = {
         id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.DevCenter/projects/mock-project"
         name = "mock-project "
         location = "nowhere"
         resource_group_name = "mock-rg"
       }
-    }
   }
 }
 
