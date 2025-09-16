@@ -32,7 +32,7 @@ dependency "l0-lp-net" {
 }
 
 locals {
-  ecp_deployment_unit = "backend"
+  ecp_deployment_unit = "tfbackend"
   ecp_resource_name_random_length = 0
 
   azure_tf_module_folder = "launchpad-backend"
