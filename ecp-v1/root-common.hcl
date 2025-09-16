@@ -22,6 +22,7 @@ locals {
   ecp_network_main_ipv4_address_space = "10.0.0.0/16"
   ecp_azure_devops_organization_name = "<not_defined>"
   ecp_azure_devops_project_name = "<not_defined>"
+  ecp_azure_devops_repository_name = "<not_defined>"
   ecp_azure_root_parent_management_group_id = "ecp-root"
   
   deployment_unit_default = "main"
@@ -256,5 +257,6 @@ inputs = {
   ecp_network_main_ipv4_address_space = local.ecp_network_main_ipv4_address_space
   ecp_azure_devops_organization_name = local.ecp_azure_devops_organization_name
   ecp_azure_devops_project_name = local.ecp_azure_devops_project_name
+  ecp_azure_devops_repository_name = local.ecp_azure_devops_repository_name
   ecp_azure_root_parent_management_group_id = local.ecp_azure_root_parent_management_group_id
 }
