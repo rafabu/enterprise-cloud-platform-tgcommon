@@ -31,6 +31,45 @@ dependency "l0-lp-net" {
   }
 }
 
+dependency "l0-lp-backend" {
+  config_path = format("%s/../launchpad-backend", get_original_terragrunt_dir())
+  mock_outputs = {
+    resource_group = {
+      id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg"
+      name = "mock-rg"
+      location = "nowhere"
+    }
+    storage_accounts = {
+      l0 = {
+        id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Storage/storageAccounts/mockstl0"
+        name = "mockstl0"
+        location = "nowhere"
+        private_endpoint_blob ={
+          fqdn = "mockstl0.blob.core.windows.net"
+          private_ip_address = "192.0.2.4"
+        }
+      }
+      l1 = {
+        id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Storage/storageAccounts/mockstl1"
+        name = "mockstl1"
+        location = "nowhere"
+        private_endpoint_blob ={
+          fqdn = "mockstl1.blob.core.windows.net"
+          private_ip_address = "192.0.2.5"
+        }
+      }
+      l2 = {
+        id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Storage/storageAccounts/mockstl2"
+        name = "mockstl2"
+        location = "nowhere"
+        private_endpoint_blob ={
+          fqdn = "mockstl2.blob.core.windows.net"
+          private_ip_address = "192.0.2.6"
+      }
+    }
+  }
+}
+
 dependency "l0-lp-devcenter" {
   config_path = format("%s/../devcenter", get_original_terragrunt_dir())
   mock_outputs = {
@@ -106,6 +145,8 @@ inputs = {
   subnet_artefact_names = [
     "l0-launchpad-ado-mpool-platform"
   ]
+
+  backend_storage_accounts = dependency.l0-lp-backend.outputs.storage_accounts
 
   workload_identity_type = "userAssignedIdentity" # "serviceprincipal"
 
