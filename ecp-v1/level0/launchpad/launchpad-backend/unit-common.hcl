@@ -46,5 +46,5 @@ locals {
 inputs = {
   azure_tags = local.unit_common_azure_tags
    
-  virtual_subnet_id = dependency.l0-lp-net.outputs.virtual_networks_subnets.virtual_networks_subnets.l0-launchpad-main-default.id
+  virtual_subnet_id = dependency.l0-lp-net.outputs.virtual_networks_subnets.l0-launchpad-main-default.id
 }
