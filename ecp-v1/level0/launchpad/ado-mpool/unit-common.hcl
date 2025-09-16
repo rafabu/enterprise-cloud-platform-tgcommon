@@ -65,6 +65,7 @@ dependency "l0-lp-backend" {
         private_endpoint_blob ={
           fqdn = "mockstl2.blob.core.windows.net"
           private_ip_address = "192.0.2.6"
+        }
       }
     }
   }
