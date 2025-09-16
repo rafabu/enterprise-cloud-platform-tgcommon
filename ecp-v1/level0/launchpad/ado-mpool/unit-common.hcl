@@ -48,6 +48,7 @@ dependency "l0-lp-backend" {
           fqdn = "mockstl0.blob.core.windows.net"
           private_ip_address = "192.0.2.4"
         }
+        ecp_level = "l0"
       }
       l1 = {
         id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Storage/storageAccounts/mockstl1"
@@ -57,6 +58,7 @@ dependency "l0-lp-backend" {
           fqdn = "mockstl1.blob.core.windows.net"
           private_ip_address = "192.0.2.5"
         }
+        ecp_level = "l1"
       }
       l2 = {
         id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Storage/storageAccounts/mockstl2"
@@ -66,6 +68,7 @@ dependency "l0-lp-backend" {
           fqdn = "mockstl2.blob.core.windows.net"
           private_ip_address = "192.0.2.6"
         }
+        ecp_level = "l2"
       }
     }
   }
