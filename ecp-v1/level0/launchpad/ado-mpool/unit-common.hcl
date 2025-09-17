@@ -49,6 +49,7 @@ dependency "l0-lp-backend" {
           private_ip_address = "192.0.2.4"
         }
         ecp_level = "l0"
+        tf_backend_container = "tfstate"
       }
       l1 = {
         id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Storage/storageAccounts/mockstl1"
@@ -59,6 +60,7 @@ dependency "l0-lp-backend" {
           private_ip_address = "192.0.2.5"
         }
         ecp_level = "l1"
+        tf_backend_container = "tfstate"
       }
       l2 = {
         id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Storage/storageAccounts/mockstl2"
@@ -69,6 +71,7 @@ dependency "l0-lp-backend" {
           private_ip_address = "192.0.2.6"
         }
         ecp_level = "l2"
+        tf_backend_container = "tfstate"
       }
     }
   }
