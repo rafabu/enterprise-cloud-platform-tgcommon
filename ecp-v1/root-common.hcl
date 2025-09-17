@@ -118,7 +118,7 @@ generate "provider" {
   contents  = <<EOF
 
 %{if contains(
-  ["ado-mpool", "devcenter"],
+  ["ado-mpool", "launchpad-backend", "devcenter"],
   regexall("^.*/(.+?)$", get_terragrunt_dir())[0][0])}
 provider "azapi" {
   tenant_id       = "${local.merged_locals.ecp_entra_tenant_id}"
@@ -199,7 +199,7 @@ terraform {
       version = "${local.tf_provider_azurecaf_version}"
     }
 %{if contains(
-  ["ado-mpool", "launchpad-network", "launchpad-network"],
+  ["ado-mpool", "launchpad-backend", "launchpad-network"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
 )[0][0])}
     azurerm = {
@@ -208,7 +208,7 @@ terraform {
     }
 %{endif}
 %{if contains(
-  ["ado-mpool", "devcenter"],
+  ["ado-mpool", "launchpad-backend","devcenter"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
 )[0][0])}
     azapi = {
