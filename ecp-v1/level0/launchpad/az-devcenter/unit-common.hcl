@@ -97,6 +97,6 @@ inputs = {
 
   # define which artefacts from the libraries we need to create
   subnet_artefact_names = [
-    "l0-launchpad-ado-mpool-platform"
+    "l0-launchpad-devcenter-devbox"
   ]
 }
