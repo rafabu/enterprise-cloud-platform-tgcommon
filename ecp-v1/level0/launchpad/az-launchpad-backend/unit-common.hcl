@@ -1,4 +1,4 @@
-dependency "l0-lp-net" {
+dependency "l0-lp-az-lp-net" {
   config_path = format("%s/../launchpad-network", get_original_terragrunt_dir())
   mock_outputs = {
     resource_group = {
@@ -46,5 +46,5 @@ locals {
 inputs = {
   azure_tags = local.unit_common_azure_tags
    
-  virtual_subnet_id = dependency.l0-lp-net.outputs.virtual_network_subnets.l0-launchpad-main-default.id
+  virtual_subnet_id = dependency.l0-lp-az-lp-net.outputs.virtual_network_subnets.l0-launchpad-main-default.id
 }

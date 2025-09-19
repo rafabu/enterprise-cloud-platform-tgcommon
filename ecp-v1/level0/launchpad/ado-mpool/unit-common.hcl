@@ -1,5 +1,5 @@
-dependency "l0-lp-net" {
-  config_path = format("%s/../launchpad-network", get_original_terragrunt_dir())
+dependency "l0-lp-az-net" {
+  config_path = format("%s/../az-launchpad-network", get_original_terragrunt_dir())
   mock_outputs = {
     resource_group = {
       id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg"
@@ -31,8 +31,8 @@ dependency "l0-lp-net" {
   }
 }
 
-dependency "l0-lp-backend" {
-  config_path = format("%s/../launchpad-backend", get_original_terragrunt_dir())
+dependency "l0-lp-az-backend" {
+  config_path = format("%s/../az-launchpad-backend", get_original_terragrunt_dir())
   mock_outputs = {
     resource_group = {
       id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg"
@@ -77,8 +77,8 @@ dependency "l0-lp-backend" {
   }
 }
 
-dependency "l0-lp-devcenter" {
-  config_path = format("%s/../devcenter", get_original_terragrunt_dir())
+dependency "l0-lp-az-devcenter" {
+  config_path = format("%s/../az-devcenter", get_original_terragrunt_dir())
   mock_outputs = {
     dev_center = {
       id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.DevCenter/devcenters/mock-devcenter"
@@ -95,7 +95,7 @@ dependency "l0-lp-devcenter" {
   }
 }
 
-dependency "l0-lp-ado-project" {
+dependency "l0-lp-az-ado-project" {
   config_path = format("%s/../ado-project", get_original_terragrunt_dir())
   mock_outputs = {}
 }
@@ -143,7 +143,7 @@ locals {
 inputs = {
   azure_tags = local.unit_common_azure_tags
    
-  virtual_network_id = dependency.l0-lp-net.outputs.virtual_networks.l0-launchpad-main.id
+  virtual_network_id = dependency.l0-lp-az-net.outputs.virtual_networks.l0-launchpad-main.id
   
   # load merged vnet artefact objects
   virtual_network_subnet_definitions = local.virtualNetworkSubnet_definition_merged
@@ -153,9 +153,9 @@ inputs = {
     "l0-launchpad-ado-mpool-platform"
   ]
 
-  backend_storage_accounts = dependency.l0-lp-backend.outputs.storage_accounts
+  backend_storage_accounts = dependency.l0-lp-az-backend.outputs.storage_accounts
 
   workload_identity_type = "userAssignedIdentity" # "serviceprincipal"
 
-  dev_center_project_resource_id = dependency.l0-lp-devcenter.outputs.dev_center_project.id
+  dev_center_project_resource_id = dependency.l0-lp-az-devcenter.outputs.dev_center_project.id
 }
