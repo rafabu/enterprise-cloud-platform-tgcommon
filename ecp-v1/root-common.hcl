@@ -149,7 +149,7 @@ provider "azuredevops" {
 %{endif}
 
 %{if contains(
-  ["ado-mpool", "az-launchpad-main", "az-launchpad-backend", "az-launchpad-network"],
+  ["ado-mpool", "az-devcenter", "az-launchpad-main", "az-launchpad-backend", "az-launchpad-network"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
 )[0][0])}
 provider "azurerm" {
@@ -199,7 +199,7 @@ terraform {
       version = "${local.tf_provider_azurecaf_version}"
     }
 %{if contains(
-  ["ado-mpool", "az-launchpad-backend", "az-launchpad-network", "az-launchpad-main"],
+  ["ado-mpool", "az-devcenter", "az-launchpad-backend", "az-launchpad-network", "az-launchpad-main"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
 )[0][0])}
     azurerm = {
