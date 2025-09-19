@@ -77,7 +77,7 @@ locals {
 inputs = {
   azure_tags = local.unit_common_azure_tags
 
-  resource_group_id = dependency.l0-lp-az-main.outputs.resource_group.id
+  resource_group_id = dependency.l0-lp-az-lp-main.outputs.resource_group.id
 
   # load merged vnet artefact objects
   virtual_network_definitions = local.virtualNetwork_definition_merged
