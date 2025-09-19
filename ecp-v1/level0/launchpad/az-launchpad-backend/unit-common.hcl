@@ -1,11 +1,17 @@
-dependency "l0-lp-az-lp-net" {
-  config_path = format("%s/../launchpad-network", get_original_terragrunt_dir())
+dependency "l0-lp-az-lp-main" {
+  config_path = format("%s/../az-launchpad-main", get_original_terragrunt_dir())
   mock_outputs = {
     resource_group = {
       id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg"
       name = "mock-rg"
       location = "nowhere"
     }
+  }
+}
+
+dependency "l0-lp-az-lp-net" {
+  config_path = format("%s/../az-launchpad-network", get_original_terragrunt_dir())
+  mock_outputs = {
     virtual_networks = {
       l0-launchpad-main = {
         id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualNetworks/mock-vnet"

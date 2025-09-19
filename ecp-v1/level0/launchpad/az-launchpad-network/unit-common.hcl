@@ -1,6 +1,15 @@
+dependency "l0-lp-az-lp-main" {
+  config_path = format("%s/../az-launchpad-main", get_original_terragrunt_dir())
+  mock_outputs = {
+    resource_group = {
+      id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg"
+      name = "mock-rg"
+      location = "nowhere"
+    }
+  }
+}
+
 locals {
-  # root_common_vars = read_terragrunt_config(format("%s/lib/terragrunt-common/ecp-v1/root-common.hcl", get_repo_root()))
-  
   ecp_deployment_unit = "main"
   ecp_resource_name_random_length = 0
 
@@ -67,6 +76,8 @@ locals {
 
 inputs = {
   azure_tags = local.unit_common_azure_tags
+
+  resource_group_id = dependency.l0-lp-az-main.outputs.resource_group.id
 
   # load merged vnet artefact objects
   virtual_network_definitions = local.virtualNetwork_definition_merged
