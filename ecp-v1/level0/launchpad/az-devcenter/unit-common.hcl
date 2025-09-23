@@ -7,6 +7,7 @@ dependency "l0-lp-az-main" {
       location = "nowhere"
     }
   }
+  mock_outputs_allowed_terraform_commands = ["plan", "validate"]
 }
 
 dependency "l0-lp-az-net" {
@@ -40,6 +41,7 @@ dependency "l0-lp-az-net" {
       }
     }
   }
+  mock_outputs_allowed_terraform_commands = ["plan", "validate"]
 }
 
 
