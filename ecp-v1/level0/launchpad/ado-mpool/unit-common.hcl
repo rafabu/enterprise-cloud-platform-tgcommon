@@ -29,7 +29,6 @@ dependency "l0-lp-az-net" {
       }
     }
   }
-  mock_outputs_allowed_terraform_commands = ["plan", "validate"]
 }
 
 dependency "l0-lp-az-backend" {
@@ -76,7 +75,6 @@ dependency "l0-lp-az-backend" {
       }
     }
   }
-  mock_outputs_allowed_terraform_commands = ["plan", "validate"]
 }
 
 dependency "l0-lp-az-devcenter" {
@@ -95,7 +93,6 @@ dependency "l0-lp-az-devcenter" {
         resource_group_name = "mock-rg"
       }
   }
-  mock_outputs_allowed_terraform_commands = ["plan", "validate"]
 }
 
 dependency "l0-lp-az-ado-project" {
