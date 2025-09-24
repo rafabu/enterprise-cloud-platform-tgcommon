@@ -17,7 +17,7 @@ remote_state {
 
 terraform {
   before_hook "get-actor-context" {
-    commands     = ["plan"]
+    commands     = ["plan", "apply"]
     execute      = [
       "pwsh",
       "-Command", 
