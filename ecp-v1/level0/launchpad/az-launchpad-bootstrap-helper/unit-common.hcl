@@ -16,30 +16,25 @@ remote_state {
 }
 
 terraform {
-
 # read helper module's output and prepare bootstrap state-specific environment variables.
- after_hook "get-backend-details-apply" {
+  after_hook "get-backend-details-apply" {
     commands     = ["plan"]
     execute      = [
       "pwsh",
       "-Command", 
 <<-SCRIPT
 terraform show -json ${local.tfplan_path}${basename(path_relative_to_include())}.tfplan | ConvertFrom-Json
-
 SCRIPT
     ]
     run_on_error = false
   }
-}
-
-after_hook "get-backend-details-apply" {
+  after_hook "get-backend-details-apply" {
     commands     = ["apply"]
     execute      = [
       "pwsh",
       "-Command", 
 <<-SCRIPT
 terraform output -json backend_resource_group | ConvertFrom-Json
-
 SCRIPT
     ]
     run_on_error = false
