@@ -23,13 +23,14 @@ terraform {
       "pwsh",
       "-Command", 
 <<-SCRIPT
-$ecp_backend_resource_group_id = (terraform show -json az-launchpad-bootstrap-helper.tfplan | ConvertFrom-Json).planned_values.outputs.backend_resource_group.value.id
-$ecp_backend_storage_account_l0_id = (terraform show -json az-launchpad-bootstrap-helper.tfplan | ConvertFrom-Json).planned_values.outputs.backend_storage_accounts.value.l0.id
+$ecp_backend_resource_group = (terraform show -json az-launchpad-bootstrap-helper.tfplan | ConvertFrom-Json).planned_values.outputs.backend_resource_group.value
+$ecp_backend_storage_account_l0 = (terraform show -json az-launchpad-bootstrap-helper.tfplan | ConvertFrom-Json).planned_values.outputs.backend_storage_accounts.value.l0.
 $filePath = Join-Path (Get-Location) "backend-details.json"
 $json = @{
-  "ecp_backend_resource_group_id" = $ecp_backend_resource_group_id;
-  "ecp_backend_storage_account_l0_id" = $ecp_backend_storage_account_l0_id;
+  "ecp_backend_resource_group" = $ecp_backend_resource_group;
+  "ecp_backend_storage_account_l0" = $ecp_backend_storage_account_l0;
 } | ConvertTo-Json -Depth 3
+Write-Output "Writing ""$filePath""" with (future) backend storage account details"
 Set-Content -Path $filePath -Value $json -Encoding UTF8 -Force
 SCRIPT
     ]
@@ -41,13 +42,14 @@ SCRIPT
       "pwsh",
       "-Command", 
 <<-SCRIPT
-$ecp_backend_resource_group_id = (terraform output -json backend_resource_group | ConvertFrom-Json).id
-$ecp_backend_storage_account_l0_id = (terraform output -json backend_storage_accounts | ConvertFrom-Json).l0.id
+$ecp_backend_resource_group = (terraform output -json backend_resource_group | ConvertFrom-Json)
+$ecp_backend_storage_account_l0 = (terraform output -json backend_storage_accounts | ConvertFrom-Json).l0
 $filePath = Join-Path (Get-Location) "backend-details.json"
 $json = @{
-  "ecp_backend_resource_group_id" = $ecp_backend_resource_group_id;
-  "ecp_backend_storage_account_l0_id" = $ecp_backend_storage_account_l0_id;
+  "ecp_backend_resource_group" = $ecp_backend_resource_group;
+  "ecp_backend_storage_account_l0" = $ecp_backend_storage_account_l0;
 } | ConvertTo-Json -Depth 3
+Write-Output "Writing ""$filePath""" with (future) backend storage account details"
 Set-Content -Path $filePath -Value $json -Encoding UTF8 -Force
 SCRIPT
     ]
