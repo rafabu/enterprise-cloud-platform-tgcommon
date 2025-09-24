@@ -35,7 +35,8 @@ SCRIPT
       "pwsh",
       "-Command", 
 <<-SCRIPT
-terraform output -json backend_resource_group | ConvertFrom-Json
+(terraform output -json backend_resource_group | ConvertFrom-Json).id
+(terraform output -json backend_storage_accounts | ConvertFrom-Json).l0.id
 SCRIPT
     ]
     run_on_error = false
