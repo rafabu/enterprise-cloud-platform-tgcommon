@@ -23,8 +23,14 @@ terraform {
       "pwsh",
       "-Command", 
 <<-SCRIPT
-$env:ecp_backend_resource_group_id = (terraform show -json az-launchpad-bootstrap-helper.tfplan | ConvertFrom-Json).planned_values.outputs.backend_resource_group.value.id
-$env:ecp_backend_storage_account_l0_id = (terraform show -json az-launchpad-bootstrap-helper.tfplan | ConvertFrom-Json).planned_values.outputs.backend_storage_accounts.value.l0.id
+$ecp_backend_resource_group_id = (terraform show -json az-launchpad-bootstrap-helper.tfplan | ConvertFrom-Json).planned_values.outputs.backend_resource_group.value.id
+$ecp_backend_storage_account_l0_id = (terraform show -json az-launchpad-bootstrap-helper.tfplan | ConvertFrom-Json).planned_values.outputs.backend_storage_accounts.value.l0.id
+$filePath = Join-Path (Get-Location) "backend-details.json"
+$json = @{
+  "ecp_backend_resource_group_id" = $ecp_backend_resource_group_id;
+  "ecp_backend_storage_account_l0_id" = $ecp_backend_storage_account_l0_id;
+} | ConvertTo-Json -Depth 3
+Set-Content -Path $filePath -Value $json -Encoding UTF8 -Force
 SCRIPT
     ]
     run_on_error = false
@@ -35,8 +41,14 @@ SCRIPT
       "pwsh",
       "-Command", 
 <<-SCRIPT
-$env:ecp_backend_resource_group_id = (terraform output -json backend_resource_group | ConvertFrom-Json).id
-$env:ecp_backend_storage_account_l0_id = (terraform output -json backend_storage_accounts | ConvertFrom-Json).l0.id
+$ecp_backend_resource_group_id = (terraform output -json backend_resource_group | ConvertFrom-Json).id
+$ecp_backend_storage_account_l0_id = (terraform output -json backend_storage_accounts | ConvertFrom-Json).l0.id
+$filePath = Join-Path (Get-Location) "backend-details.json"
+$json = @{
+  "ecp_backend_resource_group_id" = $ecp_backend_resource_group_id;
+  "ecp_backend_storage_account_l0_id" = $ecp_backend_storage_account_l0_id;
+} | ConvertTo-Json -Depth 3
+Set-Content -Path $filePath -Value $json -Encoding UTF8 -Force
 SCRIPT
     ]
     run_on_error = false
