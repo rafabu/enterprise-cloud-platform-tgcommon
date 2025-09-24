@@ -18,12 +18,13 @@ remote_state {
 terraform {
 # read helper module's output and prepare bootstrap state-specific environment variables.
   after_hook "get-backend-details-plan" {
-    commands     = ["plan", "destroy"]
+    commands     = ["plan"]
     execute      = [
       "pwsh",
       "-Command", 
 <<-SCRIPT
-terraform show -json az-launchpad-bootstrap-helper.tfplan | ConvertFrom-Json
+(terraform show -json az-launchpad-bootstrap-helper.tfplan | ConvertFrom-Json).planned_values.outputs.backend_resource_group.value.id
+(terraform show -json az-launchpad-bootstrap-helper.tfplan | ConvertFrom-Json).planned_values.outputs.backend_storage_accounts.value.l0.id
 SCRIPT
     ]
     run_on_error = false
