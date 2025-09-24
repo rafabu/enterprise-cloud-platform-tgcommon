@@ -33,7 +33,7 @@ try{
   }
 if (-not $privateIP) {
   # Cross-platform fallback using .NET
-  $privateIP = [System.Net.Dns]::GetHostAddresses([System.Net.Dns]::GetHostName()) |
+  $privateIP = [System.Net.Dns]::GetHostAddresses([System.Net.Dns]::GetHostName()).IPAddressToString |
     Where-Object { $_.AddressFamily -eq 'InterNetwork' -and $_.IPAddressToString -ne '127.0.0.1' } |
     Select-Object -First 1
 }
