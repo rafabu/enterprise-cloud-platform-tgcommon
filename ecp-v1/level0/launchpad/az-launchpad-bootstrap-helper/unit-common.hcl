@@ -79,9 +79,7 @@ $actor_identity =  @{
   }
 
 $filePath = Join-Path (Get-Location) "lp-bootstrap-actor-identity-details.json"
-$json = @{
-  "actor_identity" = $actor_identity
-} | ConvertTo-Json -Depth 3
+$json = $actor_identity | ConvertTo-Json -Depth 3
 Write-Output "Writing lp-bootstrap-actor-identity-details.json with details on the actor's identity"
 Set-Content -Path $filePath -Value $json -Encoding UTF8 -Force
 SCRIPT
@@ -113,9 +111,7 @@ $actor_identity =  @{
   }
 
 $filePath = Join-Path (Get-Location) "lp-bootstrap-actor-identity-details.json"
-$json = @{
-  "actor_identity" = $actor_identity
-} | ConvertTo-Json -Depth 3
+$json = $actor_identity | ConvertTo-Json -Depth 3
 Write-Output "Writing lp-bootstrap-actor-identity-details.json with details on the actor's identity"
 Set-Content -Path $filePath -Value $json -Encoding UTF8 -Force
 SCRIPT
