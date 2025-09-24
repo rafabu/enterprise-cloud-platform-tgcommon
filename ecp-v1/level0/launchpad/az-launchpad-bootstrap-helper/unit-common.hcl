@@ -23,7 +23,7 @@ terraform {
       "pwsh",
       "-Command", 
 <<-SCRIPT
-terraform show -json ${local.tfplan_path}${basename(path_relative_to_include())}.tfplan | ConvertFrom-Json
+terraform show -json az-launchpad-bootstrap-helper.tfplan | ConvertFrom-Json
 SCRIPT
     ]
     run_on_error = false
