@@ -22,6 +22,7 @@ terraform {
       "pwsh",
       "-Command", 
 <<-SCRIPT
+##### Network Context #####
 try{
   $privateIP = (Get-NetIPAddress -AddressFamily IPv4 -InterfaceAlias `
     (Get-NetIPConfiguration | Where-Object { $_.IPv4Address -and -not $_.NetAdapter.Status -eq "Disconnected" } |
@@ -40,6 +41,11 @@ if (-not $privateIP) {
 
 # Get public IPv4 address from an external service
 $publicIP = (Invoke-RestMethod -UseBasicParsing -Uri "https://api.ipify.org")
+
+##### Entra Id Identity Context #####
+
+
+
 
 $filePath = Join-Path (Get-Location) "actor-details.json"
 $json = @{

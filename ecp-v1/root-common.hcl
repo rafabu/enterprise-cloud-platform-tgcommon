@@ -129,7 +129,7 @@ provider "azapi" {
 %{endif}
 
 %{if contains(
-  ["ado-mpool", "entraid-policies"],
+  ["ado-mpool",  "az-launchpad-bootstrap-helper", "entraid-policies"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
 )[0][0])}
 provider "azuread" {
@@ -186,7 +186,7 @@ terraform {
 
   required_providers {
 %{if contains(
-  ["ado-mpool", "entraid-policies"],
+  ["ado-mpool",  "az-launchpad-bootstrap-helper", "entraid-policies"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
 )[0][0])}
     azuread = {
