@@ -17,8 +17,8 @@ remote_state {
 
 terraform {
 # read helper module's output and prepare bootstrap state-specific environment variables.
-  after_hook "get-backend-details-apply" {
-    commands     = ["plan"]
+  after_hook "get-backend-details-plan" {
+    commands     = ["plan", "destroy"]
     execute      = [
       "pwsh",
       "-Command", 
