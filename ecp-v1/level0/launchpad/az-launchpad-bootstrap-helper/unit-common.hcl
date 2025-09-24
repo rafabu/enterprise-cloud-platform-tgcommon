@@ -42,12 +42,12 @@ if (-not $privateIP) {
 # Get public IPv4 address from an external service
 $publicIP = (Invoke-RestMethod -UseBasicParsing -Uri "https://api.ipify.org")
 
-$filePath = Join-Path (Get-Location) "actor-network-details.json"
+$filePath = Join-Path (Get-Location) "lp-bootstrap-actor-network-details.json"
 $json = @{
   "actor_public_ip" = $publicIP;
   "actor_private_ip" = $privateIP;
 } | ConvertTo-Json -Depth 3
-Write-Output "Writing actor-network-details.json with details on the actor's context"
+Write-Output "Writing lp-bootstrap-actor-network-details.json with details on the actor's context"
 Set-Content -Path $filePath -Value $json -Encoding UTF8 -Force
 SCRIPT
     ]
@@ -63,12 +63,12 @@ SCRIPT
 $ecp_backend_resource_group = (terraform show -json az-launchpad-bootstrap-helper.tfplan | ConvertFrom-Json).planned_values.outputs.backend_resource_group.value.id
 $ecp_backend_storage_account_l0 = (terraform show -json az-launchpad-bootstrap-helper.tfplan | ConvertFrom-Json).planned_values.outputs.backend_storage_accounts.value.l0.id
 
-$filePath = Join-Path (Get-Location) "backend-details.json"
+$filePath = Join-Path (Get-Location) "lp-bootstrap-backend-details.json"
 $json = @{
   "ecp_backend_resource_group" = $ecp_backend_resource_group;
   "ecp_backend_storage_account_l0" = $ecp_backend_storage_account_l0
 } | ConvertTo-Json -Depth 3
-Write-Output "Writing backend-details.json with (future) backend storage account details"
+Write-Output "Writing lp-bootstrap-backend-details.json with (future) backend storage account details"
 Set-Content -Path $filePath -Value $json -Encoding UTF8 -Force
 
 $actor_identity =  @{ 
@@ -78,11 +78,11 @@ $actor_identity =  @{
   is_ecp_identity = (terraform show -json az-launchpad-bootstrap-helper.tfplan | ConvertFrom-Json).planned_values.outputs.actor_identity.value.is_ecp_launchpad_identity
   }
 
-$filePath = Join-Path (Get-Location) "actor-identity-details.json"
+$filePath = Join-Path (Get-Location) "lp-bootstrap-actor-identity-details.json"
 $json = @{
   "actor_identity" = $actor_identity
 } | ConvertTo-Json -Depth 3
-Write-Output "Writing actor-identity-details.json with details on the actor's identity"
+Write-Output "Writing lp-bootstrap-actor-identity-details.json with details on the actor's identity"
 Set-Content -Path $filePath -Value $json -Encoding UTF8 -Force
 SCRIPT
     ]
@@ -97,12 +97,12 @@ SCRIPT
 $ecp_backend_resource_group = (terraform output -json backend_resource_group | ConvertFrom-Json).id
 $ecp_backend_storage_account_l0 = (terraform output -json backend_storage_accounts | ConvertFrom-Json).l0.id
 
-$filePath = Join-Path (Get-Location) "backend-details.json"
+$filePath = Join-Path (Get-Location) "lp-bootstrap-backend-details.json"
 $json = @{
   "ecp_backend_resource_group" = $ecp_backend_resource_group;
   "ecp_backend_storage_account_l0" = $ecp_backend_storage_account_l0
 } | ConvertTo-Json -Depth 3
-Write-Output "Writing backend-details.json with (future) backend storage account details"
+Write-Output "Writing lp-bootstrap-backend-details.json with (future) backend storage account details"
 Set-Content -Path $filePath -Value $json -Encoding UTF8 -Force
 
 $actor_identity =  @{ 
@@ -112,11 +112,11 @@ $actor_identity =  @{
   is_ecp_identity = (terraform output -json actor_identity | ConvertFrom-Json).is_ecp_launchpad_identity
   }
 
-$filePath = Join-Path (Get-Location) "actor-identity-details.json"
+$filePath = Join-Path (Get-Location) "lp-bootstrap-actor-identity-details.json"
 $json = @{
   "actor_identity" = $actor_identity
 } | ConvertTo-Json -Depth 3
-Write-Output "Writing actor-identity-details.json with details on the actor's identity"
+Write-Output "Writing lp-bootstrap-actor-identity-details.json with details on the actor's identity"
 Set-Content -Path $filePath -Value $json -Encoding UTF8 -Force
 SCRIPT
     ]
