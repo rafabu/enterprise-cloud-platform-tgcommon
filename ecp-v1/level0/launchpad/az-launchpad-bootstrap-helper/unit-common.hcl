@@ -1,3 +1,9 @@
+#
+# Helper config which extracts runtime information via terraform data sources and
+#     drops them into local JSON files for consumption by scripts and other tools
+#     downstream
+#
+
 locals {
   ecp_deployment_unit = "tfbcknd"
   ecp_resource_name_random_length = 0
@@ -16,7 +22,7 @@ remote_state {
 }
 
 terraform {
-  before_hook "get-actor-context" {
+  before_hook "get-actor-network-context" {
     commands     = ["plan", "apply"]
     execute      = [
       "pwsh",
