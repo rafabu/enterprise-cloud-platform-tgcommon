@@ -62,7 +62,7 @@ locals {
 
 # work with local backend if remote backend doesn't exist yet
 remote_state {
- backend = dependency.l0-lp-az-lp-bootstrap-helper.outputs.backend_storage_accounts["l0"].ecp_resource_exists ? "azurerm" : local
+ backend = dependency.l0-lp-az-lp-bootstrap-helper.outputs.backend_storage_accounts["l0"].ecp_resource_exists ? "azurerm" : "local"
   generate = {
     path      = "backend.tf"
     if_exists = "overwrite"
