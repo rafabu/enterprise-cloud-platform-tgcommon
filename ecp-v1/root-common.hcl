@@ -62,6 +62,8 @@ locals {
   tf_provider_azurerm_version = "~> 4.42"
   tf_provider_azapi_version = "~> 2.6"
   tf_provider_azuredevops_version = "~> 1.11"
+  tf_provider_external_version = "~> 2.3"
+  tf_provider_http_version = "~> 3.5"
   tf_provider_random_version = "~> 3.7"
   tf_provider_msgraph_version = "~> 0.1"
 
@@ -236,6 +238,24 @@ terraform {
     msgraph = {
       source  = "Microsoft/msgraph"
       version = "${local.tf_provider_msgraph_version}"
+    }
+%{endif}
+%{if contains(
+  ["az-launchpad-bootstrap-helper"],
+  regexall("^.*/(.+?)$", get_terragrunt_dir()
+)[0][0])}
+    external = {
+      source  = "hashicorp/external"
+      version = "${local.tf_provider_external_version}"
+    }
+%{endif}
+%{if contains(
+  ["az-launchpad-bootstrap-helper"],
+  regexall("^.*/(.+?)$", get_terragrunt_dir()
+)[0][0])}
+    external = {
+      source  = "hashicorp/hppt"
+      version = "${local.tf_provider_http_version}"
     }
 %{endif}
   }
