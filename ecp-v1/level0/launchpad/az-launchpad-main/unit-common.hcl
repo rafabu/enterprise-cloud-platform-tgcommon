@@ -56,8 +56,6 @@ locals {
   }
 
   zzz_file = format("%s/../launchpad-bootstrap-helper/lp-bootstrap-backend-details.json", get_working_dir())
-  # zzz_flag = dependency.l0-lp-az-lp-bootstrap-helper.outputs.backend_storage_accounts["l0"].ecp_resource_exists
-
 }
 
 # work with local backend if remote backend doesn't exist yet
