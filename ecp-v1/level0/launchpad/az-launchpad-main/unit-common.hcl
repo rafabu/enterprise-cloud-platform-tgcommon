@@ -55,7 +55,7 @@ locals {
      "hidden-ecpTgUnitCommon" = format("%s/unit-common.hcl", get_parent_terragrunt_dir())
   }
 
-  zzz_file = format("%s/../az-launchpad-bootstrap-helper/lp-bootstrap-backend-details.json", get_working_dir())
+  zzz_file = format("%s/../launchpad-bootstrap-helper/lp-bootstrap-backend-details.json", get_working_dir())
   # zzz_flag = dependency.l0-lp-az-lp-bootstrap-helper.outputs.backend_storage_accounts["l0"].ecp_resource_exists
 
 }
@@ -98,4 +98,5 @@ inputs = {
 
    zzz_file = local.zzz_file
    zzz_working_dir = get_working_dir()
+   zzz_flag = dependency.l0-lp-az-lp-bootstrap-helper.outputs.backend_storage_accounts["l0"].ecp_resource_exists
 }
