@@ -120,7 +120,7 @@ if ($true -eq $resourceExists) {
             -o tsv
 
         if ($assignment) {
-            Write-Host "    Identity $objectId already has role '$roleName' on $accountName."
+            Write-Host "    Identity $objectId already has role '$roleName' on $accountName (TF operations: $env:TG_CTX_COMMAND)"
         }
         else {
             Write-Host "     Assigning role '$roleName' to $objectId on $accountName..."
