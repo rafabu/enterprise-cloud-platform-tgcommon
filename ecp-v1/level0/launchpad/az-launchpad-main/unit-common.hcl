@@ -46,13 +46,13 @@ terraform {
 
 $resourceExists = ${dependency.l0-lp-az-lp-bootstrap-helper.outputs.backend_storage_accounts["l0"].ecp_resource_exists == true}
 $ipInRange = ${dependency.l0-lp-az-lp-bootstrap-helper.outputs.actor_network_information.is_local_ip_within_ecp_launchpad}
-$publicIp = ${dependency.l0-lp-az-lp-bootstrap-helper.outputs.actor_network_information.public_ip}
-$subscriptionId = ${dependency.l0-lp-az-lp-bootstrap-helper.outputs.backend_storage_accounts["l0"].subscription_id}
-$accountName = ${dependency.l0-lp-az-lp-bootstrap-helper.outputs.backend_storage_accounts["l0"].name}
+$publicIp = "${dependency.l0-lp-az-lp-bootstrap-helper.outputs.actor_network_information.public_ip}"
+$subscriptionId = "${dependency.l0-lp-az-lp-bootstrap-helper.outputs.backend_storage_accounts["l0"].subscription_id}"
+$accountName = "${dependency.l0-lp-az-lp-bootstrap-helper.outputs.backend_storage_accounts["l0"].name}"
 
-$objectId = ${dependency.l0-lp-az-lp-bootstrap-helper.outputs.actor_identity.object_id}
-$ecpIdentity = ${dependency.l0-lp-az-lp-bootstrap-helper.outputs.actor_identity.is_ecp_launchpad_identity}
-$principalType = if ("user" -eq ${dependency.l0-lp-az-lp-bootstrap-helper.outputs.actor_identity.type}) { "User" } else { "ServicePrincipal" }
+$objectId = "${dependency.l0-lp-az-lp-bootstrap-helper.outputs.actor_identity.object_id}"
+$ecpIdentity = "${dependency.l0-lp-az-lp-bootstrap-helper.outputs.actor_identity.is_ecp_launchpad_identity}"
+$principalType = if ("user" -eq "${dependency.l0-lp-az-lp-bootstrap-helper.outputs.actor_identity.type}") { "User" } else { "ServicePrincipal" }
 $roleName = if ($env:TG_CTX_COMMAND -eq "apply") { "Storage Blob Data Contributor" } else { "Storage Blob Data Reader" }
 
 if ($true -eq $resourceExists) {
