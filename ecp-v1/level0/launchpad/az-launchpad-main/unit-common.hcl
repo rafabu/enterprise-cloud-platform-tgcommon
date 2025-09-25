@@ -97,4 +97,5 @@ inputs = {
 
 
    zzz_file = local.zzz_file
+   zzz_working_dir = get_working_dir()
 }
