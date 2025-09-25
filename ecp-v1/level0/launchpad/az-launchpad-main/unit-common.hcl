@@ -94,4 +94,7 @@ locals {
 
 inputs = {
   azure_tags = local.unit_common_azure_tags
+
+
+   zzz_file = local.zzz_file
 }
