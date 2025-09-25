@@ -61,16 +61,16 @@ locals {
 }
 
 # work with local backend if remote backend doesn't exist yet
-# remote_state {
-# %{if file("${path.module}/../az-launchpad-backend/lp-bootstrap-backend-details.json")(
-#   ["az-launchpad-bootstrap-helper"],
-#   regexall("^.*/(.+?)$", get_terragrunt_dir()
-# )[0][0])}
-#     external = {
-#       source  = "hashicorp/external"
-#       version = "${local.tf_provider_external_version}"
-#     }
-# %{endif}
+remote_state {
+%{if dependency.l0-lp-az-lp-bootstrap-helper.outputs.backend_storage_accounts["l0"].ecp_resource_exists == false}
+  backend = "local"
+  generate = {
+    path      = "backend.tf"
+    if_exists = "overwrite"
+  }
+  config = null
+%{endif}
+}
 
 
 #   backend =   "azurerm"
