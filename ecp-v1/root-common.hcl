@@ -105,10 +105,17 @@ terraform {
       "-lock-timeout=20m"
     ]
   }
+  extra_arguments "init" {
+    commands = ["init"]
+    arguments = [
+      "-lock=false" # assure we don't need "Blob Data Contributor"
+    ]
+  }
   extra_arguments "plan" {
     commands = ["plan"]
     arguments = [
-      "--out=${local.tfplan_path}${basename(path_relative_to_include())}.tfplan"
+      "--out=${local.tfplan_path}${basename(path_relative_to_include())}.tfplan",
+      "-lock=false"  # assure we don't need "Blob Data Contributor"
     ]
   }
 }
