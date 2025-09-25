@@ -55,6 +55,10 @@ $ecpIdentity = [bool]"${dependency.l0-lp-az-lp-bootstrap-helper.outputs.actor_id
 $principalType = if ("user" -eq "${dependency.l0-lp-az-lp-bootstrap-helper.outputs.actor_identity.type}") { "User" } else { "ServicePrincipal" }
 $roleName = if ($env:TG_CTX_COMMAND -eq "apply") { "Storage Blob Data Contributor" } else { "Storage Blob Data Reader" }
 
+"resourceExists: $resourceExists"
+"ipInRange: $ipInRange"
+"ecpIdentity: $ecpIdentity"
+
 if ($true -eq $resourceExists) {
     Write-Output "INFO: Storage Account should exist; querying"
     $sa = az storage account show `
