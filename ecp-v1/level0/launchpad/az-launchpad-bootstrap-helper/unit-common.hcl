@@ -9,6 +9,34 @@ locals {
   ecp_resource_name_random_length = 0
 
   azure_tf_module_folder = "launchpad-bootstrap-helper"
+
+  library_path_shared = format("%s/lib/ecp-lib", get_repo_root())
+  library_path_unit = "${get_terragrunt_dir()}/lib"
+
+################# virtual network artefacts #################
+  # exclude the ones named in the *.exclude.json
+  library_virtualNetworks_path_shared = "${local.library_path_shared}/platform/ecp-artefacts/ms-azure/network/virtualNetworks"
+  library_virtualNetworks_path_unit= "${local.library_path_unit}/virtualNetworks"
+  library_virtualNetworks_filter = "*.virtualNetwork.json"
+  library_virtualNetworks_exclude_filter = "*.virtualNetwork.exclude.json"
+
+  # load JSON artefact files and bring them into hcl map of objects as input to the terraform module
+  virtualNetwork_definition_shared = try({
+    for fileName in fileset(local.library_virtualNetworks_path_shared, local.library_virtualNetworks_filter) : jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_shared, fileName))).artefactName => jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_shared, fileName)))
+  }, {})
+  virtualNetwork_definition_unit = try({
+    for fileName in fileset(local.library_virtualNetworks_path_unit, local.library_virtualNetworks_filter) : jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_unit, fileName))).artefactName => jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_unit, fileName)))
+  }, {})
+  virtualNetwork_definition_exclude_unit = try({
+    for fileName in fileset(local.library_virtualNetworks_path_unit, local.library_virtualNetworks_exclude_filter) : jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_unit, fileName))).artefactName => jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_unit, fileName)))
+  }, {})
+  virtualNetwork_definition_merged = merge(
+    {
+      for key, val in local.virtualNetwork_definition_shared : key => val
+      if (contains(keys(local.virtualNetwork_definition_exclude_unit), key) == false)
+    },
+    local.virtualNetwork_definition_unit
+  )
 }
 
 # helper module does not need a backend; can and should run with local state (as it is stateless anyway)
@@ -127,4 +155,11 @@ SCRIPT
 }
 
 inputs = {
+   # load merged vnet artefact objects
+  virtual_network_definitions = local.virtualNetwork_definition_merged
+ 
+  # define which artefacts from the libraries we need to create
+  virtual_network_artefact_names = [
+    "l0-launchpad-main"
+  ]
 }
