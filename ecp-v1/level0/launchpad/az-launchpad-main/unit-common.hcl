@@ -55,16 +55,13 @@ $ecpIdentity = if ("true" -eq "${dependency.l0-lp-az-lp-bootstrap-helper.outputs
 $principalType = if ("user" -eq "${dependency.l0-lp-az-lp-bootstrap-helper.outputs.actor_identity.type}") { "User" } else { "ServicePrincipal" }
 $roleName = if ($env:TG_CTX_COMMAND -eq "apply") { "Storage Blob Data Contributor" } else { "Storage Blob Data Reader" }
 
-"resourceExists: $resourceExists"
-"ipInRange: $ipInRange"
-"ecpIdentity: $ecpIdentity"
-
 if ($true -eq $resourceExists) {
     Write-Output "INFO: Storage Account should exist; querying"
     $sa = az storage account show `
         --subscription $subscriptionId `
         --name $accountName `
         -o json | ConvertFrom-Json
+    Write-Output ""
 
     Write-Output "##### network access #####"
     if ($true -eq $resourceExists -and $false -eq $ipInRange -and $publicIp -ne $null) {
@@ -108,7 +105,7 @@ if ($true -eq $resourceExists) {
     elseif ($false -eq $resourceExists) {
         Write-Output "WARNING: Storage Account $accountName does not exist yet; no need to add IP $publicIp."
     }
-
+    Write-Output ""
 
     Write-Output "##### Blob Access #####"
     if ($false -eq $ecpIdentity) {
@@ -120,7 +117,7 @@ if ($true -eq $resourceExists) {
             -o tsv
 
         if ($assignment) {
-            Write-Host "    Identity $objectId already has role '$roleName' on $accountName (TF operations: $env:TG_CTX_COMMAND)"
+            Write-Host "    Identity $objectId already has role '$roleName' on $accountName (terraform command: '$env:TG_CTX_COMMAND')"
         }
         else {
             Write-Host "     Assigning role '$roleName' to $objectId on $accountName..."
@@ -139,8 +136,9 @@ if ($true -eq $resourceExists) {
     }
 }
 else {
-    Write-Output "WARNING: Storage Account does not exist yet; cannot configure access."
+    Write-Output "INFO: Storage Account does not exist yet; cannot configure access."
 }
+Write-Output ""
 SCRIPT
     ]
     run_on_error = false
