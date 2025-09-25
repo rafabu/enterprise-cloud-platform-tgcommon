@@ -253,8 +253,8 @@ terraform {
   ["az-launchpad-bootstrap-helper"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
 )[0][0])}
-    external = {
-      source  = "hashicorp/hppt"
+    http = {
+      source  = "hashicorp/http"
       version = "${local.tf_provider_http_version}"
     }
 %{endif}
