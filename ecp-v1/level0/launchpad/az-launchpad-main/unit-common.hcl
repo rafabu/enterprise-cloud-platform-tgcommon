@@ -35,7 +35,7 @@ remote_state {
 terraform {
 # assure storage account firewall access
   before_hook "Set-Backend-Firewall" {
-    commands     = ["plan", "apply"]
+    commands     = ["init", "plan", "apply"]
     execute      = [
       "pwsh",
       "-Command", 
@@ -53,7 +53,7 @@ SCRIPT
   }
 
   after_hook "Close-Backend-Firewall" {
-    commands     = ["plan", "apply"]
+    commands     = ["init", "plan", "apply"]
     execute      = [
       "pwsh",
       "-Command", 
