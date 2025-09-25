@@ -96,7 +96,7 @@ terraform {
 <<-SCRIPT
 
 # backend storage account details
-if ($env:TG_CTX_COMMAND == "plan") {
+if ($env:TG_CTX_COMMAND -eq "plan") {
   $ecp_backend_resource_group = (terraform show -json az-launchpad-bootstrap-helper.tfplan | ConvertFrom-Json).planned_values.outputs.backend_resource_group.value.id
   $ecp_backend_storage_account_l0 = (terraform show -json az-launchpad-bootstrap-helper.tfplan | ConvertFrom-Json).planned_values.outputs.backend_storage_accounts.value.l0.id
   $ecp_backend_storage_account_exists = (terraform show -json az-launchpad-bootstrap-helper.tfplan | ConvertFrom-Json).planned_values.outputs.backend_storage_accounts.value.l0.ecp_resource_exists
