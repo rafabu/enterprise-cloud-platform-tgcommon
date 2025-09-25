@@ -63,11 +63,13 @@ if ($env:TG_CTX_COMMAND -eq "plan") {
   $ecp_backend_resource_group = (terraform show -json az-launchpad-bootstrap-helper.tfplan | ConvertFrom-Json).planned_values.outputs.backend_resource_group.value.id
   $ecp_backend_storage_account_l0 = (terraform show -json az-launchpad-bootstrap-helper.tfplan | ConvertFrom-Json).planned_values.outputs.backend_storage_accounts.value.l0.id
   $ecp_backend_storage_account_exists = (terraform show -json az-launchpad-bootstrap-helper.tfplan | ConvertFrom-Json).planned_values.outputs.backend_storage_accounts.value.l0.ecp_resource_exists
+  $ecp_backend_subscription_id = (terraform show -json az-launchpad-bootstrap-helper.tfplan | ConvertFrom-Json).planned_values.outputs.backend_storage_accounts.value.l0.subscription_id
 }
 elseif ($env:TG_CTX_COMMAND -eq "apply") {
   $ecp_backend_resource_group = (terraform output -json backend_resource_group | ConvertFrom-Json).id
   $ecp_backend_storage_account_l0 = (terraform output -json backend_storage_accounts | ConvertFrom-Json).l0.id
   $ecp_backend_storage_account_exists = (terraform output -json backend_storage_accounts | ConvertFrom-Json).l0.ecp_resource_exists
+  $ecp_backend_subscription_id = (terraform output -json backend_storage_accounts | ConvertFrom-Json).l0.subscription_id
 }
 else {
   Write-Error "TG_CTX_COMMAND environment variable is not set to 'plan' or 'apply'. Cannot determine the correct way to extract outputs."
@@ -78,6 +80,7 @@ $json = @{
   "ecp_backend_resource_group" = $ecp_backend_resource_group;
   "ecp_backend_storage_account_l0" = $ecp_backend_storage_account_l0
   "ecp_backend_storage_account_exists" = $ecp_backend_storage_account_exists
+  "ecp_backend_subscription_id" = $ecp_backend_subscription_id
 } | ConvertTo-Json -Depth 3
 Write-Output "Writing lp-bootstrap-backend-details.json with (future) backend storage account details"
 Set-Content -Path $filePath -Value $json -Encoding UTF8 -Force
