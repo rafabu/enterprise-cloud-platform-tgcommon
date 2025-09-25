@@ -180,7 +180,7 @@ SCRIPT
 #     ]
 #     run_on_error = false
 #   }
-# }
+}
 
 inputs = {
    # load merged vnet artefact objects
