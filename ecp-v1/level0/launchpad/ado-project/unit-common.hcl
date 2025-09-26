@@ -2,6 +2,10 @@ dependency "l0-lp-az-lp-bootstrap-helper" {
   config_path = format("%s/../az-launchpad-bootstrap-helper", get_original_terragrunt_dir())
 }
 
+dependency "l0-lp-az-lp-backend" {
+  config_path = format("%s/../az-launchpad-backend", get_original_terragrunt_dir())
+}
+
 locals {
   ecp_deployment_unit = "ado-project"
   ecp_resource_name_random_length = 0

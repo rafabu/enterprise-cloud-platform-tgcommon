@@ -46,6 +46,9 @@ dependency "l0-lp-az-net" {
   }
 }
 
+dependency "l0-lp-az-lp-backend" {
+  config_path = format("%s/../az-launchpad-backend", get_original_terragrunt_dir())
+}
 
 locals {
   # root_common_vars = read_terragrunt_config(format("%s/lib/terragrunt-common/ecp-v1/root-common.hcl", get_repo_root()))
