@@ -164,7 +164,20 @@ remote_state {
 terraform {
 # assure storage account RBAC and firewall access
   before_hook "Set-RemoteBackend-Access" {
-    commands     = ["init", "plan", "apply"]
+     commands     = [
+      "apply",
+      # "destroy",  # during destroy the remote state should no longer be present
+      "force-unlock",
+      "import",
+      "init", 
+      "output",
+      "plan", 
+      "refresh",
+      "state",
+      "taint",
+      "untaint",
+      # "validate"
+      ]
     execute      = [
       "pwsh",
       "-Command", 
@@ -279,7 +292,20 @@ SCRIPT
   }
 
   after_hook "Close-RemoteBackend-Access" {
-    commands     = ["plan", "apply"]
+     commands     = [
+      "apply",
+      # "destroy",  # during destroy the remote state should no longer be present
+      "force-unlock",
+      "import",
+      # "init", 
+      # "output",
+      # "plan", 
+      # "refresh",
+      # "state",
+      # "taint",
+      # "untaint",
+      # "validate"
+      ]
     execute      = [
       "pwsh",
       "-Command", 

@@ -52,7 +52,20 @@ remote_state {
 terraform {
 
 after_hook "Set-RemoteBackend-Access" {
-    commands     = ["init", "plan", "apply"]
+    commands     = [
+      "apply",
+      # "destroy",  # during destroy the remote state should no longer be present
+      # "force-unlock",
+      "import",
+      "init", 
+      # "output",
+      "plan", 
+      "refresh",
+      # "state",
+      # "taint",
+      # "untaint",
+      # "validate"
+      ]
     execute      = [
       "pwsh",
       "-Command", 
