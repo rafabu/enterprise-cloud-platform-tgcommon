@@ -72,10 +72,18 @@ after_hook "Set-RemoteBackend-Access" {
 <<-SCRIPT
 Write-Output "INFO: TG_CTX_COMMAND: $env:TG_CTX_COMMAND"
 
-if ($env:TG_CTX_COMMAND -eq "plan") {
+$tgWriteCommands = @(
+  "apply",
+  "destroy",
+  "force-unlock",
+  "import",
+  "refresh",
+  "taint",
+  "untaint"
+)
+
+if ($tgWriteCommands -inotcontains $env:TG_CTX_COMMAND) {
     $planOutput = (terraform show -json az-launchpad-bootstrap-helper.tfplan | ConvertFrom-Json).planned_values.outputs
-    
-$planOutput.backend_storage_accounts["l0"]
 
     $resourceExists = if ($planOutput.backend_storage_accounts.value.l0.ecp_resource_exists -eq "true") { $true } else { $false }
     $ipInRange = if ($planOutput.actor_network_information.value.is_local_ip_within_ecp_launchpad -eq "true") { $true } else { $false }
@@ -89,7 +97,7 @@ $planOutput.backend_storage_accounts["l0"]
     $roleName = "Storage Blob Data Reader"
 
 }
-elseif ($env:TG_CTX_COMMAND -eq "apply") {
+else {
     $applyOutput = terraform output -json | ConvertFrom-Json
     
     $resourceExists = if ($applyOutput.backend_storage_accounts.value.l0.ecp_resource_exists -eq "true") { $true } else { $false }
@@ -194,8 +202,8 @@ else {
 }
 Write-Output ""
 if ($waitNeeded) {
-    Write-Output "INFO: Waiting 20 seconds for changes to propagate..."
-    Start-Sleep -Seconds 20
+    Write-Output "INFO: Waiting 60 seconds for changes to propagate..."
+    Start-Sleep -Seconds 60
 }
 SCRIPT
     ]
