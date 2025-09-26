@@ -92,8 +92,7 @@ if ($true -eq $resourceExists) {
                 --account-name $accountName `
                 --ip-address $publicIp | Out-Null
             Write-Output "     added..."
-            Write-Output "     waiting for propagation..."
-            Start-Sleep -Seconds 15
+            $waitNeeded = $true
         }
     }
     elseif ($true -eq $ipInRange) {
@@ -130,8 +129,7 @@ if ($true -eq $resourceExists) {
                 --role "$roleName" `
                 --scope $sa.id | Out-Null
             Write-Output "     added..."
-            Write-Output "     waiting for propagation..."
-            Start-Sleep -Seconds 15
+             $waitNeeded = $true
         }
     }
     else {
@@ -142,6 +140,10 @@ else {
     Write-Output "INFO: Storage Account does not exist yet; cannot configure access."
 }
 Write-Output ""
+if ($waitNeeded) {
+    Write-Output "INFO: Waiting 20 seconds for changes to propagate..."
+    Start-Sleep -Seconds 20
+}
 SCRIPT
     ]
     run_on_error = false
