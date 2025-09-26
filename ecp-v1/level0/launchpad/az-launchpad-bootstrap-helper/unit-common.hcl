@@ -39,7 +39,7 @@ locals {
   )
 }
 
-# helper module does not need a backend; can and should run with local state (as it is kind ofstateless anyway)
+# helper module does not need a backend; can and should run with local state (as it is kind of stateless anyway)
 remote_state {
   backend = "local"
   generate = {
@@ -49,7 +49,69 @@ remote_state {
   config = null
 }
 
+# remote_state {
+#   backend = "azurerm" 
+#    generate = {
+#     path      = "backend.tf"
+#     if_exists = "overwrite"
+#   }
+#   config ={
+#     container_name       = "tfstate"
+#     resource_group_name  = "rabu-d7-rg-ecpalp-tfbcknd"
+#     storage_account_name = "rabud7stecpalptfbckndl0"
+#     subscription_id      = "e1b3be0d-0df0-4e0a-a585-ffc97f60bd42"
+#      use_azuread_auth     = true
+#     key                  = "${basename(path_relative_to_include())}.tfstate"
+#   }
+# }
+
 terraform {
+
+  after_hook "write-terraform-output-to-file" {
+    commands     = [
+      "apply",
+       "plan"
+      ]
+    execute      = [
+      "pwsh",
+      "-Command", 
+<<-SCRIPT
+Write-Output "INFO: TG_CTX_COMMAND: $env:TG_CTX_COMMAND"
+$systemTempPath = [System.IO.Path]::GetTempPath()
+if ($env:TG_DOWNLOAD_DIR) {
+    $tempPath = $env:TG_DOWNLOAD_DIR
+}
+else {
+    $tempPath = $systemTempPath
+}
+$out_path = [System.IO.Path]::Combine($tempPath, "${uuidv5("dns", basename(get_original_terragrunt_dir()))}")
+if (-not (Test-Path -Path $out_path -PathType Container)) {
+    New-Item -ItemType Directory -Path $out_path -Force | Out-Null
+}
+
+# backend storage account details
+if ($env:TG_CTX_COMMAND -eq "plan") {
+    $terraform_output = (terraform show -json az-launchpad-bootstrap-helper.tfplan | ConvertFrom-Json).planned_values.outputs
+}
+elseif ($env:TG_CTX_COMMAND -eq "apply") {
+    $terraform_output = terraform output -json | ConvertFrom-Json
+}
+
+
+
+$filePath = Join-Path $out_path "terraform_output.json"
+$terraform_output_json = @{
+  "actor_identity" = $terraform_output.actor_identity.value
+  "actor_network_information" = $terraform_output.actor_network_information.value
+  "backend_storage_accounts" = $terraform_output.backend_storage_accounts.value
+} | ConvertTo-Json -Depth 5
+
+Write-Output "    Writing $filePath with module's output"
+Set-Content -Path $filePath -Value $terraform_output_json -Encoding UTF8 -Force
+SCRIPT
+    ]
+    run_on_error = false
+  }
 
 after_hook "Enable-PostHelper-RemoteBackend-Access" {
     commands     = [
