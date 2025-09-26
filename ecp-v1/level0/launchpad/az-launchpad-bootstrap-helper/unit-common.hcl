@@ -57,7 +57,7 @@ after_hook "Set-RemoteBackend-Access" {
       # "destroy",  # during destroy the remote state should no longer be present
       # "force-unlock",
       "import",
-      "init", 
+      # "init", # on initial run, no outputs will be available, yet
       # "output",
       "plan", 
       "refresh",
