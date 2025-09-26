@@ -54,12 +54,12 @@ locals {
 }
 
 remote_state {
- backend = dependency.l0-lp-az-lp-bootstrap-helper.outputs.backend_storage_accounts["l0"].ecp_resource_exists == true ? "azurerm" : "local"
+ backend = dependency.l0-lp-az-lp-bootstrap-helper.outputs.backend_storage_accounts["l0"].ecp_resource_exists == true && get_terraform_command() != "destroy" ? "azurerm" : "local"
   generate = {
     path      = "backend.tf"
     if_exists = "overwrite"
   }
-  config = dependency.l0-lp-az-lp-bootstrap-helper.outputs.backend_storage_accounts["l0"].ecp_resource_exists == true ? {
+  config = dependency.l0-lp-az-lp-bootstrap-helper.outputs.backend_storage_accounts["l0"].ecp_resource_exists == true && get_terraform_command() != "destroy" ? {
     subscription_id      = dependency.l0-lp-az-lp-bootstrap-helper.outputs.backend_storage_accounts["l0"].subscription_id
     resource_group_name  = dependency.l0-lp-az-lp-bootstrap-helper.outputs.backend_storage_accounts["l0"].resource_group_name
     storage_account_name = dependency.l0-lp-az-lp-bootstrap-helper.outputs.backend_storage_accounts["l0"].name
@@ -207,6 +207,33 @@ Write-Output ""
 if ($waitNeeded) {
     Write-Output "INFO: Waiting 60 seconds for changes to propagate (RBAC & network rule)..."
     Start-Sleep -Seconds 60
+}
+SCRIPT
+    ]
+    run_on_error = false
+  }
+
+  before_hook "Migrate-TerraformState" {
+    commands     = [
+      "destroy"  # during destroy the remote state will be destroyed; so we need to fail back to local state first
+      ]
+    execute      = [
+      "pwsh",
+      "-Command", 
+<<-SCRIPT
+Write-Output "INFO: TG_CTX_COMMAND: $env:TG_CTX_COMMAND"
+
+Write-Output "INFO: init without backend (just providers/modules) ==="
+terraform init -backend=false -input=false
+
+Write-Output "INFO: checking backend consistency (if migration is required) ==="
+$check = terraform init -reconfigure -input=false -migrate-state=false 2>&1
+if ($LASTEXITCODE -ne 0) {
+    Write-Output "     backend migration required; performing migration now..."
+    terraform init -migrate-state -input=false -force-copy
+}
+else {
+    Write-Output "    Backend configuration matches; no migration required."
 }
 SCRIPT
     ]
