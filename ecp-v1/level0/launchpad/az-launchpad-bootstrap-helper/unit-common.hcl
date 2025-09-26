@@ -58,7 +58,7 @@ after_hook "Enable-PostHelper-RemoteBackend-Access" {
       # "force-unlock",
       "import",
       # "init", # on initial run, no outputs will be available, yet
-      # "output",
+      "output",
       "plan", 
       "refresh",
       # "state",

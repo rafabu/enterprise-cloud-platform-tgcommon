@@ -104,7 +104,7 @@ terraform {
       "force-unlock",
       "import",
       "init", 
-      "output",
+      # "output",
       "plan", 
       "refresh",
       "state",
