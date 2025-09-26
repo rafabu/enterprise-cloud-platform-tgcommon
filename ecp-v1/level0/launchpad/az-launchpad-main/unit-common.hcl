@@ -33,7 +33,7 @@ remote_state {
 }
 
 terraform {
-# assure storage account firewall access
+# assure storage account RBAC and firewall access
   before_hook "Set-RemoteBackend-Access" {
     commands     = ["init", "plan", "apply"]
     execute      = [
@@ -111,6 +111,7 @@ if ($true -eq $resourceExists) {
     if ($false -eq $ecpIdentity) {
         Write-Output "INFO: No ECP Identity provided; checking role assignment."
         $assignment = az role assignment list `
+            --subscription $subscriptionId `
             --assignee-object-id $objectId `
             --role "$roleName" `
             --scope $sa.id `
@@ -122,6 +123,8 @@ if ($true -eq $resourceExists) {
         else {
             Write-Host "     Assigning role '$roleName' to $objectId on $accountName..."
             az role assignment create `
+                --subscription $subscriptionId `
+                --description "ECP_BOOTSTRAP_HELPER" `
                 --assignee-object-id $objectId `
                 --assignee-principal-type $principalType `
                 --role "$roleName" `
