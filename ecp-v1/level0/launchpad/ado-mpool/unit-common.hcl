@@ -279,7 +279,7 @@ SCRIPT
   }
 
   after_hook "Close-RemoteBackend-Access" {
-    commands     = ["init", "plan", "apply"]
+    commands     = ["plan", "apply"]
     execute      = [
       "pwsh",
       "-Command", 
@@ -287,6 +287,7 @@ SCRIPT
 # if not running from within launchpad network, access to backend will be blocked by storage account firewall
 #     always(!) need to remove access again --> run_on_error = true
 # remove temporary fw and RBAC again
+Write-Output "INFO: TG_CTX_COMMAND: $env:TG_CTX_COMMAND"
 
 $resourceExists = if ("true" -eq "${dependency.l0-lp-az-lp-bootstrap-helper.outputs.backend_storage_accounts["l0"].ecp_resource_exists == true}") { $true } else { $false }
 $ipInRange = if ("true" -eq "${dependency.l0-lp-az-lp-bootstrap-helper.outputs.actor_network_information.is_local_ip_within_ecp_launchpad == true}") { $true } else { $false }
