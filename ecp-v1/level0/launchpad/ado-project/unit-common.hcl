@@ -34,7 +34,7 @@ remote_state {
 terraform {
 # assure storage account RBAC and firewall access
   before_hook "Set-RemoteBackend-Access" {
-     commands     = [
+    commands     = [
       "apply",
       # "destroy",  # during destroy the remote state should no longer be present
       "force-unlock",
@@ -55,6 +55,15 @@ terraform {
 # if not running from within launchpad network, access to backend will be blocked by storage account firewall
 #     temporarily(!) open up access for the duration of this run
 #     plus RBAC permissions if not using ECP Identity
+$tgWriteCommands = @(
+  "apply",
+  "destroy",
+  "force-unlock",
+  "import",
+  "refresh",
+  "taint",
+  "untaint"
+)
 
 $resourceExists = if ("true" -eq "${dependency.l0-lp-az-lp-bootstrap-helper.outputs.backend_storage_accounts["l0"].ecp_resource_exists == true}") { $true } else { $false }
 $ipInRange = if ("true" -eq "${dependency.l0-lp-az-lp-bootstrap-helper.outputs.actor_network_information.is_local_ip_within_ecp_launchpad == true}") { $true } else { $false }
@@ -65,7 +74,10 @@ $accountName = "${dependency.l0-lp-az-lp-bootstrap-helper.outputs.backend_storag
 $objectId = "${dependency.l0-lp-az-lp-bootstrap-helper.outputs.actor_identity.object_id}"
 $ecpIdentity = if ("true" -eq "${dependency.l0-lp-az-lp-bootstrap-helper.outputs.actor_identity.is_ecp_launchpad_identity == true}") { $true } else { $false }
 $principalType = if ("user" -eq "${dependency.l0-lp-az-lp-bootstrap-helper.outputs.actor_identity.type}") { "User" } else { "ServicePrincipal" }
-$roleName = if ($env:TG_CTX_COMMAND -eq "apply") { "Storage Blob Data Contributor" } else { "Storage Blob Data Reader" }
+$roleName = if ($tgWriteCommands -contains $env:TG_CTX_COMMAND) { "Storage Blob Data Contributor" } else { "Storage Blob Data Reader" }
+
+# units shouldn't run in parallel, but just in case, wait a random time before checking/setting access
+Start-Sleep -Seconds (0..15 | Get-Random)
 
 if ($true -eq $resourceExists) {
     Write-Output "INFO: Storage Account should exist; querying"
@@ -153,8 +165,8 @@ else {
 }
 Write-Output ""
 if ($waitNeeded) {
-    Write-Output "INFO: Waiting 20 seconds for changes to propagate..."
-    Start-Sleep -Seconds 20
+    Write-Output "INFO: Waiting 60 seconds for changes to propagate (RBAC & network rule)..."
+    Start-Sleep -Seconds 60
 }
 SCRIPT
     ]
