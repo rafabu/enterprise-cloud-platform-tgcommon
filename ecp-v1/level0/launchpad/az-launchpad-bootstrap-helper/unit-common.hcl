@@ -51,7 +51,7 @@ remote_state {
 
 terraform {
 
-after_hook "Set-RemoteBackend-Access" {
+after_hook "Enable-PostHelper-RemoteBackend-Access" {
     commands     = [
       "apply",
       # "destroy",  # during destroy the remote state should no longer be present
