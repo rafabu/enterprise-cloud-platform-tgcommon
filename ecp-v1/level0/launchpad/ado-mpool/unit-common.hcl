@@ -182,6 +182,7 @@ terraform {
       "pwsh",
       "-Command", 
 <<-SCRIPT
+Write-Output "INFO: TG_CTX_COMMAND: $env:TG_CTX_COMMAND"
 # if not running from within launchpad network, access to backend will be blocked by storage account firewall
 #     temporarily(!) open up access for the duration of this run
 #     plus RBAC permissions if not using ECP Identity
@@ -322,6 +323,7 @@ SCRIPT
       "pwsh",
       "-Command", 
 <<-SCRIPT
+Write-Output "INFO: TG_CTX_COMMAND: $env:TG_CTX_COMMAND"
 # if not running from within launchpad network, access to backend will be blocked by storage account firewall
 #     always(!) need to remove access again --> run_on_error = true
 # remove temporary fw and RBAC again
