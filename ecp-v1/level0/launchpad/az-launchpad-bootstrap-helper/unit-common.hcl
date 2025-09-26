@@ -39,7 +39,7 @@ locals {
   )
 }
 
-# helper module does not need a backend; can and should run with local state (as it is stateless anyway)
+# helper module does not need a backend; can and should run with local state (as it is kind ofstateless anyway)
 remote_state {
   backend = "local"
   generate = {
@@ -50,94 +50,145 @@ remote_state {
 }
 
 terraform {
-# read helper module's output and prepare bootstrap state-specific environment variables.
-  after_hook "get-backend-details" {
-    commands     = ["plan", "apply"]
+
+after_hook "Set-RemoteBackend-Access" {
+    commands     = ["init", "plan", "apply"]
     execute      = [
       "pwsh",
       "-Command", 
 <<-SCRIPT
+Write-Output "INFO: TG_CTX_COMMAND: $env:TG_CTX_COMMAND"
 
-# backend storage account details
 if ($env:TG_CTX_COMMAND -eq "plan") {
-  $ecp_backend_resource_group = (terraform show -json az-launchpad-bootstrap-helper.tfplan | ConvertFrom-Json).planned_values.outputs.backend_resource_group.value.id
-  $ecp_backend_storage_account_l0 = (terraform show -json az-launchpad-bootstrap-helper.tfplan | ConvertFrom-Json).planned_values.outputs.backend_storage_accounts.value.l0.id
-  $ecp_backend_storage_account_exists = (terraform show -json az-launchpad-bootstrap-helper.tfplan | ConvertFrom-Json).planned_values.outputs.backend_storage_accounts.value.l0.ecp_resource_exists
-  $ecp_backend_subscription_id = (terraform show -json az-launchpad-bootstrap-helper.tfplan | ConvertFrom-Json).planned_values.outputs.backend_storage_accounts.value.l0.subscription_id
+    $planOutput = (terraform show -json az-launchpad-bootstrap-helper.tfplan | ConvertFrom-Json).planned_values.outputs
+    
+$planOutput.backend_storage_accounts["l0"]
+
+    $resourceExists = if ($planOutput.backend_storage_accounts.value.l0.ecp_resource_exists -eq "true") { $true } else { $false }
+    $ipInRange = if ($planOutput.actor_network_information.value.is_local_ip_within_ecp_launchpad -eq "true") { $true } else { $false }
+    $publicIp = $planOutput.actor_network_information.value.public_ip
+    $subscriptionId = $planOutput.backend_storage_accounts.value.l0.subscription_id
+    $accountName = $planOutput.backend_storage_accounts.value.l0.name
+
+    $objectId = $planOutput.actor_identity.value.object_id
+    $ecpIdentity = if ("true" -eq $planOutput.actor_identity.value.is_ecp_launchpad_identity -eq $true) { $true } else { $false }
+    $principalType = if ("user" -eq $planOutput.actor_identity.value.type) { "User" } else { "ServicePrincipal" }
+    $roleName = "Storage Blob Data Reader"
+
 }
 elseif ($env:TG_CTX_COMMAND -eq "apply") {
-  $ecp_backend_resource_group = (terraform output -json backend_resource_group | ConvertFrom-Json).id
-  $ecp_backend_storage_account_l0 = (terraform output -json backend_storage_accounts | ConvertFrom-Json).l0.id
-  $ecp_backend_storage_account_exists = (terraform output -json backend_storage_accounts | ConvertFrom-Json).l0.ecp_resource_exists
-  $ecp_backend_subscription_id = (terraform output -json backend_storage_accounts | ConvertFrom-Json).l0.subscription_id
-}
-else {
-  Write-Error "TG_CTX_COMMAND environment variable is not set to 'plan' or 'apply'. Cannot determine the correct way to extract outputs."
-  exit 1
-}
-$filePath = Join-Path (Get-Location) "lp-bootstrap-backend-details.json"
-$json = @{
-  "ecp_backend_resource_group" = $ecp_backend_resource_group;
-  "ecp_backend_storage_account_l0" = $ecp_backend_storage_account_l0
-  "ecp_backend_storage_account_exists" = $ecp_backend_storage_account_exists
-  "ecp_backend_subscription_id" = $ecp_backend_subscription_id
-} | ConvertTo-Json -Depth 3
-Write-Output "Writing lp-bootstrap-backend-details.json with (future) backend storage account details"
-Set-Content -Path $filePath -Value $json -Encoding UTF8 -Force
+    $applyOutput = terraform output -json | ConvertFrom-Json
+    
+    $resourceExists = if ($applyOutput.backend_storage_accounts.value.l0.ecp_resource_exists -eq "true") { $true } else { $false }
+    $ipInRange = if ($applyOutput.actor_network_information.value.is_local_ip_within_ecp_launchpad -eq "true") { $true } else { $false }
+    $publicIp = $applyOutput.actor_network_information.value.public_ip
+    $subscriptionId = $applyOutput.backend_storage_accounts.value.l0.subscription_id
+    $accountName = $applyOutput.backend_storage_accounts.value.l0.name
 
-# actor identity details
-if ($env:TG_CTX_COMMAND -eq "plan") {
-$actor_identity =  @{ 
-  object_id       = (terraform show -json az-launchpad-bootstrap-helper.tfplan | ConvertFrom-Json).planned_values.outputs.actor_identity.value.object_id;
-  display_name    = (terraform show -json az-launchpad-bootstrap-helper.tfplan | ConvertFrom-Json).planned_values.outputs.actor_identity.value.display_name;
-  type            = (terraform show -json az-launchpad-bootstrap-helper.tfplan | ConvertFrom-Json).planned_values.outputs.actor_identity.value.type;
-  is_ecp_identity = (terraform show -json az-launchpad-bootstrap-helper.tfplan | ConvertFrom-Json).planned_values.outputs.actor_identity.value.is_ecp_launchpad_identity
-  }
+    $objectId = $applyOutput.actor_identity.value.object_id;
+    $ecpIdentity = if ("true" -eq $applyOutput.actor_identity.value.is_ecp_launchpad_identity -eq $true) { $true } else { $false }
+    $principalType = if ("user" -eq $applyOutput.actor_identity.value.type) { "User" } else { "ServicePrincipal" }
+    $roleName = "Storage Blob Data Contributor"
 }
-elseif ($env:TG_CTX_COMMAND -eq "apply") {
-$actor_identity =  @{ 
-  object_id       = (terraform output -json actor_identity | ConvertFrom-Json).object_id;
-  display_name    = (terraform output -json actor_identity | ConvertFrom-Json).display_name;
-  type            = (terraform output -json actor_identity | ConvertFrom-Json).type;
-  is_ecp_identity = (terraform output -json actor_identity | ConvertFrom-Json).is_ecp_launchpad_identity
-  }
-}
-else {
-  Write-Error "TG_CTX_COMMAND environment variable is not set to 'plan' or 'apply'. Cannot determine the correct way to extract outputs."
-  exit 1
-}
-$filePath = Join-Path (Get-Location) "lp-bootstrap-actor-identity-details.json"
-$json = $actor_identity | ConvertTo-Json -Depth 3
-Write-Output "Writing lp-bootstrap-actor-identity-details.json with details on the actor's identity"
-Set-Content -Path $filePath -Value $json -Encoding UTF8 -Force
 
-# actor network details
-if ($env:TG_CTX_COMMAND -eq "plan") {
-$actor_network =  @{ 
-  local_ip       = (terraform show -json az-launchpad-bootstrap-helper.tfplan | ConvertFrom-Json).planned_values.outputs.actor_network_information.value.local_ip;
-  public_ip    = (terraform show -json az-launchpad-bootstrap-helper.tfplan | ConvertFrom-Json).planned_values.outputs.actor_network_information.value.public_ip;
-  is_in_ecp_launchpad            = (terraform show -json az-launchpad-bootstrap-helper.tfplan | ConvertFrom-Json).planned_values.outputs.actor_network_information.value.is_local_ip_within_ecp_launchpad;
-  }
-}
-elseif ($env:TG_CTX_COMMAND -eq "apply") {
-$actor_network =  @{ 
-  local_ip       = (terraform output -json actor_network_information | ConvertFrom-Json).local_ip;
-  public_ip      = (terraform output -json actor_network_information | ConvertFrom-Json).public_ip;
-  is_in_ecp_launchpad = (terraform output -json actor_network_information | ConvertFrom-Json).is_local_ip_within_ecp_launchpad;
-  }
+# if not running from within launchpad network, access to backend will be blocked by storage account firewall
+#     temporarily(!) open up access for the duration of this run
+#     plus RBAC permissions if not using ECP Identity
+
+if ($true -eq $resourceExists) {
+    Write-Output "INFO: Storage Account should exist; querying"
+    $sa = az storage account show `
+        --subscription $subscriptionId `
+        --name $accountName `
+        -o json | ConvertFrom-Json
+    Write-Output ""
+
+    Write-Output "##### network access #####"
+    if ($true -eq $resourceExists -and $false -eq $ipInRange -and $publicIp -ne $null) {
+        Write-Output "INFO: Checking Storage Account $accountName for public IP $publicIp access..."
+        if ($sa.publicNetworkAccess -ne "Enabled") {
+            Write-Output "     Public network access is $($sa.publicNetworkAccess). Enabling..."
+            az storage account update `
+                --subscription $subscriptionId `
+                --name $accountName `
+                --public-network-access Enabled | Out-Null
+        }
+        else {
+            Write-Output "     Public network access is already Enabled."
+        }
+        # Get current allowed IPs
+        $rules = az storage account network-rule list `
+            --subscription $subscriptionId `
+            --account-name $accountName `
+            --query "ipRules[].ipAddressOrRange" `
+            -o tsv
+        if ($rules -contains $publicIp) {
+            Write-Output "     IP $publicIp is already allowed per network-rule of storage account $accountName."
+        }
+        else {
+            Write-Output "     IP $publicIp is being added to network-rule of storage account $accountName..."
+            az storage account network-rule add `
+                --subscription $subscriptionId `
+                --account-name $accountName `
+                --ip-address $publicIp | Out-Null
+            Write-Output "     added..."
+            $waitNeeded = $true
+        }
+    }
+    elseif ($true -eq $ipInRange) {
+        Write-Output "INFO: Private IP is in launchpad vnet range; no need to add public IP to Storage Account $accountName."
+    }
+    elseif ($publicIp -eq $null) {
+        Write-Output "WARNING: No public IP available; cannot add to Storage Account $accountName."
+    }
+    elseif ($false -eq $resourceExists) {
+        Write-Output "WARNING: Storage Account $accountName does not exist yet; no need to add IP $publicIp."
+    }
+    Write-Output ""
+
+    Write-Output "##### Blob Access #####"
+    if ($false -eq $ecpIdentity) {
+        Write-Output "INFO: No ECP Identity provided; checking role assignment."
+        $assignment = az role assignment list `
+            --subscription $subscriptionId `
+            --assignee-object-id $objectId `
+            --role "$roleName" `
+            --scope $sa.id `
+            -o tsv
+
+        if ($assignment) {
+            Write-Host "    Identity $objectId already has role '$roleName' on $accountName (terraform command: '$env:TG_CTX_COMMAND')"
+        }
+        else {
+            Write-Host "     Assigning role '$roleName' to $objectId on $accountName..."
+            az role assignment create `
+                --subscription $subscriptionId `
+                --description "ECP_BOOTSTRAP_HELPER" `
+                --assignee-object-id $objectId `
+                --assignee-principal-type $principalType `
+                --role "$roleName" `
+                --scope $sa.id | Out-Null
+            Write-Output "     added..."
+            $waitNeeded = $true
+        }
+    }
+    else {
+        Write-Output "INFO: ECP Identity provided; assuming it has sufficient access."
+    }
 }
 else {
-  Write-Error "TG_CTX_COMMAND environment variable is not set to 'plan' or 'apply'. Cannot determine the correct way to extract outputs."
-  exit 1
+    Write-Output "INFO: Storage Account does not exist yet; cannot configure access."
 }
-$filePath = Join-Path (Get-Location) "lp-bootstrap-actor-network-details.json"
-$json = $actor_network | ConvertTo-Json -Depth 3
-Write-Output "Writing lp-bootstrap-actor-network-details.json with details on the actor's network"
-Set-Content -Path $filePath -Value $json -Encoding UTF8 -Force
+Write-Output ""
+if ($waitNeeded) {
+    Write-Output "INFO: Waiting 20 seconds for changes to propagate..."
+    Start-Sleep -Seconds 20
+}
 SCRIPT
     ]
     run_on_error = false
   }
+
 }
 
 inputs = {
