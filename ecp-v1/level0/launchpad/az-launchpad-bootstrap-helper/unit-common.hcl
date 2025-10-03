@@ -54,7 +54,7 @@ remote_state {
     if_exists = "overwrite"
   }
   config = {
-    path = "'${local.bootstrap_local_backend_path}'"
+    path = local.bootstrap_local_backend_path
   }
 }
 
