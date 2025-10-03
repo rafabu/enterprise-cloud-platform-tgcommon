@@ -88,12 +88,12 @@ locals {
 
 # work with local backend if remote backend doesn't exist yet
 remote_state {
- backend = local.bootstrap_helper_output.backend_storage_accounts["l0"].ecp_resource_exists == true  && get_terraform_command() != "destroy" ? "azurerm" : "local"
+ backend = local.bootstrap_backend_type
   generate = {
     path      = "backend.tf"
     if_exists = "overwrite"
   }
-  config = local.bootstrap_helper_output.backend_storage_accounts["l0"].ecp_resource_exists == true  && get_terraform_command() != "destroy" ? {
+  config = local.bootstrap_backend_type == "azurerm" ? {
     subscription_id      = local.bootstrap_helper_output.backend_storage_accounts["l0"].subscription_id
     resource_group_name  = local.bootstrap_helper_output.backend_storage_accounts["l0"].resource_group_name
     storage_account_name = local.bootstrap_helper_output.backend_storage_accounts["l0"].name
@@ -129,7 +129,7 @@ terraform {
 <<-SCRIPT
 Write-Output "INFO: TG_CTX_COMMAND: $env:TG_CTX_COMMAND"
 
-Write-Output "INFO: check if backend migration to backend '${local.bootstrap_backend}' is required"
+Write-Output "INFO: check if backend migration to backend '${local.bootstrap_backend_type}' is required"
 terraform init -backend=false -input=false | Out-Null
 $check = terraform init -reconfigure -input=false -migrate-state=false 2>&1
 if ($LASTEXITCODE -ne 0) {
