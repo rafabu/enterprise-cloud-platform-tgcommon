@@ -82,6 +82,34 @@ remote_state {
 }
 
 terraform {
+  
+  before_hook "backup-terraformState-dependentUnits" {
+    commands     = [
+      "destroy"  # during destroy the remote state will be destroyed; so we need to fail back all units that depend on this one to local state
+      ]
+    execute      = [
+      "pwsh",
+      "-Command", 
+<<-SCRIPT
+Write-Output "INFO: TG_CTX_COMMAND: $env:TG_CTX_COMMAND"
+
+$dependentUnits = @(
+    "az-launchpad-bootstrap-helper",
+    "az-launchpad-main",
+    "az-launchpad-network",
+    "az-launchpad-backend"
+)
+
+Write-Output "INFO: backup remote states of dependent units to local state files"
+foreach ($unit in $dependentUnits) {
+    $unitLocalStateFile = "${local.bootstrap_helper_folder}/$($unit).tfstate"
+    Write-Output "     downloading $($unit).tfstate to $unitLocalStateFile"  
+    az storage blob download --account-name ${local.bootstrap_helper_output.backend_storage_accounts["l0"].name} --container-name ${local.bootstrap_helper_output.backend_storage_accounts["l0"].tf_backend_container} --file "$unitLocalStateFile" --name "$($unit).tfstate" --overwrite --auth-mode "login" --no-progress | Out-Null
+}
+SCRIPT
+    ]
+    run_on_error = false
+  }
 
   before_hook "migrate-terraformState" {
     commands     = [
@@ -114,33 +142,6 @@ if ($LASTEXITCODE -ne 0) {
 }
 else {
     Write-Output "    backend configuration matches; no migration required."
-}
-SCRIPT
-    ]
-    run_on_error = false
-  }
-
-  before_hook "backup-terraformState-dependentUnits" {
-    commands     = [
-      "destroy"  # during destroy the remote state will be destroyed; so we need to fail back all units that depend on this one to local state
-      ]
-    execute      = [
-      "pwsh",
-      "-Command", 
-<<-SCRIPT
-Write-Output "INFO: TG_CTX_COMMAND: $env:TG_CTX_COMMAND"
-
-$dependentUnits = @(
-    "az-launchpad-bootstrap-helper",
-    "az-launchpad-main",
-    "az-launchpad-network"
-)
-
-Write-Output "INFO: backup remote states of dependent units to local state files"
-foreach ($unit in $dependentUnits) {
-    $unitLocalStateFile = "${local.bootstrap_helper_folder}/$($unit).tfstate"
-    Write-Output "     downloading $($unit).tfstate to $unitLocalStateFile"  
-    az storage blob download --account-name ${local.bootstrap_helper_output.backend_storage_accounts["l0"].name} --container-name ${local.bootstrap_helper_output.backend_storage_accounts["l0"].tf_backend_container} --file "$unitLocalStateFile" --name "$($unit).tfstate" --overwrite --auth-mode "login" --no-progress | Out-Null
 }
 SCRIPT
     ]
