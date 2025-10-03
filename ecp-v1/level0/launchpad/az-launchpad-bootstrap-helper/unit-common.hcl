@@ -60,68 +60,6 @@ remote_state {
 
 terraform {
 
-  #
-# Helper config which extracts runtime information via terraform data sources and
-#     drops them into local JSON files for consumption by scripts and other tools
-#     downstream
-#
-
-locals {
-  ecp_deployment_unit = "tfbcknd"
-  ecp_resource_name_random_length = 0
-
-  azure_tf_module_folder = "launchpad-bootstrap-helper"
-
-  library_path_shared = format("%s/lib/ecp-lib", get_repo_root())
-  library_path_unit = "${get_terragrunt_dir()}/lib"
-
-################# virtual network artefacts #################
-  # exclude the ones named in the *.exclude.json
-  library_virtualNetworks_path_shared = "${local.library_path_shared}/platform/ecp-artefacts/ms-azure/network/virtualNetworks"
-  library_virtualNetworks_path_unit= "${local.library_path_unit}/virtualNetworks"
-  library_virtualNetworks_filter = "*.virtualNetwork.json"
-  library_virtualNetworks_exclude_filter = "*.virtualNetwork.exclude.json"
-
-  # load JSON artefact files and bring them into hcl map of objects as input to the terraform module
-  virtualNetwork_definition_shared = try({
-    for fileName in fileset(local.library_virtualNetworks_path_shared, local.library_virtualNetworks_filter) : jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_shared, fileName))).artefactName => jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_shared, fileName)))
-  }, {})
-  virtualNetwork_definition_unit = try({
-    for fileName in fileset(local.library_virtualNetworks_path_unit, local.library_virtualNetworks_filter) : jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_unit, fileName))).artefactName => jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_unit, fileName)))
-  }, {})
-  virtualNetwork_definition_exclude_unit = try({
-    for fileName in fileset(local.library_virtualNetworks_path_unit, local.library_virtualNetworks_exclude_filter) : jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_unit, fileName))).artefactName => jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_unit, fileName)))
-  }, {})
-  virtualNetwork_definition_merged = merge(
-    {
-      for key, val in local.virtualNetwork_definition_shared : key => val
-      if (contains(keys(local.virtualNetwork_definition_exclude_unit), key) == false)
-    },
-    local.virtualNetwork_definition_unit
-  )
-
-  ################# bootstrap-helper unit output #################
-  TG_DOWNLOAD_DIR = get_env("TG_DOWNLOAD_DIR", trimspace(run_cmd("pwsh", "-NoLogo", "-NoProfile", "-Command", "[System.IO.Path]::GetTempPath()")))
-  bootstrap_helper_folder = "${local.TG_DOWNLOAD_DIR}/${uuidv5("dns", "az-launchpad-bootstrap-helper")}"
-  # assure local state resides in bootstrap-helper folder
-  bootstrap_local_backend_path = "${local.bootstrap_helper_folder}/${basename(path_relative_to_include())}.tfstate"
-
-}
-
-# helper module does not need a backend; can and should run with local state (as it is kind of stateless anyway)
-remote_state {
-  backend = "local"
-  generate = {
-    path      = "backend.tf"
-    if_exists = "overwrite"
-  }
-  config = {
-    path = local.bootstrap_local_backend_path
-  }
-}
-
-terraform {
-
    before_hook "create-terraform-output-folder" {
     commands     = [
      "apply"
