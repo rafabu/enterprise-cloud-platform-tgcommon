@@ -62,7 +62,8 @@ terraform {
 
    before_hook "create-terraform-output-folder" {
     commands     = [
-     "apply"
+     "apply",
+     "plan"
       ]
     execute      = [
       "pwsh",
