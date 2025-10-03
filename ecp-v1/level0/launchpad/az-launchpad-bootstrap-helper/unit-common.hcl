@@ -168,6 +168,18 @@ $displayName = $tfOutput.actor_identity.value.display_name
 $ecpIdentity = if ("true" -eq $tfOutput.actor_identity.value.is_ecp_launchpad_identity -eq $true) { $true } else { $false }
 $principalType = if ("user" -eq $tfOutput.actor_identity.value.type) { "User" } else { "ServicePrincipal" }
 
+Write-Output "     DEBUG: resourceExists: $resourceExists"
+Write-Output "     DEBUG: ipInRange: $ipInRange"
+Write-Output "     DEBUG: localIp: $localIp"
+Write-Output "     DEBUG: publicIp: $publicIp"
+Write-Output "     DEBUG: subscriptionId: $subscriptionId"
+Write-Output "     DEBUG: accountName: $accountName"
+Write-Output "     DEBUG: objectId: $objectId"
+Write-Output "     DEBUG: displayName: $displayName"
+Write-Output "     DEBUG: ecpIdentity: $ecpIdentity"
+Write-Output "     DEBUG: principalType: $principalType"
+Write-Output "     DEBUG: roleName: $roleName"
+
 # if not running from within launchpad network, access to backend will be blocked by storage account firewall
 #     temporarily(!) open up access for the duration of this run
 #     plus RBAC permissions if not using ECP Identity
