@@ -180,7 +180,7 @@ if ($true -eq $resourceExists) {
     Write-Output ""
 
     Write-Output "##### network access #####"
-    if ($true -eq $resourceExists -and $false -eq $ipInRange -and $null -eq $publicIp) {
+    if ($true -eq $resourceExists -and $false -eq $ipInRange -and $null -ne $publicIp) {
         Write-Output "INFO: Local IP is $localIp is not in launchpad range - checking if access to storage account $accountName via public IP $publicIp is allowed..."
         if ($sa.publicNetworkAccess -ne "Enabled") {
             Write-Output "     Public network access is $($sa.publicNetworkAccess). Enabling..."
