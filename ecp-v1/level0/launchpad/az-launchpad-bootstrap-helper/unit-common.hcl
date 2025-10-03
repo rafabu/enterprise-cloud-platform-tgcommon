@@ -97,13 +97,11 @@ elseif ($env:TG_CTX_COMMAND -eq "apply") {
     $terraform_output = terraform output -json | ConvertFrom-Json
 }
 
-
-
 $filePath = Join-Path $out_path "terraform_output.json"
 $terraform_output_json = @{
-  "actor_identity" = $terraform_output.actor_identity.value
-  "actor_network_information" = $terraform_output.actor_network_information.value
-  "backend_storage_accounts" = $terraform_output.backend_storage_accounts.value
+    "actor_identity"            = $terraform_output.actor_identity.value
+    "actor_network_information" = $terraform_output.actor_network_information.value
+    "backend_storage_accounts"  = $terraform_output.backend_storage_accounts.value
 } | ConvertTo-Json -Depth 5
 
 Write-Output "    Writing $filePath with module's output"
@@ -113,6 +111,10 @@ SCRIPT
     run_on_error = false
   }
 
+# enable remote backend access if conditions are met:
+#    - storage account exists
+#    - actor IP is outside of launchpad vnet range
+#    - actor identity is not the ECP Identity (which should have access anyway)
 after_hook "Enable-PostHelper-RemoteBackend-Access" {
     commands     = [
       "apply",
@@ -135,51 +137,42 @@ after_hook "Enable-PostHelper-RemoteBackend-Access" {
 Write-Output "INFO: TG_CTX_COMMAND: $env:TG_CTX_COMMAND"
 
 $tgWriteCommands = @(
-  "apply",
-  "destroy",
-  "force-unlock",
-  "import",
-  "refresh",
-  "taint",
-  "untaint"
+    "apply",
+    "destroy",
+    "force-unlock",
+    "import",
+    "refresh",
+    "taint",
+    "untaint"
 )
 
 if ($tgWriteCommands -inotcontains $env:TG_CTX_COMMAND) {
-    $planOutput = (terraform show -json az-launchpad-bootstrap-helper.tfplan | ConvertFrom-Json).planned_values.outputs
-
-    $resourceExists = if ($planOutput.backend_storage_accounts.value.l0.ecp_resource_exists -eq "true") { $true } else { $false }
-    $ipInRange = if ($planOutput.actor_network_information.value.is_local_ip_within_ecp_launchpad -eq "true") { $true } else { $false }
-    $publicIp = $planOutput.actor_network_information.value.public_ip
-    $subscriptionId = $planOutput.backend_storage_accounts.value.l0.subscription_id
-    $accountName = $planOutput.backend_storage_accounts.value.l0.name
-
-    $objectId = $planOutput.actor_identity.value.object_id
-    $ecpIdentity = if ("true" -eq $planOutput.actor_identity.value.is_ecp_launchpad_identity -eq $true) { $true } else { $false }
-    $principalType = if ("user" -eq $planOutput.actor_identity.value.type) { "User" } else { "ServicePrincipal" }
+    # "plan" like command - read access is sufficient
+    $tfOutput = (terraform show -json az-launchpad-bootstrap-helper.tfplan | ConvertFrom-Json).planned_values.outputs
     $roleName = "Storage Blob Data Reader"
-
 }
 else {
-    $applyOutput = terraform output -json | ConvertFrom-Json
-    
-    $resourceExists = if ($applyOutput.backend_storage_accounts.value.l0.ecp_resource_exists -eq "true") { $true } else { $false }
-    $ipInRange = if ($applyOutput.actor_network_information.value.is_local_ip_within_ecp_launchpad -eq "true") { $true } else { $false }
-    $publicIp = $applyOutput.actor_network_information.value.public_ip
-    $subscriptionId = $applyOutput.backend_storage_accounts.value.l0.subscription_id
-    $accountName = $applyOutput.backend_storage_accounts.value.l0.name
-
-    $objectId = $applyOutput.actor_identity.value.object_id;
-    $ecpIdentity = if ("true" -eq $applyOutput.actor_identity.value.is_ecp_launchpad_identity -eq $true) { $true } else { $false }
-    $principalType = if ("user" -eq $applyOutput.actor_identity.value.type) { "User" } else { "ServicePrincipal" }
+    # "apply" like command - write access is required
+    $tfOutput = terraform output -json | ConvertFrom-Json
     $roleName = "Storage Blob Data Contributor"
 }
+$resourceExists = if ($tfOutput.backend_storage_accounts.value.l0.ecp_resource_exists -eq "true") { $true } else { $false }
+$ipInRange = if ($tfOutput.actor_network_information.value.is_local_ip_within_ecp_launchpad -eq "true") { $true } else { $false }
+$localIp = $tfOutput.actor_network_information.value.local_ip
+$publicIp = $tfOutput.actor_network_information.value.public_ip
+$subscriptionId = $tfOutput.backend_storage_accounts.value.l0.subscription_id
+$accountName = $tfOutput.backend_storage_accounts.value.l0.name
+
+$objectId = $tfOutput.actor_identity.value.object_id
+$displayName = $tfOutput.actor_identity.value.display_name
+$ecpIdentity = if ("true" -eq $tfOutput.actor_identity.value.is_ecp_launchpad_identity -eq $true) { $true } else { $false }
+$principalType = if ("user" -eq $tfOutput.actor_identity.value.type) { "User" } else { "ServicePrincipal" }
 
 # if not running from within launchpad network, access to backend will be blocked by storage account firewall
 #     temporarily(!) open up access for the duration of this run
 #     plus RBAC permissions if not using ECP Identity
-
 if ($true -eq $resourceExists) {
-    Write-Output "INFO: Storage Account should exist; querying"
+    Write-Output "INFO: Storage Account $accountName exists; querying"
     $sa = az storage account show `
         --subscription $subscriptionId `
         --name $accountName `
@@ -187,8 +180,8 @@ if ($true -eq $resourceExists) {
     Write-Output ""
 
     Write-Output "##### network access #####"
-    if ($true -eq $resourceExists -and $false -eq $ipInRange -and $publicIp -ne $null) {
-        Write-Output "INFO: Checking Storage Account $accountName for public IP $publicIp access..."
+    if ($true -eq $resourceExists -and $false -eq $ipInRange -and $null -eq $publicIp) {
+        Write-Output "INFO: Local IP is $localIp is not in launchpad range - checking if access to storage account $accountName via public IP $publicIp is allowed..."
         if ($sa.publicNetworkAccess -ne "Enabled") {
             Write-Output "     Public network access is $($sa.publicNetworkAccess). Enabling..."
             az storage account update `
@@ -197,7 +190,7 @@ if ($true -eq $resourceExists) {
                 --public-network-access Enabled | Out-Null
         }
         else {
-            Write-Output "     Public network access is already Enabled."
+            Write-Output "     public network access is already Enabled. No change needed."
         }
         # Get current allowed IPs
         $rules = az storage account network-rule list `
@@ -206,7 +199,7 @@ if ($true -eq $resourceExists) {
             --query "ipRules[].ipAddressOrRange" `
             -o tsv
         if ($rules -contains $publicIp) {
-            Write-Output "     IP $publicIp is already allowed per network-rule of storage account $accountName."
+            Write-Output "     IP $publicIp is already allowed per network-rule of storage account $accountName. No change needed."
         }
         else {
             Write-Output "     IP $publicIp is being added to network-rule of storage account $accountName..."
@@ -219,19 +212,19 @@ if ($true -eq $resourceExists) {
         }
     }
     elseif ($true -eq $ipInRange) {
-        Write-Output "INFO: Private IP is in launchpad vnet range; no need to add public IP to Storage Account $accountName."
+        Write-Output "INFO: Private IP $privateIP is in launchpad vnet range; no need to add public IP to Storage Account $accountName."
     }
-    elseif ($publicIp -eq $null) {
+    elseif ($null -eq $publicIp) {
         Write-Output "WARNING: No public IP available; cannot add to Storage Account $accountName."
     }
     elseif ($false -eq $resourceExists) {
-        Write-Output "WARNING: Storage Account $accountName does not exist yet; no need to add IP $publicIp."
+        Write-Output "WARNING: Storage Account $accountName does not exist yet; cannot configure network access."
     }
     Write-Output ""
 
     Write-Output "##### Blob Access #####"
     if ($false -eq $ecpIdentity) {
-        Write-Output "INFO: No ECP Identity provided; checking role assignment."
+        Write-Output "INFO: identity $displayName isn't an ECP Identity; checking its '$roleName' assignment on $accountName."
         $assignment = az role assignment list `
             --subscription $subscriptionId `
             --assignee-object-id $objectId `
@@ -240,10 +233,10 @@ if ($true -eq $resourceExists) {
             -o tsv
 
         if ($assignment) {
-            Write-Host "    Identity $objectId already has role '$roleName' on $accountName (terraform command: '$env:TG_CTX_COMMAND')"
+            Write-Host "    identity $displayName already has role '$roleName' on $accountName (terraform command: '$env:TG_CTX_COMMAND')"
         }
         else {
-            Write-Host "     Assigning role '$roleName' to $objectId on $accountName..."
+            Write-Host "     assigning role '$roleName' to $displayName on $accountName..."
             az role assignment create `
                 --subscription $subscriptionId `
                 --description "ECP_BOOTSTRAP_HELPER" `
@@ -256,15 +249,15 @@ if ($true -eq $resourceExists) {
         }
     }
     else {
-        Write-Output "INFO: ECP Identity provided; assuming it has sufficient access."
+        Write-Output "INFO: Running with ECP Identity $displayName; assuming it has sufficient access. No change needed."
     }
 }
 else {
-    Write-Output "INFO: Storage Account does not exist yet; cannot configure access."
+    Write-Output "INFO: Storage Account $accountName does not exist yet; cannot configure access. Will have to run on local terraform backend for now."
 }
 Write-Output ""
 if ($waitNeeded) {
-    Write-Output "INFO: Waiting 60 seconds for changes to propagate..."
+    Write-Output "INFO: Sleep 60 seconds for RBAC and/or SA port rule changes to propagate on $accountName"
     Start-Sleep -Seconds 60
 }
 SCRIPT
