@@ -16,7 +16,8 @@ locals {
   TG_DOWNLOAD_DIR = get_env("TG_DOWNLOAD_DIR", trimspace(run_cmd("pwsh", "-NoLogo", "-NoProfile", "-Command", "[System.IO.Path]::GetTempPath()")))
   bootstrap_helper_folder = "${local.TG_DOWNLOAD_DIR}/${uuidv5("dns", "az-launchpad-bootstrap-helper")}"
   bootstrap_helper_output = jsondecode(file("${local.bootstrap_helper_folder}/terraform_output.json"))
-  bootstrap_backend_type = local.bootstrap_helper_output.backend_storage_accounts["l0"].ecp_resource_exists == true ? "azurerm" : "local"
+  bootstrap_backend_type = local.bootstrap_helper_output.backend_storage_accounts["l0"].ecp_terraform_backend
+  bootstrap_backend_type_changed = local.bootstrap_helper_output.backend_storage_accounts["l0"].ecp_terraform_backend_changed_since_last_apply
   # assure local state resides in bootstrap-helper folder
   bootstrap_local_backend_path = "${local.bootstrap_helper_folder}/${basename(path_relative_to_include())}.tfstate"
 
@@ -48,10 +49,10 @@ remote_state {
 
 terraform {
 
-before_hook "migrate-terraformState" {
-    commands     = [
+  before_hook "Copy-TerraformStateToRemote" {
+     commands     = [
       "apply",
-      "destroy",  # during destroy the remote state will be destroyed; so we need to fail back to local state first
+      # "destroy",  # during destroy the remote state should no longer be present
       # "force-unlock",
       "import",
       "init", # on initial run, no outputs will be available, yet
@@ -61,24 +62,31 @@ before_hook "migrate-terraformState" {
       "state",
       "taint",
       "untaint",
-      "validate",
-      "destroy"  
+      "validate"
       ]
     execute      = [
       "pwsh",
       "-Command", 
 <<-SCRIPT
 Write-Output "INFO: TG_CTX_COMMAND: $env:TG_CTX_COMMAND"
+Write-Output "INFO: bootstrap_backend_type: '${local.bootstrap_backend_type}'"
+Write-Output "INFO: bootstrap_backend_type_changed: '${local.bootstrap_backend_type_changed}'"
 
-Write-Output "INFO: check if backend migration to backend '${local.bootstrap_backend_type}' is required"
-terraform init -backend=false -input=false | Out-Null
-$check = terraform init -reconfigure -input=false -migrate-state=false 2>&1
-if ($LASTEXITCODE -ne 0) {
-    Write-Output "     backend migration required; performing migration now..."
-    terraform init -migrate-state -input=false -force-copy
+if ("true" -eq "${local.bootstrap_backend_type_changed}") {
+  if ("azurerm" -eq "${local.bootstrap_backend_type}") {
+    Write-Output "      remote backend changed from 'local' to 'azurerm'; copying local state to remote now..."
+    Write-Output "      uploading '${local.bootstrap_local_backend_path}' to '${basename(path_relative_to_include())}.tfstate' on ${local.bootstrap_helper_output.backend_storage_accounts["l0"].name}"  
+    az storage blob upload --account-name ${local.bootstrap_helper_output.backend_storage_accounts["l0"].name} --container-name ${local.bootstrap_helper_output.backend_storage_accounts["l0"].tf_backend_container} --file "${local.bootstrap_local_backend_path}" --name "${basename(path_relative_to_include())}.tfstate" --overwrite --auth-mode "login" --no-progress | Out-Null
+    terraform init -reconfigure | Out-Null
+  }
+  else {
+    Write-Output "      remote backend changed to 'local'; no action required as local state is already in place"
+    az storage blob download --account-name ${local.bootstrap_helper_output.backend_storage_accounts["l0"].name} --container-name ${local.bootstrap_helper_output.backend_storage_accounts["l0"].tf_backend_container} --file "${local.bootstrap_local_backend_path}" --name "${basename(path_relative_to_include())}.tfstate" --overwrite --auth-mode "login" --no-progress | Out-Null
+    terraform init -reconfigure | Out-Null
+  }
 }
 else {
-    Write-Output "    backend configuration matches; no migration required."
+  Write-Output "INFO: backend has not changed; no action required"
 }
 SCRIPT
     ]
