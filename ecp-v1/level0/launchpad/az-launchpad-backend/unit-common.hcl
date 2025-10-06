@@ -83,6 +83,10 @@ remote_state {
 
 terraform {
   
+  # before destroying the remote state:
+  #     copy states of units this one depends on from remote to local state files
+  #     ---> but only if remote state actually was deployed and implemented already
+  #          (local.bootstrap_helper_output.backend_storage_accounts["l0"].ecp_resource_exists)
   before_hook "backup-terraformState-dependentUnits" {
     commands     = [
       "destroy"  # during destroy the remote state will be destroyed; so we need to fail back all units that depend on this one to local state
@@ -100,11 +104,16 @@ $dependentUnits = @(
     "az-launchpad-backend"
 )
 
-Write-Output "INFO: backup remote states of dependent units to local state files"
-foreach ($unit in $dependentUnits) {
+if ("true" -eq "${local.bootstrap_helper_output.backend_storage_accounts["l0"].ecp_resource_exists}") {
+  Write-Output "INFO: backup remote states of dependent units to local state files" 
+  foreach ($unit in $dependentUnits) {
     $unitLocalStateFile = "${local.bootstrap_helper_folder}/$($unit).tfstate"
     Write-Output "     downloading $($unit).tfstate to $unitLocalStateFile"  
     az storage blob download --account-name ${local.bootstrap_helper_output.backend_storage_accounts["l0"].name} --container-name ${local.bootstrap_helper_output.backend_storage_accounts["l0"].tf_backend_container} --file "$unitLocalStateFile" --name "$($unit).tfstate" --overwrite --auth-mode "login" --no-progress | Out-Null
+  }
+}
+else {
+  Write-Output "INFO: remote backend not deployed yet; skipping backup of dependent units' states"
 }
 SCRIPT
     ]
