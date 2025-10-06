@@ -68,16 +68,16 @@ terraform {
       "-Command", 
 <<-SCRIPT
 Write-Output "INFO: TG_CTX_COMMAND: $env:TG_CTX_COMMAND"
-
-Write-Output "INFO: check if backend migration to backend '${local.bootstrap_backend_type}' is required"
+Write-Output "INFO: bootstrap_backend_type: '${local.bootstrap_backend_type}'"
+Write-Output "      check if backend migration is required"
 terraform init -backend=false -input=false | Out-Null
 $check = terraform init -reconfigure -input=false -migrate-state=false 2>&1
 if ($LASTEXITCODE -ne 0) {
-    Write-Output "     backend migration required; performing migration now..."
+    Write-Output "      backend migration required; performing migration now..."
     terraform init -migrate-state -input=false -force-copy
 }
 else {
-    Write-Output "    backend configuration matches; no migration required."
+    Write-Output "     backend configuration matches; no migration required."
 }
 SCRIPT
     ]
