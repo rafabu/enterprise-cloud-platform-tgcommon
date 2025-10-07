@@ -168,12 +168,10 @@ $tgWriteCommands = @(
 if ($tgWriteCommands -inotcontains $env:TG_CTX_COMMAND) {
     # "plan" like command - read access is sufficient
     $tfOutput = (terraform show -json az-launchpad-bootstrap-helper.tfplan | ConvertFrom-Json).planned_values.outputs
-    $roleName = "Storage Blob Data Reader"
 }
 else {
     # "apply" like command - write access is required
     $tfOutput = terraform output -json | ConvertFrom-Json
-    $roleName = "Storage Blob Data Contributor"
 }
 $resourceExists = if ($tfOutput.backend_storage_accounts.value.l0.ecp_resource_exists -eq "true") { $true } else { $false }
 $ipInRange = if ($tfOutput.actor_network_information.value.is_local_ip_within_ecp_launchpad -eq "true") { $true } else { $false }
@@ -181,6 +179,8 @@ $localIp = $tfOutput.actor_network_information.value.local_ip
 $publicIp = $tfOutput.actor_network_information.value.public_ip
 $subscriptionId = $tfOutput.backend_storage_accounts.value.l0.subscription_id
 $accountName = $tfOutput.backend_storage_accounts.value.l0.name
+
+$roleName = "Storage Blob Data Contributor"
 
 $objectId = $tfOutput.actor_identity.value.object_id
 $displayName = $tfOutput.actor_identity.value.display_name
