@@ -45,7 +45,7 @@ locals {
   bootstrap_local_backend_path = "${local.bootstrap_helper_folder}/${basename(path_relative_to_include())}.tfstate"
   # check if remote backend already existed when helper ran last time (consume its own output file)
   bootstrap_helper_output_file = "${local.bootstrap_helper_folder}/terraform_output.json"
-  bootstrap_helper_output = fileexists(local.bootstrap_helper_output_file) ? jsondecode(file(local.bootstrap_helper_output_file)) : null
+  bootstrap_helper_output = try(jsondecode(file(local.bootstrap_helper_output_file)), {})
 }
 
 # helper module does not need a backend; can and should run with local state (as it is kind of stateless anyway)
@@ -293,10 +293,23 @@ inputs = {
     "l0-launchpad-main"
   ]
 
-  launchpad_backend_type_previous_run = {
-    for key, val in try(local.bootstrap_helper_output.backend_storage_accounts, {}) : key => {
+  launchpad_backend_type_previous_run = try({
+    for key, val in local.bootstrap_helper_output.backend_storage_accounts : key => {
       backend_type = val.ecp_terraform_backend
       apply_timestamp = val.ecp_terraform_backend_apply_timestamp
     }
-   }
+   }, {
+    "l0" = {
+      backend_type = "local"
+      apply_timestamp = ""
+    },
+    "l1" = {
+      backend_type = "local"
+      apply_timestamp = ""
+    },
+    "l2" = {
+      backend_type = "local"
+      apply_timestamp = ""
+    }
+   })
 }
