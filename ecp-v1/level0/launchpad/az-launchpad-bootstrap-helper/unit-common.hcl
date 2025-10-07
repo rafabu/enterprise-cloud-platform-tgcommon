@@ -98,6 +98,21 @@ SCRIPT
       "pwsh",
       "-Command", 
 <<-SCRIPT
+function Merge-Objects {
+    param (
+        [object]$Object1,
+        [object]$Object2
+    )
+    $merged = [ordered]@{}
+    foreach ($prop in $Object1.PSObject.Properties) {
+        $merged[$prop.Name] = $prop.Value
+    }
+    foreach ($prop in $Object2.PSObject.Properties) {
+        $merged[$prop.Name] = $prop.Value
+    }
+    return [PSCustomObject]$merged
+}
+
 Write-Output "INFO: TG_CTX_COMMAND: $env:TG_CTX_COMMAND"
 $systemTempPath = [System.IO.Path]::GetTempPath()
 if ($env:TG_DOWNLOAD_DIR) {
@@ -110,7 +125,51 @@ $out_path = [System.IO.Path]::Combine($tempPath, "${uuidv5("dns", basename(get_o
 
 # backend storage account details
 if ($env:TG_CTX_COMMAND -eq "plan") {
-    $terraform_output = (terraform show -json az-launchpad-bootstrap-helper.tfplan | ConvertFrom-Json).planned_values.outputs
+    # "plan" like command - need to parse the tfplan file and build an apply-like output
+    $tfPlanOutput = (terraform show -no-color -json az-launchpad-bootstrap-helper.tfplan | ConvertFrom-Json)
+
+    # actor_identity
+    $tfOutputAIPlanned  =  $tfPlanOutput.planned_values.outputs.actor_identity.value
+    $tfOutputAIAfter = $tfPlanOutput.output_changes.actor_identity.after
+    $tfOutputAIAfterUnknown =$tfPlanOutput.output_changes.actor_identity.after_unknown
+    $tfOutputAIMerged = Merge-Objects -Object1 $tfOutputAIAfterUnknown -Object2 $tfOutputAIAfter
+    $tfOutputAIMerged = Merge-Objects -Object1 $tfOutputAIMerged -Object2 $tfOutputAIPlanned
+
+    # actor_network_information
+    $tfOutputANPlanned  =  $tfPlanOutput.planned_values.outputs.actor_network_information.value
+    $tfOutputANAfter = $tfPlanOutput.output_changes.actor_network_information.after
+    $tfOutputANAfterUnknown =$tfPlanOutput.output_changes.actor_network_information.after_unknown
+    $tfOutputANMerged = Merge-Objects -Object1 $tfOutputANAfterUnknown -Object2 $tfOutputANAfter
+    $tfOutputANMerged = Merge-Objects -Object1 $tfOutputANMerged -Object2 $tfOutputANPlanned
+    
+    # backend_resource_group
+    $tfOutputBRGPlanned  =  $tfPlanOutput.planned_values.outputs.backend_resource_group.value
+    $tfOutputBRGAfter = $tfPlanOutput.output_changes.backend_resource_group.after
+    $tfOutputBRGAfterUnknown =$tfPlanOutput.output_changes.backend_resource_group.after_unknown
+    $tfOutputBRGMerged = Merge-Objects -Object1 $tfOutputBRGAfterUnknown -Object2 $tfOutputBRGAfter
+    $tfOutputBRGMerged = Merge-Objects -Object1 $tfOutputBRGMerged -Object2 $tfOutputBRGPlanned
+
+    # backend_storage_accounts
+    $tfOutputBSPlanned  =  $tfPlanOutput.planned_values.outputs.backend_storage_accounts.value
+    $tfOutputBSAfter = $tfPlanOutput.output_changes.backend_storage_accounts.after
+    $tfOutputBSAfterUnknown =$tfPlanOutput.output_changes.backend_storage_accounts.after_unknown
+    $tfOutputBSMerged = Merge-Objects -Object1 $tfOutputBSAfterUnknown -Object2 $tfOutputBSAfter
+    $tfOutputBSMerged = Merge-Objects -Object1 $tfOutputBSMerged -Object2 $tfOutputBSPlanned
+
+    $terraform_output = @{
+        "actor_identity"            = @{
+          "value" = $tfOutputAIMerged
+          };
+        "actor_network_information" = @{
+          "value" = $tfOutputANMerged
+          };
+        "backend_resource_group"    = @{
+          "value" = $tfOutputBRGMerged
+          };
+        "backend_storage_accounts"  = @{
+          "value" = $tfOutputBSMerged
+          }
+    }
 }
 elseif ($env:TG_CTX_COMMAND -eq "apply") {
     $terraform_output = terraform output -json | ConvertFrom-Json
@@ -153,6 +212,21 @@ after_hook "Enable-PostHelper-RemoteBackend-Access" {
       "pwsh",
       "-Command", 
 <<-SCRIPT
+function Merge-Objects {
+    param (
+        [object]$Object1,
+        [object]$Object2
+    )
+    $merged = [ordered]@{}
+    foreach ($prop in $Object1.PSObject.Properties) {
+        $merged[$prop.Name] = $prop.Value
+    }
+    foreach ($prop in $Object2.PSObject.Properties) {
+        $merged[$prop.Name] = $prop.Value
+    }
+    return [PSCustomObject]$merged
+}
+
 Write-Output "INFO: TG_CTX_COMMAND: $env:TG_CTX_COMMAND"
 
 $tgWriteCommands = @(
@@ -166,13 +240,57 @@ $tgWriteCommands = @(
 )
 
 if ($tgWriteCommands -inotcontains $env:TG_CTX_COMMAND) {
-    # "plan" like command - read access is sufficient
-    $tfOutput = (terraform show -json az-launchpad-bootstrap-helper.tfplan | ConvertFrom-Json).planned_values.outputs
+    # "plan" like command - need to parse the tfplan file and build an apply-like output
+    $tfPlanOutput = (terraform show -no-color -json az-launchpad-bootstrap-helper.tfplan | ConvertFrom-Json)
+
+    # actor_identity
+    $tfOutputAIPlanned  =  $tfPlanOutput.planned_values.outputs.actor_identity.value
+    $tfOutputAIAfter = $tfPlanOutput.output_changes.actor_identity.after
+    $tfOutputAIAfterUnknown =$tfPlanOutput.output_changes.actor_identity.after_unknown
+    $tfOutputAIMerged = Merge-Objects -Object1 $tfOutputAIAfterUnknown -Object2 $tfOutputAIAfter
+    $tfOutputAIMerged = Merge-Objects -Object1 $tfOutputAIMerged -Object2 $tfOutputAIPlanned
+
+    # actor_network_information
+    $tfOutputANPlanned  =  $tfPlanOutput.planned_values.outputs.actor_network_information.value
+    $tfOutputANAfter = $tfPlanOutput.output_changes.actor_network_information.after
+    $tfOutputANAfterUnknown =$tfPlanOutput.output_changes.actor_network_information.after_unknown
+    $tfOutputANMerged = Merge-Objects -Object1 $tfOutputANAfterUnknown -Object2 $tfOutputANAfter
+    $tfOutputANMerged = Merge-Objects -Object1 $tfOutputANMerged -Object2 $tfOutputANPlanned
+    
+    # backend_resource_group
+    $tfOutputBRGPlanned  =  $tfPlanOutput.planned_values.outputs.backend_resource_group.value
+    $tfOutputBRGAfter = $tfPlanOutput.output_changes.backend_resource_group.after
+    $tfOutputBRGAfterUnknown =$tfPlanOutput.output_changes.backend_resource_group.after_unknown
+    $tfOutputBRGMerged = Merge-Objects -Object1 $tfOutputBRGAfterUnknown -Object2 $tfOutputBRGAfter
+    $tfOutputBRGMerged = Merge-Objects -Object1 $tfOutputBRGMerged -Object2 $tfOutputBRGPlanned
+
+    # backend_storage_accounts
+    $tfOutputBSPlanned  =  $tfPlanOutput.planned_values.outputs.backend_storage_accounts.value
+    $tfOutputBSAfter = $tfPlanOutput.output_changes.backend_storage_accounts.after
+    $tfOutputBSAfterUnknown =$tfPlanOutput.output_changes.backend_storage_accounts.after_unknown
+    $tfOutputBSMerged = Merge-Objects -Object1 $tfOutputBSAfterUnknown -Object2 $tfOutputBSAfter
+    $tfOutputBSMerged = Merge-Objects -Object1 $tfOutputBSMerged -Object2 $tfOutputBSPlanned
+
+    $tfOutput = @{
+        "actor_identity"            = @{
+          "value" = $tfOutputAIMerged
+          };
+        "actor_network_information" = @{
+          "value" = $tfOutputANMerged
+          };
+        "backend_resource_group"    = @{
+          "value" = $tfOutputBRGMerged
+          };
+        "backend_storage_accounts"  = @{
+          "value" = $tfOutputBSMerged
+          }
+    }
 }
 else {
     # "apply" like command - write access is required
     $tfOutput = terraform output -json | ConvertFrom-Json
 }
+
 $resourceExists = if ($tfOutput.backend_storage_accounts.value.l0.ecp_resource_exists -eq "true") { $true } else { $false }
 $ipInRange = if ($tfOutput.actor_network_information.value.is_local_ip_within_ecp_launchpad -eq "true") { $true } else { $false }
 $localIp = $tfOutput.actor_network_information.value.local_ip
