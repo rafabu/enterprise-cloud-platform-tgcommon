@@ -50,39 +50,20 @@ locals {
 }
 
 # helper module does not need a backend; can and should run with local state (as it is kind of stateless anyway)
-# remote_state {
-#   backend = "local"
-#   generate = {
-#     path      = "backend.tf"
-#     if_exists = "overwrite"
-#   }
-#   config = {
-#     path = local.bootstrap_local_backend_path
-#   }
-# }
-
 remote_state {
- backend = local.bootstrap_backend_type
+  backend = "local"
   generate = {
     path      = "backend.tf"
     if_exists = "overwrite"
   }
-  config = local.bootstrap_backend_type == "azurerm" ? {
-    subscription_id      = local.bootstrap_helper_output.backend_storage_accounts["l0"].subscription_id
-    resource_group_name  = local.bootstrap_helper_output.backend_storage_accounts["l0"].resource_group_name
-    storage_account_name = local.bootstrap_helper_output.backend_storage_accounts["l0"].name
-    container_name       = local.bootstrap_helper_output.backend_storage_accounts["l0"].tf_backend_container
-    use_azuread_auth     = true
-    key                  = "${basename(path_relative_to_include())}.tfstate"
-  } : {
+  config = {
     path = local.bootstrap_local_backend_path
   }
-  disable_init = tobool(get_env("TERRAGRUNT_DISABLE_INIT", "false"))
 }
 
 terraform {
 
-   before_hook "create-terraform-output-folder" {
+  before_hook "create-terraform-output-folder" {
     commands     = [
      "apply",
      "plan"
@@ -102,75 +83,6 @@ else {
 $out_path = [System.IO.Path]::Combine($tempPath, "${uuidv5("dns", basename(get_original_terragrunt_dir()))}")
 if (-not (Test-Path -Path $out_path -PathType Container)) {
     New-Item -ItemType Directory -Path $out_path -Force | Out-Null
-}
-SCRIPT
-    ]
-    run_on_error = false
-  }
-
-   before_hook "reconfigure-backend" {
-    commands     = [
-      "init",
-      "plan",
-      "apply",
-      "destroy"
-      ]
-    execute      = [
-      "pwsh",
-      "-Command", 
-<<-SCRIPT
-Write-Output "INFO: TG_CTX_COMMAND: $env:TG_CTX_COMMAND"
-
-Write-Output "     running 'terraform init -reconfigure'"
-terraform init -reconfigure | Out-Null
-SCRIPT
-    ]
-    run_on_error = false
-  }
-
-  before_hook "Copy-TerraformStateToRemote" {
-     commands     = [
-      "apply",
-      # "destroy",  # during destroy the remote state should no longer be present
-      # "force-unlock",
-      "import",
-      "init", # on initial run, no outputs will be available, yet
-      "output",
-      "plan", 
-      "refresh",
-      "state",
-      "taint",
-      "untaint",
-      "validate"
-      ]
-    execute      = [
-      "pwsh",
-      "-Command", 
-<<-SCRIPT
-Write-Output "INFO: TG_CTX_COMMAND: $env:TG_CTX_COMMAND"
-Write-Output "INFO: bootstrap_backend_type: '${local.bootstrap_backend_type}'"
-Write-Output "INFO: bootstrap_backend_type_changed: '${local.bootstrap_backend_type_changed}'"
-
-if ("true" -eq "${local.bootstrap_backend_type_changed}") {
-    if ("azurerm" -eq "${local.bootstrap_backend_type}") {
-        if (Test-Path "${local.bootstrap_local_backend_path}") {
-            Write-Output "      remote backend changed from 'local' to 'azurerm'; copying local state to remote now..."
-            Write-Output "      uploading '${local.bootstrap_local_backend_path}' to '${basename(path_relative_to_include())}.tfstate' on ${try(local.bootstrap_helper_output.backend_storage_accounts["l0"].name, "unknown storage account")}'"  
-            az storage blob upload --account-name ${try(local.bootstrap_helper_output.backend_storage_accounts["l0"].name, "unknown storage account")} --container-name ${try(local.bootstrap_helper_output.backend_storage_accounts["l0"].tf_backend_container, "unknown container")} --file "${local.bootstrap_local_backend_path}" --name "${basename(path_relative_to_include())}.tfstate" --overwrite --auth-mode "login" --no-progress | Out-Null
-            terraform init -reconfigure | Out-Null
-        }
-        else {
-            Write-Output "      local state file '${local.bootstrap_local_backend_path}' dos not exist; skipping upload to remote backend"
-        }
-    }
-    else {
-        Write-Output "      remote backend changed to 'local'; no action required as local state is already in place"
-        az storage blob download --account-name ${try(local.bootstrap_helper_output.backend_storage_accounts["l0"].name, "unknown storage account")} --container-name ${try(local.bootstrap_helper_output.backend_storage_accounts["l0"].tf_backend_container, "unknown container")} --file "${local.bootstrap_local_backend_path}" --name "${basename(path_relative_to_include())}.tfstate" --overwrite --auth-mode "login" --no-progress | Out-Null
-        terraform init -reconfigure | Out-Null
-    }
-}
-else {
-    Write-Output "INFO: backend has not changed; no action required"
 }
 SCRIPT
     ]
