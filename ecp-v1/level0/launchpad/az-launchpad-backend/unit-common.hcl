@@ -32,7 +32,6 @@ dependency "l0-lp-az-lp-bootstrap-helper" {
         tf_backend_container            = "tfstate"
         ecp_resource_exists             = false
         ecp_terraform_backend                          = "local"
-        ecp_terraform_backend_apply_timestamp = ""
         ecp_terraform_backend_changed_since_last_apply = false
       }
       l1 = {
@@ -44,7 +43,6 @@ dependency "l0-lp-az-lp-bootstrap-helper" {
         tf_backend_container            = "tfstate"
         ecp_resource_exists             = false
         ecp_terraform_backend                          = "local"
-        ecp_terraform_backend_apply_timestamp = ""
         ecp_terraform_backend_changed_since_last_apply = false
       }
       l2 = {
@@ -56,11 +54,12 @@ dependency "l0-lp-az-lp-bootstrap-helper" {
         tf_backend_container            = "tfstate"
         ecp_resource_exists             = false
         ecp_terraform_backend                          = "local"
-        ecp_terraform_backend_apply_timestamp = ""
         ecp_terraform_backend_changed_since_last_apply = false
       }
     }
   }
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
+  mock_outputs_merge_strategy_with_state = "shallow"
 }
 
 dependency "l0-lp-az-lp-main" {
@@ -72,6 +71,8 @@ dependency "l0-lp-az-lp-main" {
       location = "westeurope"
     }
   }
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
+  mock_outputs_merge_strategy_with_state = "shallow"
 }
 
 dependency "l0-lp-az-lp-net" {
@@ -100,6 +101,8 @@ dependency "l0-lp-az-lp-net" {
       }
     }
   }
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
+  mock_outputs_merge_strategy_with_state = "shallow"
 }
 
 locals {
@@ -138,7 +141,7 @@ remote_state {
     use_azuread_auth     = true
     key                  = "${basename(path_relative_to_include())}.tfstate"
   } : {
-    path = local.bootstrap_local_backend_path
+   #  path = local.bootstrap_local_backend_path
   }
   disable_init = tobool(get_env("TERRAGRUNT_DISABLE_INIT", "false"))
 }
@@ -191,7 +194,13 @@ if ("true" -eq "${try(local.bootstrap_helper_output.backend_storage_accounts["l0
   foreach ($unit in $dependentUnits) {
     $unitLocalStateFile = "${local.bootstrap_helper_folder}/$($unit).tfstate"
     Write-Output "     downloading $($unit).tfstate to $unitLocalStateFile"
-    az storage blob download --account-name ${try(local.bootstrap_helper_output.backend_storage_accounts["l0"].name, "unknown storage account")} --container-name ${try(local.bootstrap_helper_output.backend_storage_accounts["l0"].tf_backend_container, "unknown container")} --file "$unitLocalStateFile" --name "$($unit).tfstate" --overwrite --auth-mode "login" --no-progress | Out-Null
+    $downloadResult = az storage blob download --account-name ${try(local.bootstrap_helper_output.backend_storage_accounts["l0"].name, "unknown storage account")} --container-name ${try(local.bootstrap_helper_output.backend_storage_accounts["l0"].tf_backend_container, "unknown container")} --file "$unitLocalStateFile" --name "$($unit).tfstate" --overwrite --auth-mode "login" --no-progress 2>&1
+        if ($LASTEXITCODE -eq 0) {
+            Write-Output "      state file downloaded successfully to local backend at '$unitLocalStateFile'"
+        } else {
+            Write-Error "      failed to download state file from remote backend. Error: $downloadResult"
+            # throw "State file download failed with exit code: $LASTEXITCODE"
+        }
   }
   Write-Output "     reconfigure unit to work with local state now"  
   terraform init -migrate-state | Out-Null
@@ -237,7 +246,7 @@ if ("true" -eq "${local.bootstrap_backend_type_changed}") {
                 Write-Output "      state file uploaded successfully to remote backend"
                 terraform init -migrate-state | Out-Null
                 Write-Output "      removing local state file '${local.bootstrap_local_backend_path}'"
-                Remove-Item -Path "${local.bootstrap_local_backend_path}" -Force -ErrorAction SilentlyContinue
+                Move-Item -Path "${local.bootstrap_local_backend_path}" -Destination "${local.bootstrap_local_backend_path}.backup" -Force -ErrorAction SilentlyContinue
             } else {
                 Write-Error "      failed to upload state file to remote backend. Error: $uploadResult"
                 throw "State file upload failed with exit code: $LASTEXITCODE"
@@ -246,11 +255,6 @@ if ("true" -eq "${local.bootstrap_backend_type_changed}") {
         else {
             Write-Output "      local state file '${local.bootstrap_local_backend_path}' dos not exist; skipping upload to remote backend"
         }
-    }
-    else {
-        Write-Output "      remote backend changed to 'local'; no action required as local state is already in place"
-        az storage blob download --account-name ${try(local.bootstrap_helper_output.backend_storage_accounts["l0"].name, "unknown storage account")} --container-name ${try(local.bootstrap_helper_output.backend_storage_accounts["l0"].tf_backend_container, "unknown container")} --file "${local.bootstrap_local_backend_path}" --name "${basename(path_relative_to_include())}.tfstate" --overwrite --auth-mode "login" --no-progress | Out-Null
-        terraform init -migrate-state | Out-Null
     }
 }
 else {

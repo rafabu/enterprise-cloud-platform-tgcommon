@@ -420,15 +420,12 @@ inputs = {
    }, {
     "l0" = {
       backend_type = "local"
-      apply_timestamp = ""
     },
     "l1" = {
       backend_type = "local"
-      apply_timestamp = ""
     },
     "l2" = {
       backend_type = "local"
-      apply_timestamp = ""
     }
    })
 }
