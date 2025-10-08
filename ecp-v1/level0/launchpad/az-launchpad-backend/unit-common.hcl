@@ -141,7 +141,7 @@ remote_state {
     use_azuread_auth     = true
     key                  = "${basename(path_relative_to_include())}.tfstate"
   } : {
-   #  path = local.bootstrap_local_backend_path
+    path = local.bootstrap_local_backend_path
   }
   disable_init = tobool(get_env("TERRAGRUNT_DISABLE_INIT", "false"))
 }
