@@ -145,6 +145,26 @@ remote_state {
 
 terraform {
   
+before_hook "reconfigure-backend" {
+    commands     = [
+      "init",
+      "plan",
+      "apply",
+      "destroy"
+      ]
+    execute      = [
+      "pwsh",
+      "-Command", 
+<<-SCRIPT
+Write-Output "INFO: TG_CTX_COMMAND: $env:TG_CTX_COMMAND"
+
+Write-Output "     running 'terraform init -reconfigure'"  
+terraform init -reconfigure | Out-Null
+SCRIPT
+    ]
+    run_on_error = false
+  }
+
   # before destroying the remote state:
   #     copy states of units this one depends on from remote to local state files
   #     ---> but only if remote state actually was deployed and implemented already
@@ -174,7 +194,7 @@ if ("true" -eq "${try(local.bootstrap_helper_output.backend_storage_accounts["l0
     az storage blob download --account-name ${try(local.bootstrap_helper_output.backend_storage_accounts["l0"].name, "unknown storage account")} --container-name ${try(local.bootstrap_helper_output.backend_storage_accounts["l0"].tf_backend_container, "unknown container")} --file "$unitLocalStateFile" --name "$($unit).tfstate" --overwrite --auth-mode "login" --no-progress | Out-Null
   }
   Write-Output "     reconfigure unit to work with local state now"  
-  terraform init -reconfigure | Out-Null
+  terraform init -migrate-state | Out-Null
 }
 else {
   Write-Output "INFO: remote backend not deployed yet; skipping backup of dependent units' states"
@@ -212,8 +232,16 @@ if ("true" -eq "${local.bootstrap_backend_type_changed}") {
         if (Test-Path "${local.bootstrap_local_backend_path}") {
             Write-Output "      remote backend changed from 'local' to 'azurerm'; copying local state to remote now..."
             Write-Output "      uploading '${local.bootstrap_local_backend_path}' to '${basename(path_relative_to_include())}.tfstate' on ${try(local.bootstrap_helper_output.backend_storage_accounts["l0"].name, "unknown storage account")}'"  
-            az storage blob upload --account-name ${try(local.bootstrap_helper_output.backend_storage_accounts["l0"].name, "unknown storage account")} --container-name ${try(local.bootstrap_helper_output.backend_storage_accounts["l0"].tf_backend_container, "unknown container")} --file "${local.bootstrap_local_backend_path}" --name "${basename(path_relative_to_include())}.tfstate" --overwrite --auth-mode "login" --no-progress | Out-Null
-            terraform init -reconfigure | Out-Null
+            $uploadResult = az storage blob upload --account-name ${try(local.bootstrap_helper_output.backend_storage_accounts["l0"].name, "unknown storage account")} --container-name ${try(local.bootstrap_helper_output.backend_storage_accounts["l0"].tf_backend_container, "unknown container")} --file "${local.bootstrap_local_backend_path}" --name "${basename(path_relative_to_include())}.tfstate" --overwrite --auth-mode "login" --no-progress 2>&1
+            if ($LASTEXITCODE -eq 0) {
+                Write-Output "      state file uploaded successfully to remote backend"
+                terraform init -migrate-state | Out-Null
+                Write-Output "      removing local state file '${local.bootstrap_local_backend_path}'"
+                Remove-Item -Path "${local.bootstrap_local_backend_path}" -Force -ErrorAction SilentlyContinue
+            } else {
+                Write-Error "      failed to upload state file to remote backend. Error: $uploadResult"
+                throw "State file upload failed with exit code: $LASTEXITCODE"
+            }
         }
         else {
             Write-Output "      local state file '${local.bootstrap_local_backend_path}' dos not exist; skipping upload to remote backend"
@@ -222,7 +250,7 @@ if ("true" -eq "${local.bootstrap_backend_type_changed}") {
     else {
         Write-Output "      remote backend changed to 'local'; no action required as local state is already in place"
         az storage blob download --account-name ${try(local.bootstrap_helper_output.backend_storage_accounts["l0"].name, "unknown storage account")} --container-name ${try(local.bootstrap_helper_output.backend_storage_accounts["l0"].tf_backend_container, "unknown container")} --file "${local.bootstrap_local_backend_path}" --name "${basename(path_relative_to_include())}.tfstate" --overwrite --auth-mode "login" --no-progress | Out-Null
-        terraform init -reconfigure | Out-Null
+        terraform init -migrate-state | Out-Null
     }
 }
 else {
