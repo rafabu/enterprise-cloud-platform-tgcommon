@@ -5,19 +5,19 @@
 #
 
 locals {
-  ecp_deployment_unit = "tfbcknd"
+  ecp_deployment_unit             = "tfbcknd"
   ecp_resource_name_random_length = 0
 
   azure_tf_module_folder = "launchpad-bootstrap-helper"
 
   library_path_shared = format("%s/lib/ecp-lib", get_repo_root())
-  library_path_unit = "${get_terragrunt_dir()}/lib"
+  library_path_unit   = "${get_terragrunt_dir()}/lib"
 
-################# virtual network artefacts #################
+  ################# virtual network artefacts #################
   # exclude the ones named in the *.exclude.json
-  library_virtualNetworks_path_shared = "${local.library_path_shared}/platform/ecp-artefacts/ms-azure/network/virtualNetworks"
-  library_virtualNetworks_path_unit= "${local.library_path_unit}/virtualNetworks"
-  library_virtualNetworks_filter = "*.virtualNetwork.json"
+  library_virtualNetworks_path_shared    = "${local.library_path_shared}/platform/ecp-artefacts/ms-azure/network/virtualNetworks"
+  library_virtualNetworks_path_unit      = "${local.library_path_unit}/virtualNetworks"
+  library_virtualNetworks_filter         = "*.virtualNetwork.json"
   library_virtualNetworks_exclude_filter = "*.virtualNetwork.exclude.json"
 
   # load JSON artefact files and bring them into hcl map of objects as input to the terraform module
@@ -33,18 +33,18 @@ locals {
   virtualNetwork_definition_merged = merge(
     {
       for key, val in local.virtualNetwork_definition_shared : key => val
-      if (contains(keys(local.virtualNetwork_definition_exclude_unit), key) == false)
+      if(contains(keys(local.virtualNetwork_definition_exclude_unit), key) == false)
     },
     local.virtualNetwork_definition_unit
   )
 
   ################# bootstrap-helper unit output #################
-  TG_DOWNLOAD_DIR = get_env("TG_DOWNLOAD_DIR", trimspace(run_cmd("--terragrunt-quiet", "pwsh", "-NoLogo", "-NoProfile", "-Command", "[System.IO.Path]::GetTempPath()")))
-  bootstrap_helper_folder = "${local.TG_DOWNLOAD_DIR}/${uuidv5("dns", basename(get_original_terragrunt_dir()))}"
-  bootstrap_helper_output = try(jsondecode(file(local.bootstrap_helper_output_file)), {})
-  bootstrap_backend_type = try(local.bootstrap_helper_output.backend_storage_accounts["l0"].ecp_resource_exists == true  && get_terraform_command() != "destroy" ? "azurerm" : "local", "local")
+  TG_DOWNLOAD_DIR                = get_env("TG_DOWNLOAD_DIR", trimspace(run_cmd("--terragrunt-quiet", "pwsh", "-NoLogo", "-NoProfile", "-Command", "[System.IO.Path]::GetTempPath()")))
+  bootstrap_helper_folder        = "${local.TG_DOWNLOAD_DIR}/${uuidv5("dns", basename(get_original_terragrunt_dir()))}"
+  bootstrap_helper_output        = try(jsondecode(file(local.bootstrap_helper_output_file)), {})
+  bootstrap_backend_type         = try(local.bootstrap_helper_output.backend_storage_accounts["l0"].ecp_resource_exists == true && get_terraform_command() != "destroy" ? "azurerm" : "local", "local")
   bootstrap_backend_type_changed = try(local.bootstrap_helper_output.backend_storage_accounts["l0"].ecp_terraform_backend_changed_since_last_apply, false)
-  bootstrap_local_backend_path = "${local.bootstrap_helper_folder}/${basename(path_relative_to_include())}.tfstate"
+  bootstrap_local_backend_path   = "${local.bootstrap_helper_folder}/${basename(path_relative_to_include())}.tfstate"
   # check if remote backend already existed when helper ran last time (consume its own output file)
   bootstrap_helper_output_file = "${local.bootstrap_helper_folder}/terraform_output.json"
 }
@@ -64,14 +64,14 @@ remote_state {
 terraform {
 
   before_hook "create-terraform-output-folder" {
-    commands     = [
-     "apply",
-     "plan"
-      ]
-    execute      = [
+    commands = [
+      "apply",
+      "plan"
+    ]
+    execute = [
       "pwsh",
-      "-Command", 
-<<-SCRIPT
+      "-Command",
+      <<-SCRIPT
 Write-Output "INFO: TG_CTX_COMMAND: $env:TG_CTX_COMMAND"
 $systemTempPath = [System.IO.Path]::GetTempPath()
 if ($env:TG_DOWNLOAD_DIR) {
@@ -90,14 +90,14 @@ SCRIPT
   }
 
   after_hook "write-terraform-output-to-file" {
-    commands     = [
+    commands = [
       "apply",
-       "plan"
-      ]
-    execute      = [
+      "plan"
+    ]
+    execute = [
       "pwsh",
-      "-Command", 
-<<-SCRIPT
+      "-Command",
+      <<-SCRIPT
 function Merge-Objects {
     param (
         [object]$Object1,
@@ -189,29 +189,29 @@ SCRIPT
     run_on_error = false
   }
 
-# enable remote backend access if conditions are met:
-#    - storage account exists
-#    - actor IP is outside of launchpad vnet range
-#    - actor identity is not the ECP Identity (which should have access anyway)
-after_hook "Enable-PostHelper-RemoteBackend-Access" {
-    commands     = [
+  # enable remote backend access if conditions are met:
+  #    - storage account exists
+  #    - actor IP is outside of launchpad vnet range
+  #    - actor identity is not the ECP Identity (which should have access anyway)
+  after_hook "Enable-PostHelper-RemoteBackend-Access" {
+    commands = [
       "apply",
       # "destroy",  # during destroy the remote state should no longer be present
       # "force-unlock",
       "import",
       # "init", # on initial run, no outputs will be available, yet
       "output",
-      "plan", 
+      "plan",
       "refresh",
       # "state",
       # "taint",
       # "untaint",
       # "validate"
-      ]
-    execute      = [
+    ]
+    execute = [
       "pwsh",
-      "-Command", 
-<<-SCRIPT
+      "-Command",
+      <<-SCRIPT
 function Merge-Objects {
     param (
         [object]$Object1,
@@ -404,9 +404,9 @@ SCRIPT
 }
 
 inputs = {
-   # load merged vnet artefact objects
+  # load merged vnet artefact objects
   virtual_network_definitions = local.virtualNetwork_definition_merged
- 
+
   # define which artefacts from the libraries we need to create
   virtual_network_artefact_names = [
     "l0-launchpad-main"
@@ -414,10 +414,10 @@ inputs = {
 
   launchpad_backend_type_previous_run = try({
     for key, val in local.bootstrap_helper_output.backend_storage_accounts : key => {
-      backend_type = val.ecp_terraform_backend
+      backend_type    = val.ecp_terraform_backend
       apply_timestamp = val.ecp_terraform_backend_apply_timestamp
     }
-   }, {
+    }, {
     "l0" = {
       backend_type = "local"
     },
@@ -427,5 +427,5 @@ inputs = {
     "l2" = {
       backend_type = "local"
     }
-   })
+  })
 }
