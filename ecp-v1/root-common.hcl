@@ -286,4 +286,7 @@ inputs = {
   ecp_azure_devops_project_name             = local.ecp_azure_devops_project_name
   ecp_azure_devops_repository_name          = local.ecp_azure_devops_repository_name
   ecp_azure_root_parent_management_group_id = local.ecp_azure_root_parent_management_group_id
+
+  # extract relative path from git repo root to root.hcl file (and remove leading slash if any)
+  ecp_terragrunt_deployment_root_path = replace(replace(replace(dirname(abspath(format("%s/../../../../root.hcl", get_terragrunt_dir()))), "\\", "/"), get_repo_root(), ""), "/^//", "")
 }
