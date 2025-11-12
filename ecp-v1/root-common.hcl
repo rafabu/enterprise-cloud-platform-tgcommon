@@ -50,8 +50,11 @@ locals {
 
   ecp_environment_name = lower("${local.merged_locals.ecp_deployment_code}-${substr(local.merged_locals.ecp_deployment_env, 0, 1)}${local.merged_locals.ecp_deployment_number}")
 
-  azure_modules_repo         = "github.com/rafabu/enterprise-cloud-platform-azure.git"
-  azure_modules_repo_version = "main"
+  ecp_configuration_repo         = "github.com/rafabu/enterprise-cloud-platform-conf.git"
+  ecp_configuration_repo_version = "main"
+
+  ecp_azure_modules_repo         = "github.com/rafabu/enterprise-cloud-platform-azure.git"
+  ecp_azure_modules_repo_version = "main"
 
   tfplan_path = get_env("TF_PLAN_PATH", "./")
 
@@ -94,7 +97,7 @@ remote_state {
 }
 
 terraform {
-  source = "git::${local.azure_modules_repo}/modules-tf//${local.unit_common_vars.locals.azure_tf_module_folder}" # ?ref=${include.root.locals.azure_modules_repo_version}"
+  source = "git::${local.ecp_azure_modules_repo}/modules-tf//${local.unit_common_vars.locals.azure_tf_module_folder}" # ?ref=${include.root.locals.ecp_azure_modules_repo_version}"
 
   # Force Terraform to keep trying to acquire a lock for
   # up to 20 minutes if someone else already has the lock
@@ -287,6 +290,8 @@ inputs = {
   ecp_azure_devops_repository_name          = local.ecp_azure_devops_repository_name
   ecp_azure_root_parent_management_group_id = local.ecp_azure_root_parent_management_group_id
 
+  ecp_configuration_repo         = local.ecp_configuration_repo
+  ecp_configuration_repo_version = local.ecp_configuration_repo_version
   # extract relative path from git repo root to root.hcl file (and remove leading slash if any)
-  ecp_terragrunt_deployment_root_path = replace(replace(replace(dirname(abspath(format("%s/../../../../root.hcl", get_terragrunt_dir()))), "\\", "/"), get_repo_root(), ""), "/^//", "")
+  ecp_configuration_repo_deployment_root_path = replace(replace(replace(dirname(abspath(format("%s/../../../../root.hcl", get_terragrunt_dir()))), "\\", "/"), get_repo_root(), ""), "/^//", "")
 }
