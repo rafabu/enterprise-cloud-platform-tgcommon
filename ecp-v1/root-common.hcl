@@ -72,7 +72,7 @@ locals {
 
   ############ Tags ############
   root_common_azure_tags = {
-    "hidden-ecpTgUnitRootCommon" = format("%s/root-common.hcl", get_parent_terragrunt_dir())
+    # "hidden-ecpTgUnitRootCommon" = format("%s/root-common.hcl", get_parent_terragrunt_dir())
 
     createdBy = "ecp-terraform"
   }

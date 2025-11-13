@@ -79,7 +79,7 @@ locals {
 
   ################# tags #################
   unit_common_azure_tags = {
-    "hidden-ecpTgUnitCommon" = format("%s/unit-common.hcl", get_parent_terragrunt_dir())
+    # "hidden-ecpTgUnitCommon" = format("%s/unit-common.hcl", get_parent_terragrunt_dir())
   }
 }
 
