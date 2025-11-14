@@ -350,10 +350,6 @@ if ($true -eq $resourceExists) {
     }
     elseif ("true"" -eq $ipInRange) {
         Write-Output "INFO: Private IP $privateIP is in launchpad vnet range; no need to add public IP to Storage Account $accountName."
-        Write-Output "INFO:     check if private name resolution to $accountName is already configured."
-        # $saBlobFQDN = $sa.primaryEndpoints.blob.TrimEnd("/")
-        $saBlobFQDN = $sa.primaryEndpoints.blob -replace "https?://([^/]+).*", '$1'
-        Write-Output "INFO:     attempting to resolve $saBlobFQDN ..."
     }
     elseif ($null -eq $publicIp) {
         Write-Output "WARNING: No public IP available; cannot add to Storage Account $accountName."
