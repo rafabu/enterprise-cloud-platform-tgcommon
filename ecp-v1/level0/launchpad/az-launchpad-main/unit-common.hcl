@@ -1,65 +1,71 @@
-dependency "l0-lp-az-lp-bootstrap-helper" {
-  config_path = format("%s/../../bootstrap/az-launchpad-bootstrap-helper", get_original_terragrunt_dir())
-  mock_outputs = {
-    actor_identity = {
-      client_id                 = "00000000-0000-0000-0000-000000000000"
-      display_name              = "noidentity"
-      is_ecp_launchpad_identity = false
-      object_id                 = "00000000-0000-0000-0000-000000000000"
-      tenant_id                 = "00000000-0000-0000-0000-000000000000"
-      type                      = "ManagedIdentity"
-      user_principal_name       = "No Identity"
-    }
-    actor_network_information = {
-      ecp_launchpad_network_cidr       = "192.0.2.0/25"
-      is_local_ip_within_ecp_launchpad = false
-      local_ip                         = "192.168.0.1"
-      public_ip                        = "0.0.0.0"
-    }
-    backend_resource_group = {
-      id              = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg"
-      location        = "westeurope"
-      name            = "mock-rg"
-      subscription_id = "00000000-0000-0000-0000-000000000000"
-    }
-    backend_storage_accounts = {
-      l0 = {
-        name                                           = "mocksal0"
-        id                                             = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Storage/storageAccounts/mocksal0"
-        resource_group_name                            = "mock-rg"
-        location                                       = "westeurope"
-        subscription_id                                = "00000000-0000-0000-0000-000000000000"
-        tf_backend_container                           = "tfstate"
-        ecp_resource_exists                            = false
-        ecp_terraform_backend                          = "local"
-        ecp_terraform_backend_changed_since_last_apply = false
-      }
-      l1 = {
-        name                                           = "mocksal1"
-        id                                             = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Storage/storageAccounts/mocksal1"
-        resource_group_name                            = "mock-rg"
-        location                                       = "westeurope"
-        subscription_id                                = "00000000-0000-0000-0000-000000000000"
-        tf_backend_container                           = "tfstate"
-        ecp_resource_exists                            = false
-        ecp_terraform_backend                          = "local"
-        ecp_terraform_backend_changed_since_last_apply = false
-      }
-      l2 = {
-        name                                           = "mocksal2"
-        id                                             = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Storage/storageAccounts/mocksal2"
-        resource_group_name                            = "mock-rg"
-        location                                       = "westeurope"
-        subscription_id                                = "00000000-0000-0000-0000-000000000000"
-        tf_backend_container                           = "tfstate"
-        ecp_resource_exists                            = false
-        ecp_terraform_backend                          = "local"
-        ecp_terraform_backend_changed_since_last_apply = false
-      }
-    }
-  }
-  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
-  mock_outputs_merge_strategy_with_state  = "shallow"
+# dependency "l0-lp-az-lp-bootstrap-helper" {
+#   config_path = format("%s/../../bootstrap/az-launchpad-bootstrap-helper", get_original_terragrunt_dir())
+#   mock_outputs = {
+#     actor_identity = {
+#       client_id                 = "00000000-0000-0000-0000-000000000000"
+#       display_name              = "noidentity"
+#       is_ecp_launchpad_identity = false
+#       object_id                 = "00000000-0000-0000-0000-000000000000"
+#       tenant_id                 = "00000000-0000-0000-0000-000000000000"
+#       type                      = "ManagedIdentity"
+#       user_principal_name       = "No Identity"
+#     }
+#     actor_network_information = {
+#       ecp_launchpad_network_cidr       = "192.0.2.0/25"
+#       is_local_ip_within_ecp_launchpad = false
+#       local_ip                         = "192.168.0.1"
+#       public_ip                        = "0.0.0.0"
+#     }
+#     backend_resource_group = {
+#       id              = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg"
+#       location        = "westeurope"
+#       name            = "mock-rg"
+#       subscription_id = "00000000-0000-0000-0000-000000000000"
+#     }
+#     backend_storage_accounts = {
+#       l0 = {
+#         name                                           = "mocksal0"
+#         id                                             = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Storage/storageAccounts/mocksal0"
+#         resource_group_name                            = "mock-rg"
+#         location                                       = "westeurope"
+#         subscription_id                                = "00000000-0000-0000-0000-000000000000"
+#         tf_backend_container                           = "tfstate"
+#         ecp_resource_exists                            = false
+#         ecp_terraform_backend                          = "local"
+#         ecp_terraform_backend_changed_since_last_apply = false
+#       }
+#       l1 = {
+#         name                                           = "mocksal1"
+#         id                                             = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Storage/storageAccounts/mocksal1"
+#         resource_group_name                            = "mock-rg"
+#         location                                       = "westeurope"
+#         subscription_id                                = "00000000-0000-0000-0000-000000000000"
+#         tf_backend_container                           = "tfstate"
+#         ecp_resource_exists                            = false
+#         ecp_terraform_backend                          = "local"
+#         ecp_terraform_backend_changed_since_last_apply = false
+#       }
+#       l2 = {
+#         name                                           = "mocksal2"
+#         id                                             = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Storage/storageAccounts/mocksal2"
+#         resource_group_name                            = "mock-rg"
+#         location                                       = "westeurope"
+#         subscription_id                                = "00000000-0000-0000-0000-000000000000"
+#         tf_backend_container                           = "tfstate"
+#         ecp_resource_exists                            = false
+#         ecp_terraform_backend                          = "local"
+#         ecp_terraform_backend_changed_since_last_apply = false
+#       }
+#     }
+#   }
+#   mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
+#   mock_outputs_merge_strategy_with_state  = "shallow"
+# }
+
+dependencies {
+  paths = [
+    format("%s/../../bootstrap/az-launchpad-bootstrap-helper", get_original_terragrunt_dir())
+  ]
 }
 
 locals {
