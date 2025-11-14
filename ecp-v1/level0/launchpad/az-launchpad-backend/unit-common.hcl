@@ -215,5 +215,5 @@ inputs = {
   virtual_subnet_id = dependency.l0-lp-az-lp-net.outputs.virtual_network_subnets.l0-launchpad-main-default.id
 
   # if running from outside ECP network, storage account must allow (temporary) public network access
-  storage_account_public_network_access_enabled = local.bootstrap_is_local_ip_within_ecp_launchpad == "true" ? "false" : "true" #dependency.l0-lp-az-lp-bootstrap-helper.outputs.actor_network_information.is_local_ip_within_ecp_launchpad 
+  storage_account_public_network_access_enabled = local.bootstrap_is_local_ip_within_ecp_launchpad == true ? false : true
 }
