@@ -1,5 +1,5 @@
 dependency "l0-lp-az-lp-bootstrap-helper" {
-  config_path = format("%s/../az-launchpad-bootstrap-helper", get_original_terragrunt_dir())
+  config_path = format("%s/../../bootstrap/az-launchpad-bootstrap-helper", get_original_terragrunt_dir())
   mock_outputs = {
     actor_identity = {
       client_id                 = "00000000-0000-0000-0000-000000000000"

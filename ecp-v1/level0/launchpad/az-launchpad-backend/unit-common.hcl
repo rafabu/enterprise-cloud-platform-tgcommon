@@ -1,5 +1,5 @@
 dependency "l0-lp-az-lp-bootstrap-helper" {
-  config_path = format("%s/../az-launchpad-bootstrap-helper", get_original_terragrunt_dir())
+  config_path = format("%s/../../bootstrap/az-launchpad-bootstrap-helper", get_original_terragrunt_dir())
   mock_outputs = {
     actor_identity = {
       client_id                 = "00000000-0000-0000-0000-000000000000"
@@ -272,5 +272,5 @@ inputs = {
   virtual_subnet_id = dependency.l0-lp-az-lp-net.outputs.virtual_network_subnets.l0-launchpad-main-default.id
 
   # if running from outside ECP network, storage account must allow (temporary)public network access
-  storage_account_public_network_access_enabled = dependency.l0-lp-az-lp-bootstrap-helper.outputs.actor_network_information.is_local_ip_within_ecp_launchpad == true ? false : true
+  storage_account_public_network_access_enabled = dependency.l0-lp-az-lp-bootstrap-helper.outputs.actor_network_information.is_local_ip_within_ecp_launchpad == "true" ? "false" : "true"
 }
