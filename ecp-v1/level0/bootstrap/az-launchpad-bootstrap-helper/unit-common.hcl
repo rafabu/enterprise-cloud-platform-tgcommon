@@ -292,7 +292,7 @@ else {
 }
 
 $resourceExists = if ($tfOutput.backend_storage_accounts.value.l0.ecp_resource_exists -eq "true") { $true } else { $false }
-$ipInRange = if ($tfOutput.actor_network_information.value.is_local_ip_within_ecp_launchpad -eq "true") { $true } else { $false }
+$ipInRange = if ($tfOutput.actor_network_information.value.is_local_ip_within_ecp_launchpad -eq "true") { "true" } else { "false" }
 $localIp = $tfOutput.actor_network_information.value.local_ip
 $publicIp = $tfOutput.actor_network_information.value.public_ip
 $subscriptionId = $tfOutput.backend_storage_accounts.value.l0.subscription_id
@@ -317,7 +317,7 @@ if ($true -eq $resourceExists) {
     Write-Output ""
 
     Write-Output "##### network access #####"
-    if ($true -eq $resourceExists -and $false -eq $ipInRange -and $null -ne $publicIp) {
+    if ($true -eq $resourceExists -and "false" -eq $ipInRange -and $null -ne $publicIp) {
         Write-Output "INFO: Local IP is $localIp is not in launchpad range - checking if access to storage account $accountName via public IP $publicIp is allowed..."
         if ($sa.publicNetworkAccess -ne "Enabled") {
             Write-Output "     Public network access is $($sa.publicNetworkAccess). Enabling..."
@@ -348,7 +348,7 @@ if ($true -eq $resourceExists) {
             $waitNeeded = $true
         }
     }
-    elseif ($true -eq $ipInRange) {
+    elseif ("true"" -eq $ipInRange) {
         Write-Output "INFO: Private IP $privateIP is in launchpad vnet range; no need to add public IP to Storage Account $accountName."
     }
     elseif ($null -eq $publicIp) {
