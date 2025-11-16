@@ -348,7 +348,7 @@ if ($true -eq $resourceExists) {
             $waitNeeded = $true
         }
     }
-    elseif ("true"" -eq $ipInRange) {
+    elseif ("true" -eq $ipInRange) {
         Write-Output "INFO: Private IP $localIp is in launchpad vnet range; no need to add public IP to Storage Account $accountName."
     }
     elseif ($null -eq $publicIp) {
