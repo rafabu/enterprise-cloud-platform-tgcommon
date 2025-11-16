@@ -295,6 +295,7 @@ $resourceExists = if ($tfOutput.backend_storage_accounts.value.l0.ecp_resource_e
 $ipInRange = if ($tfOutput.actor_network_information.value.is_local_ip_within_ecp_launchpad -eq "true") { "true" } else { "false" }
 $localIp = $tfOutput.actor_network_information.value.local_ip
 $publicIp = $tfOutput.actor_network_information.value.public_ip
+$privateIp = $tfOutput.actor_network_information.value.private_ip
 $subscriptionId = $tfOutput.backend_storage_accounts.value.l0.subscription_id
 $accountName = $tfOutput.backend_storage_accounts.value.l0.name
 
