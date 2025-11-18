@@ -67,6 +67,7 @@ locals {
   tf_provider_azuredevops_version = "~> 1.11"
   tf_provider_external_version    = "~> 2.3"
   tf_provider_http_version        = "~> 3.5"
+  tf_provider_local_version       = "~> 2.0"
   tf_provider_random_version      = "~> 3.7"
   tf_provider_msgraph_version     = "~> 0.1"
 
@@ -152,7 +153,7 @@ provider "azuread" {
 provider "azurecaf" {}
 
 %{if contains(
-  ["ado-mpool", "ado-project"],
+  ["ado-mpool", "ado-project", "ado-repo-sync"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
   )[0][0])}
 provider "azuredevops" {
@@ -229,7 +230,7 @@ terraform {
     }
 %{endif}
 %{if contains(
-  ["ado-mpool", "ado-project"],
+  ["ado-mpool", "ado-project", "ado-repo-sync"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
   )[0][0])}
     azuredevops = {
@@ -237,6 +238,10 @@ terraform {
       version = "${local.tf_provider_azuredevops_version}"
     }
 %{endif}
+    local = {
+      source  = "hashicorp/local"
+      version = "${local.tf_provider_local_version}"
+    }
     random = {
       source  = "hashicorp/random"
       version = "${local.tf_provider_random_version}"
