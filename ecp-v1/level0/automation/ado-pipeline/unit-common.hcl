@@ -14,7 +14,31 @@ locals {
   library_path_shared = format("%s/lib/ecp-lib", get_repo_root())
   library_path_unit   = "${get_terragrunt_dir()}/lib"
 
-  # automation_path = format("%s/lib/ecp-automation", get_repo_root())
+  ################# ADO pipeline artifacts #################
+  # exclude the ones named in the *.exclude.json
+  # artifact schema follows: https://learn.microsoft.com/en-us/rest/api/azure/devops/build/definitions/create?view=azure-devops-rest-7.1#buildprocess
+  library_buildDefinition_path_shared    = "${local.library_path_shared}/platform/ecp-artifacts/ms-azure-devops/pipelines"
+  library_buildDefinition_path_unit      = "${local.library_path_unit}/pipelines"
+  library_buildDefinition_filter         = "*.buildDefinition.json"
+  library_buildDefinition_exclude_filter = "*.buildDefinition.exclude.json"
+
+  # load JSON artifact files and bring them into hcl map of objects as input to the terraform module
+  buildDefinition_definition_shared = try({
+    for fileName in fileset(local.library_buildDefinition_path_shared, local.library_buildDefinition_filter) : jsondecode(file(format("%s/%s", local.library_buildDefinition_path_shared, fileName))).artifactName => jsondecode(file(format("%s/%s", local.library_buildDefinition_path_shared, fileName)))
+  }, {})
+  buildDefinition_definition_unit = try({
+    for fileName in fileset(local.library_buildDefinition_path_unit, local.library_buildDefinition_filter) : jsondecode(file(format("%s/%s", local.library_buildDefinition_path_unit, fileName))).artifactName => jsondecode(file(format("%s/%s", local.library_buildDefinition_path_unit, fileName)))
+  }, {})
+  buildDefinition_definition_exclude_unit = try({
+    for fileName in fileset(local.library_buildDefinition_path_unit, local.library_buildDefinition_exclude_filter) : jsondecode(file(format("%s/%s", local.library_buildDefinition_path_unit, fileName))).artifactName => jsondecode(file(format("%s/%s", local.library_buildDefinition_path_unit, fileName)))
+  }, {})
+  buildDefinition_definition_merged = merge(
+    {
+      for key, val in local.buildDefinition_definition_shared : key => val
+      if(contains(keys(local.buildDefinition_definition_exclude_unit), key) == false)
+    },
+    local.buildDefinition_definition_unit
+  )
 
   ################# bootstrap-helper unit output #################
   TG_DOWNLOAD_DIR                = get_env("TG_DOWNLOAD_DIR", trimspace(run_cmd("--terragrunt-quiet", "pwsh", "-NoLogo", "-NoProfile", "-Command", "[System.IO.Path]::GetTempPath()")))
@@ -128,4 +152,12 @@ SCRIPT
 
 inputs = {
   azure_tags = local.unit_common_azure_tags
+
+  ado_yaml_pipeline_definitions = local.buildDefinition_definition_merged
+
+  # define which artifacts from the libraries we need to create
+  ado_yaml_pipeline_artifact_names = [
+   "ECP-Deployment-Testing-Disabled",
+   "ECP-Deployment-Testing-Enabled"
+  ]
 }
