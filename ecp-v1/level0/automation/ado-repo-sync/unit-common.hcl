@@ -129,5 +129,5 @@ SCRIPT
 inputs = {
   azure_tags = local.unit_common_azure_tags
 
-  local_submodule_path = local.automation_path
+  local_git_submodule_path = local.automation_path
 }
