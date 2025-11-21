@@ -59,7 +59,7 @@ locals {
   tfplan_path = get_env("TF_PLAN_PATH", "./")
 
   ############ Versions ############
-  tf_version                      = ">= 1.13"
+  tf_version                      = ">= 1.14"
   tf_provider_azuread_version     = "~> 3.5"
   tf_provider_azurecaf_version    = "~> 1.2"
   tf_provider_azurerm_version     = "~> 4.42"
