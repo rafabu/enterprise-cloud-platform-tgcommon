@@ -30,8 +30,6 @@ locals {
 
   automation_path = format("%s/lib/ecp-automation", get_repo_root())
 
-  ecp_environment_name = dependency.l0-lp-az-lp-main.outputs.ecp_environment_name
-
   ################# bootstrap-helper unit output #################
   TG_DOWNLOAD_DIR                = get_env("TG_DOWNLOAD_DIR", trimspace(run_cmd("--terragrunt-quiet", "pwsh", "-NoLogo", "-NoProfile", "-Command", "[System.IO.Path]::GetTempPath()")))
   bootstrap_helper_folder        = "${local.TG_DOWNLOAD_DIR}/${uuidv5("dns", "az-launchpad-bootstrap-helper")}"
@@ -153,13 +151,13 @@ inputs = {
         "**/pipelines-ado"
       ]
       name_replacements = {
-        "pipelines-ado" = "pipelines-${local.ecp_environment_name}-ado"
+        "pipelines-ado" = "pipelines-${dependency.l0-lp-az-lp-main.outputs.ecp_environment_name}-ado"
       }
       file_patterns = [
         "**/ecp-tg-deploy-platform.yaml"
       ]
       content_replacements = {
-        "<ecp_environment_name>" = "${local.ecp_environment_name}"
+        "<ecp_environment_name>" = "${dependency.l0-lp-az-lp-main.outputs.ecp_environment_name}"
       }
     }
   }

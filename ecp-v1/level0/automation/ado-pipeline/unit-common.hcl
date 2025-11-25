@@ -28,8 +28,6 @@ locals {
   library_path_shared = format("%s/lib/ecp-lib", get_repo_root())
   library_path_unit   = "${get_terragrunt_dir()}/lib"
 
-  ecp_environment_name = dependency.l0-lp-az-lp-main.outputs.ecp_environment_name
-
   ################# ADO pipeline artefacts #################
   # exclude the ones named in the *.exclude.json
   # artefact schema follows: https://learn.microsoft.com/en-us/rest/api/azure/devops/build/definitions/create?view=azure-devops-rest-7.1#buildprocess
@@ -177,5 +175,5 @@ inputs = {
    "ECP-Deployment-Testing-Enabled"
   ]
 
-  ecp_environment_name = local.ecp_environment_name
+  ecp_environment_name = dependency.l0-lp-az-lp-main.outputs.ecp_environment_name
 }
