@@ -289,6 +289,8 @@ inputs = {
   }
   azure_tags = local.root_common_azure_tags
 
+  ecp_environment_name = local.ecp_environment_name
+
   ecp_network_main_ipv4_address_space       = local.ecp_network_main_ipv4_address_space
   ecp_azure_devops_organization_name        = local.ecp_azure_devops_organization_name
   ecp_azure_devops_project_name             = local.ecp_azure_devops_project_name

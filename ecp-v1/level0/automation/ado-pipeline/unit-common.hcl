@@ -5,6 +5,20 @@ dependencies {
   ]
 }
 
+dependency "l0-lp-az-lp-main" {
+  config_path = format("%s/../az-launchpad-main", get_original_terragrunt_dir())
+  mock_outputs = {
+    resource_group = {
+      id       = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg"
+      name     = "mock-rg"
+      location = "westeurope"
+    }
+    ecp_environment_name = "mock-environment"
+  }
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
+  mock_outputs_merge_strategy_with_state  = "shallow"
+}
+
 locals {
   ecp_deployment_unit             = "ado-automation"
   ecp_resource_name_random_length = 0
@@ -13,6 +27,8 @@ locals {
 
   library_path_shared = format("%s/lib/ecp-lib", get_repo_root())
   library_path_unit   = "${get_terragrunt_dir()}/lib"
+
+  ecp_environment_name = dependency.l0-lp-az-lp-main.outputs.ecp_environment_name
 
   ################# ADO pipeline artefacts #################
   # exclude the ones named in the *.exclude.json
@@ -160,4 +176,6 @@ inputs = {
    "ECP-Deployment-Testing-Disabled",
    "ECP-Deployment-Testing-Enabled"
   ]
+
+  ecp_environment_name = local.ecp_environment_name
 }

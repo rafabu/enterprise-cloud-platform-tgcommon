@@ -5,6 +5,20 @@ dependencies {
   ]
 }
 
+dependency "l0-lp-az-lp-main" {
+  config_path = format("%s/../az-launchpad-main", get_original_terragrunt_dir())
+  mock_outputs = {
+    resource_group = {
+      id       = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg"
+      name     = "mock-rg"
+      location = "westeurope"
+    }
+    ecp_environment_name = "mock-environment"
+  }
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
+  mock_outputs_merge_strategy_with_state  = "shallow"
+}
+
 locals {
   ecp_deployment_unit             = "ado-automation"
   ecp_resource_name_random_length = 0
@@ -15,6 +29,8 @@ locals {
   library_path_unit   = "${get_terragrunt_dir()}/lib"
 
   automation_path = format("%s/lib/ecp-automation", get_repo_root())
+
+  ecp_environment_name = dependency.l0-lp-az-lp-main.outputs.ecp_environment_name
 
   ################# bootstrap-helper unit output #################
   TG_DOWNLOAD_DIR                = get_env("TG_DOWNLOAD_DIR", trimspace(run_cmd("--terragrunt-quiet", "pwsh", "-NoLogo", "-NoProfile", "-Command", "[System.IO.Path]::GetTempPath()")))
@@ -130,4 +146,21 @@ inputs = {
   azure_tags = local.unit_common_azure_tags
 
   local_git_submodule_path = local.automation_path
+
+  template_replacements = {
+    "ecp_environment_name_replacement" = {
+      directory_patterns = [
+        "**/pipelines-ado"
+      ]
+      name_replacements = {
+        "pipelines-ado" = "pipelines-${local.ecp_environment_name}-ado"
+      }
+      file_patterns = [
+        "**/ecp-tg-deploy-platform.yaml"
+      ]
+      content_replacements = {
+        "<ecp_environment_name>" = "${local.ecp_environment_name}"
+      }
+    }
+  }
 }
