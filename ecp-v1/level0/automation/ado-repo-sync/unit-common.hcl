@@ -154,7 +154,7 @@ inputs = {
         "pipelines-ado" = "pipelines-${dependency.l0-lp-az-lp-main.outputs.ecp_environment_name}-ado"
       }
       file_patterns = [
-        "**/ecp-tg-deploy-platform.yaml"
+        "**/ecp-tg-deploy-platform-infrastructure.yaml"
       ]
       content_replacements = {
         "<ecp_environment_name>" = "${dependency.l0-lp-az-lp-main.outputs.ecp_environment_name}"
