@@ -64,6 +64,23 @@ dependency "l0-lp-az-lp-backend" {
   mock_outputs_merge_strategy_with_state  = "shallow"
 }
 
+dependency "l0-lp-az-lp-main" {
+  config_path = format("%s/../az-launchpad-main", get_original_terragrunt_dir())
+  mock_outputs = {
+    resource_group = {
+      id       = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg"
+      name     = "mock-rg"
+      location = "westeurope"
+    }
+    ecp_environment_name = "mock-environment"
+    ecp_azure_devops_automation_repository_name = "mock.automation"
+    ecp_azure_devops_configuration_repository_name = "mock.configuration"
+    azuredevops_organization_name = "mock-ado-org"
+  }
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
+  mock_outputs_merge_strategy_with_state  = "shallow"
+}
+
 locals {
   ecp_deployment_unit             = "ado-project"
   ecp_resource_name_random_length = 0
@@ -182,4 +199,9 @@ SCRIPT
 
 inputs = {
   azure_tags = local.unit_common_azure_tags
+
+ecp_azure_devops_repository_names = distinct(compact([
+  dependency.l0-lp-az-lp-main.outputs.ecp_azure_devops_automation_repository_name,
+  dependency.l0-lp-az-lp-main.outputs.ecp_azure_devops_configuration_repository_name
+]))
 }
