@@ -146,24 +146,18 @@ SCRIPT
 inputs = {
   azure_tags = local.unit_common_azure_tags
 
+  # get configuration folder and sync only the parts of the current environment.
   local_git_submodule_path = format("%s/%s", get_repo_root(), dependency.l0-lp-az-lp-main.outputs.ecp_configuration_repo_deployment_root_path)
 
   ecp_azure_devops_repository_name = dependency.l0-lp-az-lp-main.outputs.ecp_azure_devops_configuration_repository_name
 
-
   template_replacements = {
     "ecp_environment_name_replacement" = {
       directory_patterns = [
-        "**/pipelines-ado"
+        "**/${basename(dependency.l0-lp-az-lp-main.outputs.ecp_configuration_repo_deployment_root_path)}"
       ]
       name_replacements = {
-        "pipelines-ado" = "pipelines-${dependency.l0-lp-az-lp-main.outputs.ecp_environment_name}-ado"
-      }
-      file_patterns = [
-        "**/ecp-tg-deploy-platform-infrastructure.yaml"
-      ]
-      content_replacements = {
-        "<ecp_environment_name>" = "${dependency.l0-lp-az-lp-main.outputs.ecp_environment_name}"
+        "${basename(dependency.l0-lp-az-lp-main.outputs.ecp_configuration_repo_deployment_root_path)}" = "${dependency.l0-lp-az-lp-main.outputs.ecp_environment_name}"
       }
     }
   }
