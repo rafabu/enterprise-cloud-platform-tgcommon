@@ -12,6 +12,10 @@ dependency "l0-lp-az-lp-main" {
       name     = "mock-rg"
       location = "westeurope"
     }
+    ecp_environment_name = "mock-environment"
+    ecp_azure_devops_automation_repository_name = "mock.automation"
+    ecp_azure_devops_configuration_repository_name = "mock.configuration"
+    azuredevops_organization_name = "mock-ado-org"
   }
   mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
   mock_outputs_merge_strategy_with_state  = "shallow"
