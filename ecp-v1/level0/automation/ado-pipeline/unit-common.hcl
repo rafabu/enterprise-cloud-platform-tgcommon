@@ -180,4 +180,6 @@ inputs = {
   ]
 
   ecp_environment_name = dependency.l0-lp-az-lp-main.outputs.ecp_environment_name
+
+  ecp_azure_devops_repository_name = dependency.l0-lp-az-lp-main.outputs.ecp_azure_devops_automation_repository_name
 }
