@@ -14,6 +14,9 @@ dependency "l0-lp-az-lp-main" {
       location = "westeurope"
     }
     ecp_environment_name = "mock-environment"
+    ecp_azure_devops_automation_repository_name = "mock.automation"
+    ecp_azure_devops_configuration_repository_name = "mock.configuration"
+    azuredevops_organization_name = "mock-ado-org"
   }
   mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
   mock_outputs_merge_strategy_with_state  = "shallow"
@@ -144,6 +147,8 @@ inputs = {
   azure_tags = local.unit_common_azure_tags
 
   local_git_submodule_path = local.automation_path
+
+  ecp_azure_devops_repository_name = dependency.l0-lp-az-lp-main.outputs.ecp_azure_devops_automation_repository_name
 
   template_replacements = {
     "ecp_environment_name_replacement" = {
