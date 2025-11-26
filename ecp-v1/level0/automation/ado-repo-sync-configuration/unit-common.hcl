@@ -31,7 +31,7 @@ locals {
   library_path_shared = format("%s/lib/ecp-lib", get_repo_root())
   library_path_unit   = "${get_terragrunt_dir()}/lib"
 
-  configuration_path = format("%s/", get_repo_root())
+  configuration_path = format("%s/", get_repo_root(), dependency.l0-lp-az-lp-main.outputs.ecp_configuration_repo_deployment_root_path)
 
   ################# bootstrap-helper unit output #################
   TG_DOWNLOAD_DIR                = get_env("TG_DOWNLOAD_DIR", trimspace(run_cmd("--terragrunt-quiet", "pwsh", "-NoLogo", "-NoProfile", "-Command", "[System.IO.Path]::GetTempPath()")))
