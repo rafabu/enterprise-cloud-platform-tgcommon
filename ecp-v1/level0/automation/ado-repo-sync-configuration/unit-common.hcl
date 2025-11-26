@@ -151,14 +151,14 @@ inputs = {
 
   ecp_azure_devops_repository_name = dependency.l0-lp-az-lp-main.outputs.ecp_azure_devops_configuration_repository_name
 
-  template_replacements = {
-    "ecp_environment_name_replacement" = {
-      directory_patterns = [
-        "**/${basename(dependency.l0-lp-az-lp-main.outputs.ecp_configuration_repo_deployment_root_path)}"
-      ]
-      name_replacements = {
-        "${basename(dependency.l0-lp-az-lp-main.outputs.ecp_configuration_repo_deployment_root_path)}" = "${dependency.l0-lp-az-lp-main.outputs.ecp_environment_name}"
-      }
-    }
-  }
+  # template_replacements = {
+  #   "ecp_environment_name_replacement" = {
+  #     directory_patterns = [
+  #       "**/${basename(dependency.l0-lp-az-lp-main.outputs.ecp_configuration_repo_deployment_root_path)}"
+  #     ]
+  #     name_replacements = {
+  #       "${basename(dependency.l0-lp-az-lp-main.outputs.ecp_configuration_repo_deployment_root_path)}" = "${dependency.l0-lp-az-lp-main.outputs.ecp_environment_name}"
+  #     }
+  #   }
+  # }
 }
