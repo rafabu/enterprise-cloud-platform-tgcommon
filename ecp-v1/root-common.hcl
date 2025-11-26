@@ -154,7 +154,7 @@ provider "azuread" {
 provider "azurecaf" {}
 
 %{if contains(
-  ["ado-mpool", "ado-project", "ado-repo-sync", "ado-pipeline"],
+  ["ado-mpool", "ado-project", "ado-repo-sync-automation", "ado-repo-sync-configuration", "ado-pipeline"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
   )[0][0])}
 provider "azuredevops" {
@@ -231,7 +231,7 @@ terraform {
     }
 %{endif}
 %{if contains(
-  ["ado-mpool", "ado-project", "ado-repo-sync", "ado-pipeline"],
+  ["ado-mpool", "ado-project", "ado-repo-sync-automation", "ado-repo-sync-configuration", "ado-pipeline"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
   )[0][0])}
     azuredevops = {
