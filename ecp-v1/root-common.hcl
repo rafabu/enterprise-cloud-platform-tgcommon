@@ -18,12 +18,13 @@ locals {
 
   ######## ECP Defaults ########
 
-  ecp_azure_main_location                   = "WestEurope"
-  ecp_network_main_ipv4_address_space       = "10.0.0.0/16"
-  ecp_azure_devops_organization_name        = "<not_defined>"
-  ecp_azure_devops_project_name             = "ECP.Automation"
-  ecp_azure_devops_repository_name          = "ECP.Automation"
-  ecp_azure_root_parent_management_group_id = "ecp-root"
+  ecp_azure_main_location                        = "WestEurope"
+  ecp_network_main_ipv4_address_space            = "10.0.0.0/16"
+  ecp_azure_devops_organization_name             = "<not_defined>"
+  ecp_azure_devops_project_name                  = "ECP"
+  ecp_azure_devops_automation_repository_name    = "ECP.Automation"
+  ecp_azure_devops_configuration_repository_name = "ECP.Configuration"
+  ecp_azure_root_parent_management_group_id      = "ecp-root"
 
   deployment_unit_default = "main"
 
@@ -291,11 +292,12 @@ inputs = {
 
   ecp_environment_name = local.ecp_environment_name
 
-  ecp_network_main_ipv4_address_space       = local.ecp_network_main_ipv4_address_space
-  ecp_azure_devops_organization_name        = local.ecp_azure_devops_organization_name
-  ecp_azure_devops_project_name             = local.ecp_azure_devops_project_name
-  ecp_azure_devops_repository_name          = local.ecp_azure_devops_repository_name
-  ecp_azure_root_parent_management_group_id = local.ecp_azure_root_parent_management_group_id
+  ecp_network_main_ipv4_address_space            = local.ecp_network_main_ipv4_address_space
+  ecp_azure_devops_organization_name             = local.ecp_azure_devops_organization_name
+  ecp_azure_devops_project_name                  = local.ecp_azure_devops_project_name
+  ecp_azure_devops_automation_repository_name    = local.ecp_azure_devops_automation_repository_name
+  ecp_azure_devops_configuration_repository_name = local.ecp_azure_devops_configuration_repository_name
+  ecp_azure_root_parent_management_group_id      = local.ecp_azure_root_parent_management_group_id
 
   ecp_configuration_repo         = local.ecp_configuration_repo
   ecp_configuration_repo_version = local.ecp_configuration_repo_version
