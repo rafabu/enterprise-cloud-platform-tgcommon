@@ -39,14 +39,14 @@ locals {
   )
 
   ################# bootstrap-helper unit output #################
-TG_DOWNLOAD_DIR = (
-  get_env("TG_DOWNLOAD_DIR", "") != "" ? get_env("TG_DOWNLOAD_DIR") :
-  get_env("RUNNER_TEMP", "") != "" ? get_env("RUNNER_TEMP") :
-  get_env("AGENT_TEMPDIRECTORY", "") != "" ? get_env("AGENT_TEMPDIRECTORY") :
-  get_env("TMPDIR", "") != "" ? get_env("TMPDIR") :
-  get_env("TEMP", "") != "" ? get_env("TEMP") :
-  "/tmp"
-)
+  TG_DOWNLOAD_DIR = (
+    get_env("TG_DOWNLOAD_DIR", "") != "" ? get_env("TG_DOWNLOAD_DIR") :
+    get_env("RUNNER_TEMP", "") != "" ? get_env("RUNNER_TEMP") :
+    get_env("AGENT_TEMPDIRECTORY", "") != "" ? get_env("AGENT_TEMPDIRECTORY") :
+    get_env("TMPDIR", "") != "" ? get_env("TMPDIR") :
+    get_env("TEMP", "") != "" ? get_env("TEMP") :
+    "/tmp"
+  )
   bootstrap_helper_folder        = "${local.TG_DOWNLOAD_DIR}/${uuidv5("dns", basename(get_original_terragrunt_dir()))}"
   bootstrap_helper_output        = try(jsondecode(file(local.bootstrap_helper_output_file)), {})
   bootstrap_backend_type         = try(local.bootstrap_helper_output.backend_storage_accounts["l0"].ecp_resource_exists == true && get_terraform_command() != "destroy" ? "azurerm" : "local", "local")

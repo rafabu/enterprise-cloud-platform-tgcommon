@@ -12,10 +12,10 @@ dependency "l0-lp-az-lp-main" {
       name     = "mock-rg"
       location = "westeurope"
     }
-    ecp_environment_name = "mock-environment"
-    ecp_azure_devops_automation_repository_name = "mock.automation"
+    ecp_environment_name                           = "mock-environment"
+    ecp_azure_devops_automation_repository_name    = "mock.automation"
     ecp_azure_devops_configuration_repository_name = "mock.configuration"
-    azuredevops_organization_name = "mock-ado-org"
+    azuredevops_organization_name                  = "mock-ado-org"
   }
   mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
   mock_outputs_merge_strategy_with_state  = "shallow"
@@ -58,18 +58,18 @@ locals {
   azure_tf_module_folder = "launchpad-backend"
 
   ################# bootstrap-helper unit output #################
-TG_DOWNLOAD_DIR = (
-  get_env("TG_DOWNLOAD_DIR", "") != "" ? get_env("TG_DOWNLOAD_DIR") :
-  get_env("RUNNER_TEMP", "") != "" ? get_env("RUNNER_TEMP") :
-  get_env("AGENT_TEMPDIRECTORY", "") != "" ? get_env("AGENT_TEMPDIRECTORY") :
-  get_env("TMPDIR", "") != "" ? get_env("TMPDIR") :
-  get_env("TEMP", "") != "" ? get_env("TEMP") :
-  "/tmp"
-)
-  bootstrap_helper_folder        = "${local.TG_DOWNLOAD_DIR}/${uuidv5("dns", "az-launchpad-bootstrap-helper")}"
-  bootstrap_helper_output        = jsondecode(file("${local.bootstrap_helper_folder}/terraform_output.json"))
-  bootstrap_backend_type         = try(local.bootstrap_helper_output.backend_storage_accounts["l0"].ecp_resource_exists == true && get_terraform_command() != "destroy" ? "azurerm" : "local", "local")
-  bootstrap_backend_type_changed = try(local.bootstrap_helper_output.backend_storage_accounts["l0"].ecp_terraform_backend_changed_since_last_apply, false)
+  TG_DOWNLOAD_DIR = (
+    get_env("TG_DOWNLOAD_DIR", "") != "" ? get_env("TG_DOWNLOAD_DIR") :
+    get_env("RUNNER_TEMP", "") != "" ? get_env("RUNNER_TEMP") :
+    get_env("AGENT_TEMPDIRECTORY", "") != "" ? get_env("AGENT_TEMPDIRECTORY") :
+    get_env("TMPDIR", "") != "" ? get_env("TMPDIR") :
+    get_env("TEMP", "") != "" ? get_env("TEMP") :
+    "/tmp"
+  )
+  bootstrap_helper_folder                    = "${local.TG_DOWNLOAD_DIR}/${uuidv5("dns", "az-launchpad-bootstrap-helper")}"
+  bootstrap_helper_output                    = jsondecode(file("${local.bootstrap_helper_folder}/terraform_output.json"))
+  bootstrap_backend_type                     = try(local.bootstrap_helper_output.backend_storage_accounts["l0"].ecp_resource_exists == true && get_terraform_command() != "destroy" ? "azurerm" : "local", "local")
+  bootstrap_backend_type_changed             = try(local.bootstrap_helper_output.backend_storage_accounts["l0"].ecp_terraform_backend_changed_since_last_apply, false)
   bootstrap_is_local_ip_within_ecp_launchpad = try(local.bootstrap_helper_output.actor_network_information.is_local_ip_within_ecp_launchpad, false)
   # assure local state resides in bootstrap-helper folder
   bootstrap_local_backend_path = "${local.bootstrap_helper_folder}/${basename(path_relative_to_include())}.tfstate"

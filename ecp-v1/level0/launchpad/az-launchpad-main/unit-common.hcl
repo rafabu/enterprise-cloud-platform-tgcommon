@@ -11,14 +11,14 @@ locals {
   azure_tf_module_folder = "launchpad-main"
 
   ################# bootstrap-helper unit output #################
-TG_DOWNLOAD_DIR = (
-  get_env("TG_DOWNLOAD_DIR", "") != "" ? get_env("TG_DOWNLOAD_DIR") :
-  get_env("RUNNER_TEMP", "") != "" ? get_env("RUNNER_TEMP") :
-  get_env("AGENT_TEMPDIRECTORY", "") != "" ? get_env("AGENT_TEMPDIRECTORY") :
-  get_env("TMPDIR", "") != "" ? get_env("TMPDIR") :
-  get_env("TEMP", "") != "" ? get_env("TEMP") :
-  "/tmp"
-)
+  TG_DOWNLOAD_DIR = (
+    get_env("TG_DOWNLOAD_DIR", "") != "" ? get_env("TG_DOWNLOAD_DIR") :
+    get_env("RUNNER_TEMP", "") != "" ? get_env("RUNNER_TEMP") :
+    get_env("AGENT_TEMPDIRECTORY", "") != "" ? get_env("AGENT_TEMPDIRECTORY") :
+    get_env("TMPDIR", "") != "" ? get_env("TMPDIR") :
+    get_env("TEMP", "") != "" ? get_env("TEMP") :
+    "/tmp"
+  )
   bootstrap_helper_folder        = "${local.TG_DOWNLOAD_DIR}/${uuidv5("dns", "az-launchpad-bootstrap-helper")}"
   bootstrap_helper_output        = jsondecode(file("${local.bootstrap_helper_folder}/terraform_output.json"))
   bootstrap_backend_type         = try(local.bootstrap_helper_output.backend_storage_accounts["l0"].ecp_resource_exists == true && get_terraform_command() != "destroy" ? "azurerm" : "local", "local")

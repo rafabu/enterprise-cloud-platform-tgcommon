@@ -7,7 +7,7 @@ locals {
   level_vars       = read_terragrunt_config(format("%s/../../level.hcl", get_terragrunt_dir()))
   area_vars        = read_terragrunt_config(format("%s/../area.hcl", get_terragrunt_dir()))
   unit_common_vars = read_terragrunt_config(format("%s/lib/terragrunt-common/ecp-v1/%s/unit-common.hcl", get_repo_root(), regexall("^.*/(.+?/.+?/.+?)$", get_terragrunt_dir())[0][0]))
-  
+
   merged_locals = merge(
     local.root_vars.locals,
     local.env_vars.locals,
