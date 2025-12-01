@@ -34,7 +34,14 @@ locals {
   # configuration_path = format("%s/", get_repo_root(), dependency.l0-lp-az-lp-main.outputs.ecp_configuration_repo_deployment_root_path)
 
   ################# bootstrap-helper unit output #################
-  TG_DOWNLOAD_DIR                = get_env("TG_DOWNLOAD_DIR", trimspace(run_cmd("--terragrunt-quiet", "pwsh", "-NoLogo", "-NoProfile", "-Command", "[System.IO.Path]::GetTempPath()")))
+  TG_DOWNLOAD_DIR = coalesce(
+    get_env("TG_DOWNLOAD_DIR", ""),           # User preference
+    get_env("RUNNER_TEMP", ""),               # GitHub Actions
+    get_env("AGENT_TEMPDIRECTORY", ""),       # Azure DevOps
+    get_env("TMPDIR", ""),                    # macOS/Linux
+    get_env("TEMP", ""),                      # Windows
+    "/tmp"                                     # Fallback
+  )
   bootstrap_helper_folder        = "${local.TG_DOWNLOAD_DIR}/${uuidv5("dns", "az-launchpad-bootstrap-helper")}"
   bootstrap_helper_output        = jsondecode(file("${local.bootstrap_helper_folder}/terraform_output.json"))
   bootstrap_backend_type         = try(local.bootstrap_helper_output.backend_storage_accounts["l0"].ecp_resource_exists == true ? "azurerm" : "local", "local")
@@ -153,14 +160,5 @@ inputs = {
 
   ecp_azure_devops_repository_name = dependency.l0-lp-az-lp-main.outputs.ecp_azure_devops_configuration_repository_name
 
-  # template_replacements = {
-  #   "ecp_environment_name_replacement" = {
-  #     directory_patterns = [
-  #       "**/${basename(dependency.l0-lp-az-lp-main.outputs.ecp_configuration_repo_deployment_root_path)}"
-  #     ]
-  #     name_replacements = {
-  #       "${basename(dependency.l0-lp-az-lp-main.outputs.ecp_configuration_repo_deployment_root_path)}" = "${dependency.l0-lp-az-lp-main.outputs.ecp_environment_name}"
-  #     }
-  #   }
-  # }
+  template_replacements = {}
 }

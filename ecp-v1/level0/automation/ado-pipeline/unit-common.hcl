@@ -1,7 +1,7 @@
 dependencies {
   paths = [
     format("%s/../../bootstrap/az-launchpad-bootstrap-helper", get_original_terragrunt_dir()),
-    format("%s/../ado-repo-sync-automation", get_original_terragrunt_dir())
+    format("%s/../ado-repo-sync-automation", get_original_terragrunt_dir()),
     format("%s/../../launchpad/ado-mpool", get_original_terragrunt_dir())
   ]
 }
@@ -59,7 +59,14 @@ locals {
   )
 
   ################# bootstrap-helper unit output #################
-  TG_DOWNLOAD_DIR                = get_env("TG_DOWNLOAD_DIR", trimspace(run_cmd("--terragrunt-quiet", "pwsh", "-NoLogo", "-NoProfile", "-Command", "[System.IO.Path]::GetTempPath()")))
+  TG_DOWNLOAD_DIR = coalesce(
+    get_env("TG_DOWNLOAD_DIR", ""),           # User preference
+    get_env("RUNNER_TEMP", ""),               # GitHub Actions
+    get_env("AGENT_TEMPDIRECTORY", ""),       # Azure DevOps
+    get_env("TMPDIR", ""),                    # macOS/Linux
+    get_env("TEMP", ""),                      # Windows
+    "/tmp"                                     # Fallback
+  )
   bootstrap_helper_folder        = "${local.TG_DOWNLOAD_DIR}/${uuidv5("dns", "az-launchpad-bootstrap-helper")}"
   bootstrap_helper_output        = jsondecode(file("${local.bootstrap_helper_folder}/terraform_output.json"))
   bootstrap_backend_type         = try(local.bootstrap_helper_output.backend_storage_accounts["l0"].ecp_resource_exists == true ? "azurerm" : "local", "local")
