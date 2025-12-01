@@ -59,12 +59,10 @@ locals {
   )
 
   ################# bootstrap-helper unit output #################
-  TG_DOWNLOAD_DIR = (
-    get_env("TG_DOWNLOAD_DIR", "") != "" ? get_env("TG_DOWNLOAD_DIR") :
-    get_env("RUNNER_TEMP", "") != "" ? get_env("RUNNER_TEMP") :
-    get_env("AGENT_TEMPDIRECTORY", "") != "" ? get_env("AGENT_TEMPDIRECTORY") :
-    get_env("TMPDIR", "") != "" ? get_env("TMPDIR") :
-    get_env("TEMP", "") != "" ? get_env("TEMP") :
+  TG_DOWNLOAD_DIR = coalesce(
+    try(get_env("TG_DOWNLOAD_DIR"), null),
+    try(get_env("TMPDIR"), null),
+    try(trimspace(run_cmd("--terragrunt-quiet", "pwsh", "-NoLogo", "-NoProfile", "-NonInteractive", "-Command", "[System.IO.Path]::GetTempPath()")), null),
     "/tmp"
   )
   bootstrap_helper_folder        = "${local.TG_DOWNLOAD_DIR}/${uuidv5("dns", "az-launchpad-bootstrap-helper")}"
