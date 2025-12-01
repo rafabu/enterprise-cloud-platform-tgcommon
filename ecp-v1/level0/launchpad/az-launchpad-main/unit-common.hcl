@@ -12,9 +12,9 @@ locals {
 
   ################# bootstrap-helper unit output #################
   #  TG_DOWNLOAD_DIR                = get_env("TG_DOWNLOAD_DIR", trimspace(run_cmd("--terragrunt-quiet", "pwsh", "-NoLogo", "-NoProfile", "-Command", "[System.IO.Path]::GetTempPath()")))
-  TG_DOWNLOAD_DIR = coalesce(
-    get_env("TG_DOWNLOAD_DIR"),
-    get_env("TMPDIR"),
+   TG_DOWNLOAD_DIR = coalesce(
+    try(get_env("TG_DOWNLOAD_DIR"), null),
+    try(get_env("TMPDIR"), null),
     try(trimspace(run_cmd("--terragrunt-quiet", "pwsh", "-NoLogo", "-NoProfile", "-NonInteractive", "-Command", "[System.IO.Path]::GetTempPath()")), null),
     "/tmp"
   )
