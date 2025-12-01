@@ -11,7 +11,13 @@ locals {
   azure_tf_module_folder = "launchpad-main"
 
   ################# bootstrap-helper unit output #################
-  TG_DOWNLOAD_DIR                = get_env("TG_DOWNLOAD_DIR", trimspace(run_cmd("--terragrunt-quiet", "pwsh", "-NoLogo", "-NoProfile", "-Command", "[System.IO.Path]::GetTempPath()")))
+  #  TG_DOWNLOAD_DIR                = get_env("TG_DOWNLOAD_DIR", trimspace(run_cmd("--terragrunt-quiet", "pwsh", "-NoLogo", "-NoProfile", "-Command", "[System.IO.Path]::GetTempPath()")))
+  TG_DOWNLOAD_DIR = coalesce(
+    get_env("TG_DOWNLOAD_DIR"),
+    get_env("TMPDIR"),
+    try(trimspace(run_cmd("--terragrunt-quiet", "pwsh", "-NoLogo", "-NoProfile", "-NonInteractive", "-Command", "[System.IO.Path]::GetTempPath()")), null),
+    "/tmp"
+  )
   # TG_DOWNLOAD_DIR = (
   #   get_env("TG_DOWNLOAD_DIR", "") != "" ? get_env("TG_DOWNLOAD_DIR") :
   #   get_env("RUNNER_TEMP", "") != "" ? get_env("RUNNER_TEMP") :
