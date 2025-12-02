@@ -205,7 +205,7 @@ if ("true" -eq "${local.bootstrap_backend_type_changed}") {
             }
         }
         else {
-            Write-Output "      local state file '${local.bootstrap_local_backend_path}' dos not exist; skipping upload to remote backend"
+            Write-Output "      local state file '${local.bootstrap_local_backend_path}' does not exist; skipping upload to remote backend"
         }
     }
 }
