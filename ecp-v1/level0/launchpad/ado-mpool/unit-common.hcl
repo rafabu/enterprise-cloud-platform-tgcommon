@@ -205,9 +205,9 @@ terraform {
   before_hook "reconfigure-backend" {
     commands = [
       "init",
-      "plan",
-      "apply",
-      "destroy"
+      # "plan",
+      # "apply",
+      # "destroy"
     ]
     execute = [
       "pwsh",
