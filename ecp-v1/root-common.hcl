@@ -163,7 +163,7 @@ provider "azuredevops" {
 %{endif}
 
 %{if contains(
-  ["ado-mpool", "az-devcenter", "az-launchpad-bootstrap-helper", "az-launchpad-main", "az-launchpad-backend", "az-launchpad-network"],
+  ["ado-mpool", "az-devcenter", "az-launchpad-bootstrap-finalizer", "az-launchpad-bootstrap-helper", "az-launchpad-main", "az-launchpad-backend", "az-launchpad-network"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
   )[0][0])}
 provider "azurerm" {
@@ -200,7 +200,7 @@ terraform {
 
   required_providers {
 %{if contains(
-  ["ado-mpool", "az-launchpad-bootstrap-helper", "entraid-policies"],
+  ["ado-mpool", "az-launchpad-bootstrap-finalizer", "az-launchpad-bootstrap-helper", "entraid-policies"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
   )[0][0])}
     azuread = {
