@@ -1,3 +1,15 @@
+dependencies{
+   paths = [
+    format("%s/../az-launchpad-bootstrap-helper", get_original_terragrunt_dir()),
+    format("%s/../../launchpad/az-launchpad-main", get_original_terragrunt_dir()),
+    format("%s/../../launchpad/az-launchpad-network", get_original_terragrunt_dir()),
+    format("%s/../../launchpad/az-launchpad-backend", get_original_terragrunt_dir()),
+    format("%s/../../launchpad/az-devcenter", get_original_terragrunt_dir()),
+    format("%s/../../launchpad/ado-project", get_original_terragrunt_dir())
+    format("%s/../../automation/ado-pipeline", get_original_terragrunt_dir())
+  ]
+}
+
 dependency "l0-lp-ado-mpool" {
   config_path = format("%s/../../launchpad/ado-mpool", get_original_terragrunt_dir())
   mock_outputs = {
