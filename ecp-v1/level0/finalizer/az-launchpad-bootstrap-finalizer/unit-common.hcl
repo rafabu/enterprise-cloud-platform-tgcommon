@@ -238,6 +238,7 @@ SCRIPT
       }
       elseif ($true -eq $ipInRange) {
           Write-Output "INFO: Private IP is in launchpad vnet range"
+          Write-Output "INFO:     no need to remove network rule from Storage Account $accountName."
       }
       elseif ($publicIp -eq $null) {
           Write-Output "WARNING: No public IP available; cannot configure Storage Account $accountName."
@@ -261,6 +262,9 @@ SCRIPT
               az role assignment delete `
                   --subscription $subscriptionId ` `
                   --ids $assignment.id | Out-Null
+          }
+          if ($assignments.Count -eq 0) {
+              Write-Output "INFO:    No RBAC role assignments with description 'ECP_BOOTSTRAP_HELPER' found for $objectId on $accountName."
           }
       }
   }
