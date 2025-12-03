@@ -394,6 +394,9 @@ inputs = {
   # load merged vnet artefact objects
   virtual_network_subnet_definitions = local.virtualNetworkSubnet_definition_merged
 
+  # virtual network is not yet connected to infrastructure that will route traffic to internet (we need a NAT gateway)
+  virtual_network_island_mode = true
+
   # define which artefacts from the libraries we need to create
   subnet_artefact_names = [
     "l0-launchpad-ado-mpool-platform"
