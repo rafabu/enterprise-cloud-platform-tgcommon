@@ -409,4 +409,51 @@ inputs = {
   workload_identity_type = "userAssignedIdentity" # "serviceprincipal"
 
   dev_center_project_resource_id = dependency.l0-lp-az-devcenter.outputs.dev_center_project.id
+
+  managed_devops_pool_maximum_concurrency = 2
+  managed_devops_pool_stateless_agent_profile = {
+    manual_resource_predictions_profile = {
+      time_zone = "W. Europe Standard Time"
+      # all_week_schedule = 2
+      monday_schedule = {
+        "07:30:00" = 2,
+        "21:00:00" = 0
+      }
+      tuesday_schedule = {
+        "07:30:00" = 2,
+        "21:00:00" = 0
+      }
+      wednesday_schedule = {
+        "07:30:00" = 2,
+        "21:00:00" = 0
+      }
+      thursday_schedule = {
+        "07:30:00" = 2,
+        "21:00:00" = 0
+      }
+      friday_schedule = {
+        "07:30:00" = 2,
+        "21:00:00" = 0
+      }
+      saturday_schedule = {}
+      sunday_schedule   = {}
+    }
+  }
+  managed_devops_pool_vmss_fabric_profile = {
+    sku_name = "Standard_D2as_v5"
+    image = [
+      {
+        aliases               = ["ubuntu-24.04/latest"]
+        buffer                = "*"
+        well_known_image_name = "ubuntu-24.04/latest"
+      }
+    ]
+    os_profile = {
+      logon_type = "Service"
+    }
+    storage_profile = {
+      os_disk_storage_account_type = "StandardSSD"
+      data_disk                    = []
+    }
+  }
 }
