@@ -5,7 +5,7 @@ dependencies{
     format("%s/../../launchpad/az-launchpad-network", get_original_terragrunt_dir()),
     format("%s/../../launchpad/az-launchpad-backend", get_original_terragrunt_dir()),
     format("%s/../../launchpad/az-devcenter", get_original_terragrunt_dir()),
-    format("%s/../../launchpad/ado-project", get_original_terragrunt_dir())
+    format("%s/../../launchpad/ado-project", get_original_terragrunt_dir()),
     format("%s/../../automation/ado-pipeline", get_original_terragrunt_dir())
   ]
 }
