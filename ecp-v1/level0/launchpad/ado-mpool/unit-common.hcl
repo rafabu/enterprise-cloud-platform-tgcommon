@@ -173,6 +173,8 @@ locals {
   bootstrap_backend_type_changed = try(local.bootstrap_helper_output.backend_storage_accounts["l0"].ecp_terraform_backend_changed_since_last_apply, false)
   # assure local state resides in bootstrap-helper folder
   bootstrap_local_backend_path = "${local.bootstrap_helper_folder}/${basename(path_relative_to_include())}.tfstate"
+  # do we need to deploy a NAT gateway?
+  launchpad_network_island_mode = try(local.bootstrap_helper_output.actor_network_information.ecp_launchpad_network_island_mode, false)
 
   ################# tags #################
   unit_common_azure_tags = {
@@ -395,7 +397,7 @@ inputs = {
   virtual_network_subnet_definitions = local.virtualNetworkSubnet_definition_merged
 
   # virtual network is not yet connected to infrastructure that will route traffic to internet (we need a NAT gateway)
-  virtual_network_island_mode = true
+  virtual_network_island_mode = local.launchpad_network_island_mode
 
   # define which artefacts from the libraries we need to create
   subnet_artefact_names = [
