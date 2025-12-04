@@ -143,7 +143,7 @@ provider "azapi" {
 %{endif}
 
 %{if contains(
-  ["az-ecp-management", "ado-mpool", "az-launchpad-bootstrap-helper", "entraid-policies"],
+  ["az-ecp-parent", "ado-mpool", "az-launchpad-bootstrap-helper", "entraid-policies"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
   )[0][0])}
 provider "azuread" {
@@ -163,7 +163,7 @@ provider "azuredevops" {
 %{endif}
 
 %{if contains(
-  ["ado-mpool", "az-ecp-management", "az-devcenter", "az-launchpad-bootstrap-finalizer", "az-launchpad-bootstrap-helper", "az-launchpad-main", "az-launchpad-backend", "az-launchpad-network"],
+  ["ado-mpool", "az-ecp-parent", "az-devcenter", "az-launchpad-bootstrap-finalizer", "az-launchpad-bootstrap-helper", "az-launchpad-main", "az-launchpad-backend", "az-launchpad-network"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
   )[0][0])}
 provider "azurerm" {
