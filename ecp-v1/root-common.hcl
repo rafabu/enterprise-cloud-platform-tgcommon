@@ -37,8 +37,8 @@ locals {
     deployment_unit                = try(local.merged_locals.ecp_deployment_unit, local.deployment_unit_default)
     environment_name               = lower("${local.merged_locals.ecp_deployment_code}-${substr(local.merged_locals.ecp_deployment_env, 0, 1)}${local.merged_locals.ecp_deployment_number}")
     launchpad_subscription_id      = local.merged_locals.ecp_launchpad_subscription_id
-    launchpad_resource_group_name  = local.merged_locals.ecp_launchpad_resource_group_name
-    launchpad_storage_account_name = local.merged_locals.ecp_launchpad_storage_account_name
+    # launchpad_resource_group_name  = local.merged_locals.ecp_launchpad_resource_group_name
+    # launchpad_storage_account_name = local.merged_locals.ecp_launchpad_storage_account_name
   }
 
   ######## Launchpad ########
@@ -46,8 +46,8 @@ locals {
   # ecp_launchpad_vnet_address_space = cidrsubnet(local.ecp_deployment_data_object.network_main_ipv4_address_space, 8, 12)# e.g.
 
   ecp_launchpad_subscription_id      = local.merged_locals.ecp_launchpad_subscription_id      # from env.hcl normally
-  ecp_launchpad_resource_group_name  = local.merged_locals.ecp_launchpad_resource_group_name  # from level.hcl normally
-  ecp_launchpad_storage_account_name = local.merged_locals.ecp_launchpad_storage_account_name # from level.hcl normally
+  # ecp_launchpad_resource_group_name  = local.merged_locals.ecp_launchpad_resource_group_name  # from level.hcl normally
+  # ecp_launchpad_storage_account_name = local.merged_locals.ecp_launchpad_storage_account_name # from level.hcl normally
 
   ecp_environment_name = lower("${local.merged_locals.ecp_deployment_code}-${substr(local.merged_locals.ecp_deployment_env, 0, 1)}${local.merged_locals.ecp_deployment_number}")
 
@@ -81,22 +81,22 @@ locals {
 
 }
 
-remote_state {
-  backend = "azurerm"
-  generate = {
-    path      = "backend.tf"
-    if_exists = "overwrite"
-  }
-  config = {
-    subscription_id      = local.ecp_launchpad_subscription_id
-    resource_group_name  = local.ecp_launchpad_resource_group_name
-    storage_account_name = local.ecp_launchpad_storage_account_name
-    container_name       = "tfstate"
-    use_azuread_auth     = true
-    key                  = "${basename(path_relative_to_include())}.tfstate"
-  }
-  disable_init = tobool(get_env("TERRAGRUNT_DISABLE_INIT", "false"))
-}
+# remote_state {
+#   backend = "azurerm"
+#   generate = {
+#     path      = "backend.tf"
+#     if_exists = "overwrite"
+#   }
+#   config = {
+#     subscription_id      = local.ecp_launchpad_subscription_id
+#     resource_group_name  = local.ecp_launchpad_resource_group_name
+#     storage_account_name = local.ecp_launchpad_storage_account_name
+#     container_name       = "tfstate"
+#     use_azuread_auth     = true
+#     key                  = "${basename(path_relative_to_include())}.tfstate"
+#   }
+#   disable_init = tobool(get_env("TERRAGRUNT_DISABLE_INIT", "false"))
+# }
 
 terraform {
   source = "git::${local.ecp_azure_modules_repo}/modules-tf//${local.unit_common_vars.locals.azure_tf_module_folder}" # ?ref=${include.root.locals.ecp_azure_modules_repo_version}"
