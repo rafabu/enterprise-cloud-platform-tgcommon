@@ -257,7 +257,7 @@ terraform {
     }
 %{endif}
 %{if contains(
-  ["az-launchpad-bootstrap-helper"],
+  ["az-ecp-parent", "az-launchpad-bootstrap-helper"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
   )[0][0])}
     external = {
