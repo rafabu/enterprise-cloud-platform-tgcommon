@@ -1,4 +1,4 @@
-dependencies {}
+# dependencies {}
 
 locals {
   ecp_deployment_unit             = "az-management"
