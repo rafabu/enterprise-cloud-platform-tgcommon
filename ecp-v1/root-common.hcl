@@ -276,7 +276,7 @@ terraform {
     }
 %{endif}
 %{if contains(
-  ["az-ecp-parent"],
+  ["az-devcenter","az-ecp-parent", "ado-mpool", "ado-project"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
 )[0][0])}
     http = {
