@@ -4,6 +4,42 @@ dependencies {
   ]
 }
 
+dependency "l0-lp-ado-mpool" {
+  config_path = format("%s/../../../level0/launchpad/ado-mpool", get_original_terragrunt_dir())
+  mock_outputs = {
+    resource_group = {
+      id       = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg"
+      name     = "mock-rg"
+      location = "westeurope"
+    }
+    managed_devops_pool = {
+      id   = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.DevOps/managedDevOpsPools/mock-pool"
+      id_azuredevops = "0"
+      name = "mock-pool"
+      resource_group_name = "mock-rg"
+      location = "westeurope"
+    }
+     service_principals = {
+      "l0-contribute" = {
+        id   = "00000000-0000-0000-0000-000000000000"
+        display_name = "mock_name"
+        client_id = "00000000-0000-0000-0000-000000000000"
+        object_id = "00000000-0000-0000-0000-000000000000"
+        type = "managedIdentity"
+      }
+      "l0-read" = {
+        id   = "00000000-0000-0000-0000-000000000000"
+        display_name = "mock_name"
+        client_id = "00000000-0000-0000-0000-000000000000"
+        object_id = "00000000-0000-0000-0000-000000000000"
+        type = "managedIdentity"
+      }
+    }
+  }
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
+  mock_outputs_merge_strategy_with_state  = "shallow"
+}
+
 locals {
   ecp_deployment_unit             = "az-management"
   ecp_resource_name_random_length = 0
@@ -44,4 +80,10 @@ remote_state {
   disable_init = tobool(get_env("TERRAGRUNT_DISABLE_INIT", "false"))
 }
 
-inputs = {}
+inputs = {
+  ecp_deployment_entraid_contributor_group_protected = true
+  ecp_deployment_entraid_contributor_group_pim_enabled = true
+
+  ecp_deployment_contributor_workload_identity_object_id = dependency.l0-lp-ado-mpool.outputs.service_principals["l0-contribute"].object_id
+  ecp_deployment_contributor_reader_identity_object_id  = dependency.l0-lp-ado-mpool.outputs.service_principals["l0-read"].object_id
+}
