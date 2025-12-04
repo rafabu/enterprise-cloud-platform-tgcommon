@@ -279,7 +279,7 @@ terraform {
   ["az-devcenter","az-ecp-parent", "ado-mpool", "ado-project"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
 )[0][0])}
-    http = {
+    time = {
       source  = "hashicorp/time"
       version = "${local.tf_provider_time_version}"
     }
