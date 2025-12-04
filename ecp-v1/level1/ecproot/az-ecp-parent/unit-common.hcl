@@ -84,6 +84,9 @@ inputs = {
   ecp_deployment_entraid_contributor_group_protected = true
   ecp_deployment_entraid_contributor_group_pim_enabled = true
 
+  ecp_deployment_entraid_reader_group_protected = false
+  ecp_deployment_entraid_reader_group_pim_enabled = false
+
   ecp_deployment_contributor_workload_identity_object_id = dependency.l0-lp-ado-mpool.outputs.service_principals["l0-contribute"].object_id
-  ecp_deployment_contributor_reader_identity_object_id  = dependency.l0-lp-ado-mpool.outputs.service_principals["l0-read"].object_id
+  ecp_deployment_reader_workload_identity_object_id  = dependency.l0-lp-ado-mpool.outputs.service_principals["l0-read"].object_id
 }
