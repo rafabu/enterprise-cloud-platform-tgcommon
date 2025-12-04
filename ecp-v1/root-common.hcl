@@ -71,6 +71,7 @@ locals {
   tf_provider_local_version       = "~> 2.0"
   tf_provider_random_version      = "~> 3.7"
   tf_provider_msgraph_version     = "~> 0.1"
+  tf_provider_time_version        = "~> 0.13"
 
   ############ Tags ############
   root_common_azure_tags = {
@@ -272,6 +273,15 @@ terraform {
     http = {
       source  = "hashicorp/http"
       version = "${local.tf_provider_http_version}"
+    }
+%{endif}
+%{if contains(
+  ["az-ecp-parent"],
+  regexall("^.*/(.+?)$", get_terragrunt_dir()
+)[0][0])}
+    http = {
+      source  = "hashicorp/time"
+      version = "${local.tf_provider_time_version}"
     }
 %{endif}
   }
