@@ -305,24 +305,24 @@ inputs = {
       time_zone = "W. Europe Standard Time"
       # all_week_schedule = 2
       monday_schedule = {
-        "07:30:00" = 2,
-        "21:00:00" = 0
+        "08:30:00" = 2,
+        "18:30:00" = 0
       }
       tuesday_schedule = {
-        "07:30:00" = 2,
-        "21:00:00" = 0
+        "08:30:00" = 2,
+        "18:30:00" = 0
       }
       wednesday_schedule = {
-        "07:30:00" = 2,
-        "21:00:00" = 0
+        "08:30:00" = 2,
+        "18:30:00" = 0
       }
       thursday_schedule = {
-        "07:30:00" = 2,
-        "21:00:00" = 0
+        "08:30:00" = 2,
+        "18:30:00" = 0
       }
       friday_schedule = {
-        "07:30:00" = 2,
-        "21:00:00" = 0
+        "08:30:00" = 2,
+        "18:30:00" = 0
       }
       saturday_schedule = {}
       sunday_schedule   = {}
