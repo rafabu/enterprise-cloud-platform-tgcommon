@@ -61,9 +61,9 @@ locals {
 
   ############ Versions ############
   tf_version                      = ">= 1.14"
-  tf_provider_azuread_version     = "~> 3.5"
+  tf_provider_azuread_version     = "~> 3.7"
   tf_provider_azurecaf_version    = "~> 1.2"
-  tf_provider_azurerm_version     = "~> 4.42"
+  tf_provider_azurerm_version     = "~> 4.55"
   tf_provider_azapi_version       = "~> 2.6"
   tf_provider_azuredevops_version = "~> 1.11"
   tf_provider_external_version    = "~> 2.3"
@@ -82,22 +82,8 @@ locals {
 
 }
 
-# remote_state {
-#   backend = "azurerm"
-#   generate = {
-#     path      = "backend.tf"
-#     if_exists = "overwrite"
-#   }
-#   config = {
-#     subscription_id      = local.ecp_launchpad_subscription_id
-#     resource_group_name  = local.ecp_launchpad_resource_group_name
-#     storage_account_name = local.ecp_launchpad_storage_account_name
-#     container_name       = "tfstate"
-#     use_azuread_auth     = true
-#     key                  = "${basename(path_relative_to_include())}.tfstate"
-#   }
-#   disable_init = tobool(get_env("TERRAGRUNT_DISABLE_INIT", "false"))
-# }
+# remote state logic is in each unit-common.hcl file
+# remote_state {}
 
 terraform {
   source = "git::${local.ecp_azure_modules_repo}/modules-tf//${local.unit_common_vars.locals.azure_tf_module_folder}" # ?ref=${include.root.locals.ecp_azure_modules_repo_version}"
