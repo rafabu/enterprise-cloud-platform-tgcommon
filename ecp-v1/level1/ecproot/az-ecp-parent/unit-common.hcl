@@ -1,6 +1,7 @@
 dependencies {
   paths = [
     format("%s/../../../level0/bootstrap/az-launchpad-bootstrap-helper", get_original_terragrunt_dir())
+    format("%s/../../../level0/finalizer/az-launchpad-bootstrap-finalizer", get_original_terragrunt_dir())
   ]
 }
 
