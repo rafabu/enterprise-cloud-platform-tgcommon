@@ -81,6 +81,7 @@ locals {
   bootstrap_backend_type_changed = try(local.bootstrap_helper_output.backend_storage_accounts["l0"].ecp_terraform_backend_changed_since_last_apply, false)
   # assure local state resides in bootstrap-helper folder
   bootstrap_local_backend_path = "${local.bootstrap_helper_folder}/${basename(path_relative_to_include())}.tfstate"
+  bootstrap_is_local_ip_within_ecp_launchpad = try(local.bootstrap_helper_output.actor_network_information.is_local_ip_within_ecp_launchpad, true)
 
   backend_type         = local.backend_config_present ? "azurerm" : try(local.bootstrap_helper_output.backend_storage_accounts["l0"].ecp_resource_exists == true && get_terraform_command() != "destroy" ? "azurerm" : "local", "local")
   backend_config = local.backend_config_present ? {
