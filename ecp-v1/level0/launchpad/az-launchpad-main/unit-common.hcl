@@ -113,11 +113,11 @@ SCRIPT
       "-Command",
       <<-SCRIPT
 Write-Output "INFO: TG_CTX_COMMAND: $env:TG_CTX_COMMAND"
-Write-Output "INFO: bootstrap_backend_type: '${local.bootstrap_backend_type}'"
+Write-Output "INFO: backend_type: '${local.backend_type}'"
 Write-Output "INFO: bootstrap_backend_type_changed: '${local.bootstrap_backend_type_changed}'"
 
 if ("true" -eq "${local.bootstrap_backend_type_changed}") {
-    if ("azurerm" -eq "${local.bootstrap_backend_type}") {
+    if ("azurerm" -eq "${local.backend_type}") {
         if (Test-Path "${local.bootstrap_local_backend_path}") {
             Write-Output "      remote backend changed from 'local' to 'azurerm'; copying local state to remote now..."
             Write-Output "      uploading '${local.bootstrap_local_backend_path}' to '${basename(path_relative_to_include())}.tfstate' on ${try(local.bootstrap_helper_output.backend_storage_accounts["l0"].name, "unknown storage account")}'"  
