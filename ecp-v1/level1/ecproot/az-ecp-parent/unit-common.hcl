@@ -4,41 +4,41 @@ dependencies {
   ] : []
 }
 
-dependency "l0-lp-ado-mpool" {
-  config_path = format("%s/../../../level0/launchpad/ado-mpool", get_original_terragrunt_dir())
-  mock_outputs = {
-    resource_group = {
-      id       = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg"
-      name     = "mock-rg"
-      location = "westeurope"
-    }
-    managed_devops_pool = {
-      id   = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.DevOps/managedDevOpsPools/mock-pool"
-      id_azuredevops = "0"
-      name = "mock-pool"
-      resource_group_name = "mock-rg"
-      location = "westeurope"
-    }
-     service_principals = {
-      "l0-contribute" = {
-        id   = "00000000-0000-0000-0000-000000000000"
-        display_name = "mock_name"
-        client_id = "00000000-0000-0000-0000-000000000000"
-        object_id = "00000000-0000-0000-0000-000000000000"
-        type = "managedIdentity"
-      }
-      "l0-read" = {
-        id   = "00000000-0000-0000-0000-000000000000"
-        display_name = "mock_name"
-        client_id = "00000000-0000-0000-0000-000000000000"
-        object_id = "00000000-0000-0000-0000-000000000000"
-        type = "managedIdentity"
-      }
-    }
-  }
-  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
-  mock_outputs_merge_strategy_with_state  = "shallow"
-}
+# dependency "l0-lp-ado-mpool" {
+#   config_path = format("%s/../../../level0/launchpad/ado-mpool", get_original_terragrunt_dir())
+#   mock_outputs = {
+#     resource_group = {
+#       id       = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg"
+#       name     = "mock-rg"
+#       location = "westeurope"
+#     }
+#     managed_devops_pool = {
+#       id   = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.DevOps/managedDevOpsPools/mock-pool"
+#       id_azuredevops = "0"
+#       name = "mock-pool"
+#       resource_group_name = "mock-rg"
+#       location = "westeurope"
+#     }
+#      service_principals = {
+#       "l0-contribute" = {
+#         id   = "00000000-0000-0000-0000-000000000000"
+#         display_name = "mock_name"
+#         client_id = "00000000-0000-0000-0000-000000000000"
+#         object_id = "00000000-0000-0000-0000-000000000000"
+#         type = "managedIdentity"
+#       }
+#       "l0-read" = {
+#         id   = "00000000-0000-0000-0000-000000000000"
+#         display_name = "mock_name"
+#         client_id = "00000000-0000-0000-0000-000000000000"
+#         object_id = "00000000-0000-0000-0000-000000000000"
+#         type = "managedIdentity"
+#       }
+#     }
+#   }
+#   mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
+#   mock_outputs_merge_strategy_with_state  = "shallow"
+# }
 
 locals {
   ecp_deployment_unit             = "ecproot"
@@ -46,7 +46,7 @@ locals {
 
   azure_tf_module_folder = "az-ecp-parent"  
 
-  ################# bootstrap-helper unit output #################
+  ################# terragrunt specifics #################
   TG_DOWNLOAD_DIR = coalesce(
     try(get_env("TG_DOWNLOAD_DIR"), null),
     try(get_env("TMPDIR"), null),
@@ -54,7 +54,7 @@ locals {
     "/tmp"
   )
 
-  # see if backend variables are set
+ # see if backend variables are set
   backend_config_present = alltrue([
     get_env("ECP_TG_BACKEND_SUBSCRIPTION_ID", "") != "",
     get_env("ECP_TG_BACKEND_RESOURCE_GROUP_NAME", "") != "",
@@ -62,7 +62,7 @@ locals {
     get_env("ECP_TG_BACKEND_CONTAINER_NAME", "") != ""
   ])
 
-  # backend config based on bootstrap file (als fallback)
+  ################# bootstrap-helper unit output (fallback) #################
   bootstrap_helper_folder        = "${local.TG_DOWNLOAD_DIR}/${uuidv5("dns", "az-launchpad-bootstrap-helper")}"
   bootstrap_helper_output        = jsondecode(
       try(file("${local.bootstrap_helper_folder}/terraform_output.json"), "{}")
@@ -86,7 +86,7 @@ locals {
     use_azuread_auth     = true
     key                  = "${basename(path_relative_to_include())}.tfstate"
   }
-}
+} 
 
 remote_state {
   backend = local.bootstrap_backend_type
@@ -112,6 +112,6 @@ inputs = {
   ecp_deployment_entraid_reader_groups_protected = false
   ecp_deployment_entraid_reader_group_pim_enabled = false
 
-  ecp_deployment_contributor_workload_identity_object_id = dependency.l0-lp-ado-mpool.outputs.service_principals["l0-contribute"].object_id
-  ecp_deployment_reader_workload_identity_object_id  = dependency.l0-lp-ado-mpool.outputs.service_principals["l0-read"].object_id
+  ecp_deployment_contributor_workload_identity_object_id = "65b04b24-3c62-4d46-856d-059d2242637e" # dependency.l0-lp-ado-mpool.outputs.service_principals["l0-contribute"].object_id
+  ecp_deployment_reader_workload_identity_object_id  = "34e7b021-512d-4e97-93f0-c49cac2d418c" # dependency.l0-lp-ado-mpool.outputs.service_principals["l0-read"].object_id
 }

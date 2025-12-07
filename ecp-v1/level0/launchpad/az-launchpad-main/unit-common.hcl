@@ -10,19 +10,49 @@ locals {
 
   azure_tf_module_folder = "launchpad-main"
 
-  ################# bootstrap-helper unit output #################
+ ################# terragrunt specifics #################
   TG_DOWNLOAD_DIR = coalesce(
     try(get_env("TG_DOWNLOAD_DIR"), null),
     try(get_env("TMPDIR"), null),
     try(trimspace(run_cmd("--terragrunt-quiet", "pwsh", "-NoLogo", "-NoProfile", "-NonInteractive", "-Command", "[System.IO.Path]::GetTempPath()")), null),
     "/tmp"
   )
+
+   # see if backend variables are set
+  backend_config_present = alltrue([
+    get_env("ECP_TG_BACKEND_SUBSCRIPTION_ID", "") != "",
+    get_env("ECP_TG_BACKEND_RESOURCE_GROUP_NAME", "") != "",
+    get_env("ECP_TG_BACKEND_NAME", "") != "",
+    get_env("ECP_TG_BACKEND_CONTAINER_NAME", "") != ""
+  ])
+
+
+  ################# bootstrap-helper unit output (fallback) #################
   bootstrap_helper_folder        = "${local.TG_DOWNLOAD_DIR}/${uuidv5("dns", "az-launchpad-bootstrap-helper")}"
-  bootstrap_helper_output        = jsondecode(file("${local.bootstrap_helper_folder}/terraform_output.json"))
+  bootstrap_helper_output        = jsondecode(
+      try(file("${local.bootstrap_helper_folder}/terraform_output.json"), "{}")
+  )
   bootstrap_backend_type         = try(local.bootstrap_helper_output.backend_storage_accounts["l0"].ecp_resource_exists == true && get_terraform_command() != "destroy" ? "azurerm" : "local", "local")
   bootstrap_backend_type_changed = try(local.bootstrap_helper_output.backend_storage_accounts["l0"].ecp_terraform_backend_changed_since_last_apply, false)
   # assure local state resides in bootstrap-helper folder
   bootstrap_local_backend_path = "${local.bootstrap_helper_folder}/${basename(path_relative_to_include())}.tfstate"
+
+  backend_config = local.backend_config_present ? {
+    subscription_id      = get_env("ECP_TG_BACKEND_SUBSCRIPTION_ID")
+    resource_group_name  = get_env("ECP_TG_BACKEND_RESOURCE_GROUP_NAME")
+    storage_account_name = get_env("ECP_TG_BACKEND_NAME")
+    container_name       = get_env("ECP_TG_BACKEND_CONTAINER_NAME")
+    use_azuread_auth     = true
+    key                  = "${basename(path_relative_to_include())}.tfstate"
+  } : {
+    subscription_id      = local.bootstrap_helper_output.backend_storage_accounts["l1"].subscription_id
+    resource_group_name  = local.bootstrap_helper_output.backend_storage_accounts["l1"].resource_group_name
+    storage_account_name = local.bootstrap_helper_output.backend_storage_accounts["l1"].name
+    container_name       = local.bootstrap_helper_output.backend_storage_accounts["l1"].tf_backend_container
+    use_azuread_auth     = true
+    key                  = "${basename(path_relative_to_include())}.tfstate"
+  }
+
 
   ################# tags #################
   unit_common_azure_tags = {
@@ -37,16 +67,7 @@ remote_state {
     path      = "backend.tf"
     if_exists = "overwrite"
   }
-  config = local.bootstrap_backend_type == "azurerm" ? {
-    subscription_id      = local.bootstrap_helper_output.backend_storage_accounts["l0"].subscription_id
-    resource_group_name  = local.bootstrap_helper_output.backend_storage_accounts["l0"].resource_group_name
-    storage_account_name = local.bootstrap_helper_output.backend_storage_accounts["l0"].name
-    container_name       = local.bootstrap_helper_output.backend_storage_accounts["l0"].tf_backend_container
-    use_azuread_auth     = true
-    key                  = "${basename(path_relative_to_include())}.tfstate"
-    } : {
-    path = local.bootstrap_local_backend_path
-  }
+  config = local.backend_config
   disable_init = tobool(get_env("TERRAGRUNT_DISABLE_INIT", "false"))
 }
 
