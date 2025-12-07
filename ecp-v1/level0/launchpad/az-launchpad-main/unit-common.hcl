@@ -167,4 +167,9 @@ inputs = {
   zzz_backend_config_present = {
     value = local.backend_config_present
   }
+
+
+  zzz_ECP_TG_BACKEND_SUBSCRIPTION_ID = {
+    value = get_env("ECP_TG_BACKEND_SUBSCRIPTION_ID", "")
+  }
 }
