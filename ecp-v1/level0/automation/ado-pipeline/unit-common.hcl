@@ -161,7 +161,7 @@ SCRIPT
       "-Command",
       <<-SCRIPT
 Write-Output "INFO: TG_CTX_COMMAND: $env:TG_CTX_COMMAND"
-Write-Output "INFO: bootstrap_backend_type: '${local.bootstrap_backend_type}'"
+Write-Output "INFO: backend_type: '${local.backend_type}'"
 Write-Output "INFO: bootstrap_backend_type_changed: '${local.bootstrap_backend_type_changed}'"
 
 if ("true" -eq "${local.bootstrap_backend_type_changed}") {
