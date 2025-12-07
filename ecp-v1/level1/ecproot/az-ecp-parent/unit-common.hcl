@@ -63,7 +63,7 @@ locals {
     )
   )
   bootstrap_helper_output_file        = jsondecode(
-    try(file("${local.bootstrap_helper_folder}/terraform_output.json"), {})
+    try(file("${local.bootstrap_helper_folder}/terraform_output.json"), "{}")
   )
   bootstrap_backend_type         = "azurerm"
   bootstrap_backend_type_changed = false
@@ -71,7 +71,7 @@ locals {
   bootstrap_local_backend_path = "${local.bootstrap_helper_folder}/${basename(path_relative_to_include())}.tfstate"
 
   # backend config from env_variable (e.g. DevOps variable group)
-  env_backend = jsondecode(get_env("ECP_TF_BACKEND_STORAGE_AZURE_L1", ""))
+  env_backend = jsondecode(get_env("ECP_TF_BACKEND_STORAGE_AZURE_L1", "{}"))
   backend_config = length(local.env_backend) > 0 ? {
     subscription_id      = local.env_backend.subscription_id
     resource_group_name  = local.env_backend.resource_group_name
