@@ -43,7 +43,7 @@ locals {
     container_name       = get_env("ECP_TG_BACKEND_CONTAINER")
     use_azuread_auth     = true
     key                  = "${basename(path_relative_to_include())}.tfstate"
-  } : local.bootstrap_backend_type == "azurerm" ? {
+  } : local.backend_type == "azurerm" ? {
     subscription_id      = local.bootstrap_helper_output.backend_storage_accounts["l0"].subscription_id
     resource_group_name  = local.bootstrap_helper_output.backend_storage_accounts["l0"].resource_group_name
     storage_account_name = local.bootstrap_helper_output.backend_storage_accounts["l0"].name
@@ -62,7 +62,7 @@ locals {
 
 # work with local backend if remote backend doesn't exist yet
 remote_state {
-  backend = local.bootstrap_backend_type
+  backend = local.backend_type
   generate = {
     path      = "backend.tf"
     if_exists = "overwrite"
