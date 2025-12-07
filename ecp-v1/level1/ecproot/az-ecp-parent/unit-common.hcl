@@ -55,8 +55,10 @@ locals {
   )
   bootstrap_helper_folder        = "${local.TG_DOWNLOAD_DIR}/${uuidv5("dns", "az-launchpad-bootstrap-helper")}"
   bootstrap_helper_output        = jsondecode(
-    coalesce(get_env("ECP_TF_BACKEND_STORAGE_AZURE_L1")),
-    file("${local.bootstrap_helper_folder}/terraform_output.json")
+    coalesce(
+      get_env("ECP_TF_BACKEND_STORAGE_AZURE_L1"),
+      file("${local.bootstrap_helper_folder}/terraform_output.json")
+    )
   )
   bootstrap_backend_type         = "azurerm"
   bootstrap_backend_type_changed = false
