@@ -1,7 +1,7 @@
 dependencies {
-  paths = [
+  paths = get_env("ECP_TF_BACKEND_STORAGE_AZURE_L1", "") == "" ? [
     format("%s/../../../level0/bootstrap/az-launchpad-bootstrap-helper", get_original_terragrunt_dir())
-  ]
+  ] : []
 }
 
 dependency "l0-lp-ado-mpool" {
@@ -54,7 +54,10 @@ locals {
     "/tmp"
   )
   bootstrap_helper_folder        = "${local.TG_DOWNLOAD_DIR}/${uuidv5("dns", "az-launchpad-bootstrap-helper")}"
-  bootstrap_helper_output        = jsondecode(file("${local.bootstrap_helper_folder}/terraform_output.json"))
+  bootstrap_helper_output        = try(
+    jsondecode(get_env("ECP_TF_BACKEND_STORAGE_AZURE_L1")),
+    jsondecode(file("${local.bootstrap_helper_folder}/terraform_output.json"))
+  )
   bootstrap_backend_type         = "azurerm"
   bootstrap_backend_type_changed = false
   # assure local state resides in bootstrap-helper folder
@@ -67,16 +70,14 @@ remote_state {
     path      = "backend.tf"
     if_exists = "overwrite"
   }
-  config = local.bootstrap_backend_type == "azurerm" ? {
+  config = {
     subscription_id      = local.bootstrap_helper_output.backend_storage_accounts["l1"].subscription_id
     resource_group_name  = local.bootstrap_helper_output.backend_storage_accounts["l1"].resource_group_name
     storage_account_name = local.bootstrap_helper_output.backend_storage_accounts["l1"].name
     container_name       = local.bootstrap_helper_output.backend_storage_accounts["l1"].tf_backend_container
     use_azuread_auth     = true
     key                  = "${basename(path_relative_to_include())}.tfstate"
-    } : {
-    path = local.bootstrap_local_backend_path
-  }
+    } 
   disable_init = tobool(get_env("TERRAGRUNT_DISABLE_INIT", "false"))
 }
 
