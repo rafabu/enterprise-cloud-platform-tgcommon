@@ -60,11 +60,30 @@ locals {
       file("${local.bootstrap_helper_folder}/terraform_output.json")
     )
   )
+  bootstrap_helper_output_file        = jsondecode(
+    try(file("${local.bootstrap_helper_folder}/terraform_output.json"), {})
+  )
   bootstrap_backend_type         = "azurerm"
   bootstrap_backend_type_changed = false
   # assure local state resides in bootstrap-helper folder
   bootstrap_local_backend_path = "${local.bootstrap_helper_folder}/${basename(path_relative_to_include())}.tfstate"
-}
+
+  env_backend = jsondecode(get_env("ECP_TF_BACKEND_STORAGE_AZURE_L1", ""))
+  backend_config = length(local.env_backend) > 0 ? : {
+    subscription_id      = local.env_backend.subscription_id
+    resource_group_name  = local.env_backend.resource_group_name
+    storage_account_name = local.env_backend.storage_account_name
+    container_name       = local.env_backend.container_name
+    use_azuread_auth     = true
+    key                  = "${basename(path_relative_to_include())}.tfstate"
+  } : {
+    subscription_id      = local.bootstrap_helper_output.backend_storage_accounts["l1"].subscription_id
+    resource_group_name  = local.bootstrap_helper_output.backend_storage_accounts["l1"].resource_group_name
+    storage_account_name = local.bootstrap_helper_output.backend_storage_accounts["l1"].name
+    container_name       = local.bootstrap_helper_output.backend_storage_accounts["l1"].tf_backend_container
+    use_azuread_auth     = true
+    key                  = "${basename(path_relative_to_include())}.tfstate"
+  }
 
 remote_state {
   backend = local.bootstrap_backend_type
@@ -72,14 +91,7 @@ remote_state {
     path      = "backend.tf"
     if_exists = "overwrite"
   }
-  config = {
-    subscription_id      = local.bootstrap_helper_output.backend_storage_accounts["l1"].subscription_id
-    resource_group_name  = local.bootstrap_helper_output.backend_storage_accounts["l1"].resource_group_name
-    storage_account_name = local.bootstrap_helper_output.backend_storage_accounts["l1"].name
-    container_name       = local.bootstrap_helper_output.backend_storage_accounts["l1"].tf_backend_container
-    use_azuread_auth     = true
-    key                  = "${basename(path_relative_to_include())}.tfstate"
-    } 
+  config = local.backend_config
   disable_init = tobool(get_env("TERRAGRUNT_DISABLE_INIT", "false"))
 }
 
