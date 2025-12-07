@@ -68,7 +68,7 @@ remote_state {
     if_exists = "overwrite"
   }
   config = local.backend_config
-  
+
   # config = local.bootstrap_backend_type == "azurerm" ? {
   #   subscription_id      = local.bootstrap_helper_output.backend_storage_accounts["l0"].subscription_id
   #   resource_group_name  = local.bootstrap_helper_output.backend_storage_accounts["l0"].resource_group_name
@@ -159,4 +159,8 @@ SCRIPT
 
 inputs = {
   azure_tags = local.unit_common_azure_tags
+
+  zzz_backend_config = {
+    value = local.backend_config
+  }
 }
