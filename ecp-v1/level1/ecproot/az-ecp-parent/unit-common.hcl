@@ -53,6 +53,8 @@ locals {
     try(trimspace(run_cmd("--terragrunt-quiet", "pwsh", "-NoLogo", "-NoProfile", "-NonInteractive", "-Command", "[System.IO.Path]::GetTempPath()")), null),
     "/tmp"
   )
+
+  # backend config based on bootstrap file (als fallback)
   bootstrap_helper_folder        = "${local.TG_DOWNLOAD_DIR}/${uuidv5("dns", "az-launchpad-bootstrap-helper")}"
   bootstrap_helper_output        = jsondecode(
     coalesce(
@@ -68,6 +70,7 @@ locals {
   # assure local state resides in bootstrap-helper folder
   bootstrap_local_backend_path = "${local.bootstrap_helper_folder}/${basename(path_relative_to_include())}.tfstate"
 
+  # backend config from env_variable (e.g. DevOps variable group)
   env_backend = jsondecode(get_env("ECP_TF_BACKEND_STORAGE_AZURE_L1", ""))
   backend_config = length(local.env_backend) > 0 ? {
     subscription_id      = local.env_backend.subscription_id
@@ -84,6 +87,7 @@ locals {
     use_azuread_auth     = true
     key                  = "${basename(path_relative_to_include())}.tfstate"
   }
+}
 
 remote_state {
   backend = local.bootstrap_backend_type
