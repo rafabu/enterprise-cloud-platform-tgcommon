@@ -169,7 +169,7 @@ inputs = {
   }
 
 
-  zzz_ECP_TG_BACKEND_Container = {
-    value = get_env("ECP_TG_BACKEND_Container", "")
+  zzz_ECP_TG_BACKEND_CONTAINER = {
+    value = get_env("ECP_TG_BACKEND_CONTAINER", "")
   }
 }
