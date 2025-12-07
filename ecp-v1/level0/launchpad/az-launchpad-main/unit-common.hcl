@@ -19,12 +19,12 @@ locals {
   )
 
 # see if backend variables are set
-  backend_config_present = alltrue([
-    get_env("ECP_TG_BACKEND_SUBSCRIPTION_ID", "") != "",
-    get_env("ECP_TG_BACKEND_RESOURCE_GROUP_NAME", "") != "",
-    get_env("ECP_TG_BACKEND_NAME", "") != "",
-    get_env("ECP_TG_BACKEND_CONTAINER_NAME", "") != ""
-  ])
+  backend_config_present = true # alltrue([
+  #   get_env("ECP_TG_BACKEND_SUBSCRIPTION_ID", "") != "",
+  #   get_env("ECP_TG_BACKEND_RESOURCE_GROUP_NAME", "") != "",
+  #   get_env("ECP_TG_BACKEND_NAME", "") != "",
+  #   get_env("ECP_TG_BACKEND_CONTAINER_NAME", "") != ""
+  # ])
 
   ################# bootstrap-helper unit output (fallback) #################
   bootstrap_helper_folder        = "${local.TG_DOWNLOAD_DIR}/${uuidv5("dns", "az-launchpad-bootstrap-helper")}"
