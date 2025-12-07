@@ -69,7 +69,7 @@ locals {
   bootstrap_local_backend_path = "${local.bootstrap_helper_folder}/${basename(path_relative_to_include())}.tfstate"
 
   env_backend = jsondecode(get_env("ECP_TF_BACKEND_STORAGE_AZURE_L1", ""))
-  backend_config = length(local.env_backend) > 0 ? : {
+  backend_config = length(local.env_backend) > 0 ? {
     subscription_id      = local.env_backend.subscription_id
     resource_group_name  = local.env_backend.resource_group_name
     storage_account_name = local.env_backend.storage_account_name
