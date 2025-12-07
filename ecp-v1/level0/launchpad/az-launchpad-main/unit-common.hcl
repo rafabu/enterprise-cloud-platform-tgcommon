@@ -18,7 +18,7 @@ locals {
     "/tmp"
   )
 
-# see if backend variables are set
+  # see if backend variables are set
   backend_config_present = alltrue([
     get_env("ECP_TG_BACKEND_SUBSCRIPTION_ID", "") != "",
     get_env("ECP_TG_BACKEND_RESOURCE_GROUP_NAME", "") != "",

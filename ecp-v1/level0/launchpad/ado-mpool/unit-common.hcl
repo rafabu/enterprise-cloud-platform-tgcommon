@@ -167,29 +167,33 @@ locals {
     try(trimspace(run_cmd("--terragrunt-quiet", "pwsh", "-NoLogo", "-NoProfile", "-NonInteractive", "-Command", "[System.IO.Path]::GetTempPath()")), null),
     "/tmp"
   )
+
+  # see if backend variables are set
+  backend_config_present = alltrue([
+    get_env("ECP_TG_BACKEND_SUBSCRIPTION_ID", "") != "",
+    get_env("ECP_TG_BACKEND_RESOURCE_GROUP_NAME", "") != "",
+    get_env("ECP_TG_BACKEND_NAME", "") != "",
+    get_env("ECP_TG_BACKEND_CONTAINER", "") != ""
+  ])
+
+  ################# bootstrap-helper unit output (fallback) #################
   bootstrap_helper_folder        = "${local.TG_DOWNLOAD_DIR}/${uuidv5("dns", "az-launchpad-bootstrap-helper")}"
-  bootstrap_helper_output        = jsondecode(file("${local.bootstrap_helper_folder}/terraform_output.json"))
-  bootstrap_backend_type         = try(local.bootstrap_helper_output.backend_storage_accounts["l0"].ecp_resource_exists == true ? "azurerm" : "local", "local")
+  bootstrap_helper_output        = jsondecode(
+    try(file("${local.bootstrap_helper_folder}/terraform_output.json"), "{}")
+  )
   bootstrap_backend_type_changed = try(local.bootstrap_helper_output.backend_storage_accounts["l0"].ecp_terraform_backend_changed_since_last_apply, false)
   # assure local state resides in bootstrap-helper folder
   bootstrap_local_backend_path = "${local.bootstrap_helper_folder}/${basename(path_relative_to_include())}.tfstate"
-  # do we need to deploy a NAT gateway?
-  launchpad_network_island_mode = try(local.bootstrap_helper_output.actor_network_information.ecp_launchpad_network_island_mode, false)
 
-  ################# tags #################
-  unit_common_azure_tags = {
-    # "_ecpTgUnitCommon" = format("%s/unit-common.hcl", get_parent_terragrunt_dir())
-  }
-}
-
-# work with local backend if remote backend doesn't exist yet
-remote_state {
-  backend = local.bootstrap_backend_type
-  generate = {
-    path      = "backend.tf"
-    if_exists = "overwrite"
-  }
-  config = local.bootstrap_backend_type == "azurerm" ? {
+  backend_type         = local.backend_config_present ? "azurerm" : try(local.bootstrap_helper_output.backend_storage_accounts["l0"].ecp_resource_exists == true && get_terraform_command() != "destroy" ? "azurerm" : "local", "local")
+  backend_config = local.backend_config_present ? {
+    subscription_id      = get_env("ECP_TG_BACKEND_SUBSCRIPTION_ID")
+    resource_group_name  = get_env("ECP_TG_BACKEND_RESOURCE_GROUP_NAME")
+    storage_account_name = get_env("ECP_TG_BACKEND_NAME")
+    container_name       = get_env("ECP_TG_BACKEND_CONTAINER")
+    use_azuread_auth     = true
+    key                  = "${basename(path_relative_to_include())}.tfstate"
+  } : local.backend_type == "azurerm" ? {
     subscription_id      = local.bootstrap_helper_output.backend_storage_accounts["l0"].subscription_id
     resource_group_name  = local.bootstrap_helper_output.backend_storage_accounts["l0"].resource_group_name
     storage_account_name = local.bootstrap_helper_output.backend_storage_accounts["l0"].name
@@ -199,6 +203,23 @@ remote_state {
     } : {
     path = local.bootstrap_local_backend_path
   }
+  # do we need to deploy a NAT gateway?
+  launchpad_network_island_mode = try(local.bootstrap_helper_output.actor_network_information.ecp_launchpad_network_island_mode, true)
+
+  ################# tags #################
+  unit_common_azure_tags = {
+    # "_ecpTgUnitCommon" = format("%s/unit-common.hcl", get_parent_terragrunt_dir())
+  }
+}
+
+# work with local backend if remote backend doesn't exist yet
+remote_state {
+  backend = local.backend_type
+  generate = {
+    path      = "backend.tf"
+    if_exists = "overwrite"
+  }
+  config = local.backend_config
   disable_init = tobool(get_env("TERRAGRUNT_DISABLE_INIT", "false"))
 }
 
@@ -217,7 +238,7 @@ terraform {
       <<-SCRIPT
 Write-Output "INFO: TG_CTX_COMMAND: $env:TG_CTX_COMMAND"
 
-Write-Output "     running 'terraform init -reconfigure'"  
+Write-Output "     running 'terraform init -reconfigure'"
 terraform init -reconfigure | Out-Null
 SCRIPT
     ]
@@ -244,11 +265,11 @@ SCRIPT
       "-Command",
       <<-SCRIPT
 Write-Output "INFO: TG_CTX_COMMAND: $env:TG_CTX_COMMAND"
-Write-Output "INFO: bootstrap_backend_type: '${local.bootstrap_backend_type}'"
+Write-Output "INFO: backend_type: '${local.backend_type}'"
 Write-Output "INFO: bootstrap_backend_type_changed: '${local.bootstrap_backend_type_changed}'"
 
 if ("true" -eq "${local.bootstrap_backend_type_changed}") {
-    if ("azurerm" -eq "${local.bootstrap_backend_type}") {
+    if ("azurerm" -eq "${local.backend_type}") {
         if (Test-Path "${local.bootstrap_local_backend_path}") {
             Write-Output "      remote backend changed from 'local' to 'azurerm'; copying local state to remote now..."
             Write-Output "      uploading '${local.bootstrap_local_backend_path}' to '${basename(path_relative_to_include())}.tfstate' on ${try(local.bootstrap_helper_output.backend_storage_accounts["l0"].name, "unknown storage account")}'"  
