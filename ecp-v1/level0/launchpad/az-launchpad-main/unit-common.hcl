@@ -38,17 +38,17 @@ locals {
   bootstrap_local_backend_path = "${local.bootstrap_helper_folder}/${basename(path_relative_to_include())}.tfstate"
 
   backend_config = local.backend_config_present ? {
-    subscription_id      = get_env("ECP_TG_BACKEND_SUBSCRIPTION_ID")
-    resource_group_name  = get_env("ECP_TG_BACKEND_RESOURCE_GROUP_NAME")
-    storage_account_name = get_env("ECP_TG_BACKEND_NAME")
-    container_name       = get_env("ECP_TG_BACKEND_CONTAINER_NAME")
+    subscription_id      = get_env("ECP_TG_BACKEND_SUBSCRIPTION_ID", "")
+    resource_group_name  = get_env("ECP_TG_BACKEND_RESOURCE_GROUP_NAME", "")
+    storage_account_name = get_env("ECP_TG_BACKEND_NAME", "")
+    container_name       = get_env("ECP_TG_BACKEND_CONTAINER_NAME", "")
     use_azuread_auth     = true
     key                  = "${basename(path_relative_to_include())}.tfstate"
   } : {
-    subscription_id      = local.bootstrap_helper_output.backend_storage_accounts["l1"].subscription_id
-    resource_group_name  = local.bootstrap_helper_output.backend_storage_accounts["l1"].resource_group_name
-    storage_account_name = local.bootstrap_helper_output.backend_storage_accounts["l1"].name
-    container_name       = local.bootstrap_helper_output.backend_storage_accounts["l1"].tf_backend_container
+    subscription_id      = try(local.bootstrap_helper_output.backend_storage_accounts["l0"].subscription_id, "")
+    resource_group_name  = try(local.bootstrap_helper_output.backend_storage_accounts["l0"].resource_group_name, "")
+    storage_account_name = try(local.bootstrap_helper_output.backend_storage_accounts["l0"].name, "")
+    container_name       = try(local.bootstrap_helper_output.backend_storage_accounts["l0"].tf_backend_container, "")
     use_azuread_auth     = true
     key                  = "${basename(path_relative_to_include())}.tfstate"
   }
