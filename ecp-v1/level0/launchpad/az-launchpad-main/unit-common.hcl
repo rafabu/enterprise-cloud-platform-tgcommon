@@ -163,4 +163,8 @@ inputs = {
   zzz_backend_config = {
     value = local.backend_config
   }
+
+  zzz_backend_config_present = {
+    value = local.backend_config_present
+  }
 }
