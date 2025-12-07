@@ -54,30 +54,28 @@ locals {
     "/tmp"
   )
 
-  # backend config from env_variable (e.g. DevOps variable group)
-  env_backend = jsondecode(get_env("ECP_TF_BACKEND_STORAGE_AZURE_L1", "{}"))
+  # see if backend variables are set
+  backend_config_present = alltrue([
+    get_env("ECP_TG_BACKEND_SUBSCRIPTION_ID", "") != "",
+    get_env("ECP_TG_BACKEND_RESOURCE_GROUP_NAME", "") != "",
+    get_env("ECP_TG_BACKEND_NAME", "") != "",
+    get_env("ECP_TG_BACKEND_CONTAINER_NAME", "") != ""
+  ])
 
   # backend config based on bootstrap file (als fallback)
   bootstrap_helper_folder        = "${local.TG_DOWNLOAD_DIR}/${uuidv5("dns", "az-launchpad-bootstrap-helper")}"
   bootstrap_helper_output        = jsondecode(
-    coalesce(
-      get_env("ECP_TF_BACKEND_STORAGE_AZURE_L1", ""),
-      file("${local.bootstrap_helper_folder}/terraform_output.json")
-    )
+      try(file("${local.bootstrap_helper_folder}/terraform_output.json"), "{}")
   )
-  bootstrap_helper_output_file        = jsondecode(
-    try(file("${local.bootstrap_helper_folder}/terraform_output.json"), "{}")
-  )
+
   bootstrap_backend_type         = "azurerm"
   bootstrap_backend_type_changed = false
-  # assure local state resides in bootstrap-helper folder
-  bootstrap_local_backend_path = "${local.bootstrap_helper_folder}/${basename(path_relative_to_include())}.tfstate"
 
-   backend_config = length(local.env_backend) > 0 ? {
-    subscription_id      = local.env_backend.subscription_id
-    resource_group_name  = local.env_backend.resource_group_name
-    storage_account_name = local.env_backend.storage_account_name
-    container_name       = local.env_backend.container_name
+   backend_config = local.backend_config_present ? {
+    subscription_id      = get_env("ECP_TG_BACKEND_SUBSCRIPTION_ID")
+    resource_group_name  = get_env("ECP_TG_BACKEND_RESOURCE_GROUP_NAME")
+    storage_account_name = get_env("ECP_TG_BACKEND_NAME")
+    container_name       = get_env("ECP_TG_BACKEND_CONTAINER_NAME")
     use_azuread_auth     = true
     key                  = "${basename(path_relative_to_include())}.tfstate"
   } : {
