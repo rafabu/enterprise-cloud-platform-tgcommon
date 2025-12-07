@@ -36,14 +36,14 @@ locals {
   # assure local state resides in bootstrap-helper folder
   bootstrap_local_backend_path = "${local.bootstrap_helper_folder}/${basename(path_relative_to_include())}.tfstate"
 
-  backend_config = local.backend_config_present ? {
+  backend_config = local.bootstrap_backend_type == "azurerm" ? local.backend_config_present ? {
     subscription_id      = get_env("ECP_TG_BACKEND_SUBSCRIPTION_ID")
     resource_group_name  = get_env("ECP_TG_BACKEND_RESOURCE_GROUP_NAME")
     storage_account_name = get_env("ECP_TG_BACKEND_NAME")
     container_name       = get_env("ECP_TG_BACKEND_CONTAINER")
     use_azuread_auth     = true
     key                  = "${basename(path_relative_to_include())}.tfstate"
-  } : local.bootstrap_backend_type == "azurerm" ? {
+  } : {
     subscription_id      = local.bootstrap_helper_output.backend_storage_accounts["l0"].subscription_id
     resource_group_name  = local.bootstrap_helper_output.backend_storage_accounts["l0"].resource_group_name
     storage_account_name = local.bootstrap_helper_output.backend_storage_accounts["l0"].name
@@ -69,16 +69,6 @@ remote_state {
   }
   config = local.backend_config
 
-  # config = local.bootstrap_backend_type == "azurerm" ? {
-  #   subscription_id      = local.bootstrap_helper_output.backend_storage_accounts["l0"].subscription_id
-  #   resource_group_name  = local.bootstrap_helper_output.backend_storage_accounts["l0"].resource_group_name
-  #   storage_account_name = local.bootstrap_helper_output.backend_storage_accounts["l0"].name
-  #   container_name       = local.bootstrap_helper_output.backend_storage_accounts["l0"].tf_backend_container
-  #   use_azuread_auth     = true
-  #   key                  = "${basename(path_relative_to_include())}.tfstate"
-  #   } : {
-  #   path = local.bootstrap_local_backend_path
-  # }
   disable_init = tobool(get_env("TERRAGRUNT_DISABLE_INIT", "false"))
 }
 
@@ -159,17 +149,4 @@ SCRIPT
 
 inputs = {
   azure_tags = local.unit_common_azure_tags
-
-  zzz_backend_config = {
-    value = local.backend_config
-  }
-
-  zzz_backend_config_present = {
-    value = local.backend_config_present
-  }
-
-
-  zzz_ECP_TG_BACKEND_CONTAINER = {
-    value = get_env("ECP_TG_BACKEND_CONTAINER", "")
-  }
 }

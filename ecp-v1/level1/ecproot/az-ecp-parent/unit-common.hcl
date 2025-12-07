@@ -59,7 +59,7 @@ locals {
     get_env("ECP_TG_BACKEND_SUBSCRIPTION_ID", "") != "",
     get_env("ECP_TG_BACKEND_RESOURCE_GROUP_NAME", "") != "",
     get_env("ECP_TG_BACKEND_NAME", "") != "",
-    get_env("ECP_TG_BACKEND_CONTAINER_NAME", "") != ""
+    get_env("ECP_TG_BACKEND_CONTAINER", "") != ""
   ])
 
   ################# bootstrap-helper unit output (fallback) #################
@@ -75,7 +75,7 @@ locals {
     subscription_id      = get_env("ECP_TG_BACKEND_SUBSCRIPTION_ID")
     resource_group_name  = get_env("ECP_TG_BACKEND_RESOURCE_GROUP_NAME")
     storage_account_name = get_env("ECP_TG_BACKEND_NAME")
-    container_name       = get_env("ECP_TG_BACKEND_CONTAINER_NAME")
+    container_name       = get_env("ECP_TG_BACKEND_CONTAINER")
     use_azuread_auth     = true
     key                  = "${basename(path_relative_to_include())}.tfstate"
   } : {
