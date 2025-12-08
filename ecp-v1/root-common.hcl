@@ -37,18 +37,18 @@ locals {
     deployment_unit                = try(local.merged_locals.ecp_deployment_unit, local.deployment_unit_default)
     environment_name               = lower("${local.merged_locals.ecp_deployment_code}-${substr(local.merged_locals.ecp_deployment_env, 0, 1)}${local.merged_locals.ecp_deployment_number}")
     launchpad_subscription_id      = local.merged_locals.ecp_launchpad_subscription_id
+    management_subscription_id      = local.merged_locals.ecp_management_subscription_id
     # launchpad_resource_group_name  = local.merged_locals.ecp_launchpad_resource_group_name
     # launchpad_storage_account_name = local.merged_locals.ecp_launchpad_storage_account_name
   }
 
   ######## Launchpad ########
-
-  # ecp_launchpad_vnet_address_space = cidrsubnet(local.ecp_deployment_data_object.network_main_ipv4_address_space, 8, 12)# e.g.
-
-  ecp_launchpad_subscription_id      = local.merged_locals.ecp_launchpad_subscription_id      # from env.hcl normally
-  # ecp_launchpad_resource_group_name  = local.merged_locals.ecp_launchpad_resource_group_name  # from level.hcl normally
-  # ecp_launchpad_storage_account_name = local.merged_locals.ecp_launchpad_storage_account_name # from level.hcl normally
-
+  ecp_launchpad_subscription_id     = coalesce(local.merged_locals.ecp_launchpad_subscription_id, "00000000-0000-0000-0000-000000000000")     # from env.hcl normally
+  ecp_management_subscription_id    = local.merged_locals.ecp_management_subscription_id
+  ecp_network_subscription_id       = coalesce(local.merged_locals.ecp_network_subscription_id, "00000000-0000-0000-0000-000000000000")
+  ecp_identity_subscription_id      = coalesce(local.merged_locals.ecp_identity_subscription_id, "00000000-0000-0000-0000-000000000000")
+  ecp_security_subscription_id      = coalesce(local.merged_locals.ecp_security_subscription_id, "00000000-0000-0000-0000-000000000000")
+  
   ecp_environment_name = lower("${local.merged_locals.ecp_deployment_code}-${substr(local.merged_locals.ecp_deployment_env, 0, 1)}${local.merged_locals.ecp_deployment_number}")
 
   ecp_configuration_repo         = "github.com/rafabu/enterprise-cloud-platform-conf.git"
@@ -289,6 +289,13 @@ inputs = {
   ecp_environment_name = local.ecp_environment_name
 
   ecp_network_main_ipv4_address_space            = local.ecp_network_main_ipv4_address_space
+
+  ecp_management_subscription_id    = local.ecp_management_subscription_id
+  ecp_launchpad_subscription_id     = local.ecp_launchpad_subscription_id
+  ecp_identity_subscription_id      = local.ecp_identity_subscription_id
+  ecp_security_subscription_id      = local.ecp_security_subscription_id
+  ecp_network_subscription_id       = local.ecp_network_subscription_id
+
   ecp_azure_devops_organization_name             = local.ecp_azure_devops_organization_name
   ecp_azure_devops_project_name                  = local.ecp_azure_devops_project_name
   ecp_azure_devops_automation_repository_name    = local.ecp_azure_devops_automation_repository_name
