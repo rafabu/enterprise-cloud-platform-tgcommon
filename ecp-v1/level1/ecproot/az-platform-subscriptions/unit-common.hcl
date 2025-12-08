@@ -50,6 +50,11 @@ locals {
     use_azuread_auth     = true
     key                  = "${basename(path_relative_to_include())}.tfstate"
   }
+
+    ################# tags #################
+  unit_common_azure_tags = {
+    # "hidden-ecpTgUnitCommon" = format("%s/unit-common.hcl", get_parent_terragrunt_dir())
+  }
 } 
 
 remote_state {
@@ -63,4 +68,5 @@ remote_state {
 }
 
 inputs = {
+    azure_tags = local.unit_common_azure_tags
 }
