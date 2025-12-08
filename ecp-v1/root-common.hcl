@@ -290,6 +290,7 @@ inputs = {
 
   ecp_network_main_ipv4_address_space            = local.ecp_network_main_ipv4_address_space
 
+  # ECP Platform Azure Subscriptions variables
   ecp_management_subscription_id    = local.ecp_management_subscription_id
   ecp_launchpad_subscription_id     = local.ecp_launchpad_subscription_id
   ecp_identity_subscription_id      = local.ecp_identity_subscription_id

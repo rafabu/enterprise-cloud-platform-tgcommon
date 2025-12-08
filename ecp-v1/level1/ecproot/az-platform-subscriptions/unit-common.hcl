@@ -69,4 +69,20 @@ remote_state {
 
 inputs = {
     azure_tags = local.unit_common_azure_tags
+
+    launchpad_azure_tags = {
+      workloadName = "ecpalp"
+    }
+     management_azure_tags = {
+      workloadName = "ecpamg"
+    }
+     network_azure_tags = {
+      workloadName = "ecpanet"
+    }
+     identity_azure_tags = {
+      workloadName = "ecpaid"
+    }
+    security_azure_tags = {
+      workloadName = "ecpasec"
+    }
 }
