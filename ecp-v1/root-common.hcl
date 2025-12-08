@@ -119,7 +119,7 @@ generate "provider" {
   contents = <<EOF
 
 %{if contains(
-  ["ado-mpool", "az-launchpad-backend", "az-devcenter", "az-launchpad-network", "az-platform-subscriptions"],
+  ["ado-mpool", "az-ecp-parent", "az-launchpad-backend", "az-devcenter", "az-launchpad-network", "az-platform-subscriptions"],
   regexall("^.*/(.+?)$", get_terragrunt_dir())[0][0])}
 provider "azapi" {
   tenant_id       = "${local.merged_locals.ecp_entra_tenant_id}"
@@ -209,7 +209,7 @@ terraform {
     }
 %{endif}
 %{if contains(
-  ["ado-mpool", "az-launchpad-backend", "az-devcenter", "az-launchpad-network", "az-platform-subscriptions"],
+  ["ado-mpool", "az-ecp-parent", "az-launchpad-backend", "az-devcenter", "az-launchpad-network", "az-platform-subscriptions"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
   )[0][0])}
     azapi = {
