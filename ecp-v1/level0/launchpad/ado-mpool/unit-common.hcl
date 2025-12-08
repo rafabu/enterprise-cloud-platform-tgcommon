@@ -170,10 +170,10 @@ locals {
 
   # see if backend variables are set
   backend_config_present = alltrue([
-    get_env("ECP_TG_BACKEND_SUBSCRIPTION_ID", "") != "",
-    get_env("ECP_TG_BACKEND_RESOURCE_GROUP_NAME", "") != "",
-    get_env("ECP_TG_BACKEND_NAME", "") != "",
-    get_env("ECP_TG_BACKEND_CONTAINER", "") != ""
+    get_env("ECP_TG_BACKEND_LEVEL0_SUBSCRIPTION_ID", "") != "",
+    get_env("ECP_TG_BACKEND_LEVEL0_RESOURCE_GROUP_NAME", "") != "",
+    get_env("ECP_TG_BACKEND_LEVEL0_NAME", "") != "",
+    get_env("ECP_TG_BACKEND_LEVEL0_CONTAINER", "") != ""
   ])
 
   ################# bootstrap-helper unit output (fallback) #################
@@ -187,10 +187,10 @@ locals {
 
   backend_type         = local.backend_config_present ? "azurerm" : try(local.bootstrap_helper_output.backend_storage_accounts["l0"].ecp_resource_exists == true && get_terraform_command() != "destroy" ? "azurerm" : "local", "local")
   backend_config = local.backend_config_present ? {
-    subscription_id      = get_env("ECP_TG_BACKEND_SUBSCRIPTION_ID")
-    resource_group_name  = get_env("ECP_TG_BACKEND_RESOURCE_GROUP_NAME")
-    storage_account_name = get_env("ECP_TG_BACKEND_NAME")
-    container_name       = get_env("ECP_TG_BACKEND_CONTAINER")
+    subscription_id      = get_env("ECP_TG_BACKEND_LEVEL0_SUBSCRIPTION_ID")
+    resource_group_name  = get_env("ECP_TG_BACKEND_LEVEL0_RESOURCE_GROUP_NAME")
+    storage_account_name = get_env("ECP_TG_BACKEND_LEVEL0_NAME")
+    container_name       = get_env("ECP_TG_BACKEND_LEVEL0_CONTAINER")
     use_azuread_auth     = true
     key                  = "${basename(path_relative_to_include())}.tfstate"
   } : local.backend_type == "azurerm" ? {

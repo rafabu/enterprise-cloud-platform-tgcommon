@@ -56,10 +56,10 @@ locals {
 
  # see if backend variables are set
   backend_config_present = alltrue([
-    get_env("ECP_TG_BACKEND_SUBSCRIPTION_ID", "") != "",
-    get_env("ECP_TG_BACKEND_RESOURCE_GROUP_NAME", "") != "",
-    get_env("ECP_TG_BACKEND_NAME", "") != "",
-    get_env("ECP_TG_BACKEND_CONTAINER", "") != ""
+    get_env("ECP_TG_BACKEND_LEVEL1_SUBSCRIPTION_ID", "") != "",
+    get_env("ECP_TG_BACKEND_LEVEL1_RESOURCE_GROUP_NAME", "") != "",
+    get_env("ECP_TG_BACKEND_LEVEL1_NAME", "") != "",
+    get_env("ECP_TG_BACKEND_LEVEL1_CONTAINER", "") != ""
   ])
 
   ################# bootstrap-helper unit output (fallback) #################
@@ -72,10 +72,10 @@ locals {
   bootstrap_backend_type_changed = false
 
    backend_config = local.backend_config_present ? {
-    subscription_id      = get_env("ECP_TG_BACKEND_SUBSCRIPTION_ID")
-    resource_group_name  = get_env("ECP_TG_BACKEND_RESOURCE_GROUP_NAME")
-    storage_account_name = get_env("ECP_TG_BACKEND_NAME")
-    container_name       = get_env("ECP_TG_BACKEND_CONTAINER")
+    subscription_id      = get_env("ECP_TG_BACKEND_LEVEL1_SUBSCRIPTION_ID")
+    resource_group_name  = get_env("ECP_TG_BACKEND_LEVEL1_RESOURCE_GROUP_NAME")
+    storage_account_name = get_env("ECP_TG_BACKEND_LEVEL1_NAME")
+    container_name       = get_env("ECP_TG_BACKEND_LEVEL1_CONTAINER")
     use_azuread_auth     = true
     key                  = "${basename(path_relative_to_include())}.tfstate"
   } : {
