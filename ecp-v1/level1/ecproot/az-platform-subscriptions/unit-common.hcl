@@ -72,17 +72,22 @@ inputs = {
 
     launchpad_azure_tags = {
       workloadName = "ecpalp"
+      workloadDescription = "ecpa launchpad"
     }
      management_azure_tags = {
       workloadName = "ecpamg"
+      workloadDescription = "ecpa management"
     }
      network_azure_tags = {
       workloadName = "ecpanet"
+      workloadDescription = "ecpa network"
     }
      identity_azure_tags = {
       workloadName = "ecpaid"
+      workloadDescription = "ecpa identity"
     }
     security_azure_tags = {
       workloadName = "ecpasec"
+      workloadDescription = "ecpa security"
     }
 }
