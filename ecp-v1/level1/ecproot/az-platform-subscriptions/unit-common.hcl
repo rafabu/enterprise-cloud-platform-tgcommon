@@ -5,6 +5,7 @@ dependencies {
 }
 
 locals {
+  ecp_deployment_area = "ecpa"
   ecp_deployment_unit             = ""
   ecp_resource_name_random_length = 0
 
