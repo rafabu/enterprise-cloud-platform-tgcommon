@@ -209,7 +209,7 @@ terraform {
     }
 %{endif}
 %{if contains(
-  ["ado-mpool", "az-launchpad-backend", "az-devcenter", "az-launchpad-network"],
+  ["ado-mpool", "az-launchpad-backend", "az-devcenter", "az-launchpad-network", "az-platform-subscriptions"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
   )[0][0])}
     azapi = {
