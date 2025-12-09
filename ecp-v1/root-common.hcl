@@ -72,6 +72,13 @@ locals {
   tf_provider_random_version      = "~> 3.7"
   tf_provider_msgraph_version     = "~> 0.1"
   tf_provider_time_version        = "~> 0.13"
+  # ALZ
+  tf_provider_alz_version        = "~> 0.20"
+  tf_provider_alz_alz_lib_version = "2025.09.3"
+  tf_provider_alz_slz_lib_version = "2025.10.1"
+  tf_provider_alz_amba_lib_version = "2025.10.1"
+  # Azure Verified Modules
+  tf_provider_modtm_version        = "~> 0.3"
 
   ############ Tags ############
   root_common_azure_tags = {
@@ -119,7 +126,34 @@ generate "provider" {
   contents = <<EOF
 
 %{if contains(
-  ["ado-mpool", "az-ecp-parent", "az-launchpad-backend", "az-devcenter", "az-launchpad-network", "az-platform-subscriptions"],
+  ["az-alz-base"],
+  regexall("^.*/(.+?)$", get_terragrunt_dir())[0][0])}
+provider "alz" {
+  tenant_id       = "${local.merged_locals.ecp_entra_tenant_id}"
+  subscription_id = "${local.ecp_management_subscription_id}"
+  environment         = "public"
+  library_references = [
+    {
+      path = "platform/alz"
+      ref  = "${local.tf_provider_alz_alz_lib_version}"
+    },
+    # {
+    #   path = "platform/slz"
+    #   ref  = "${local.tf_provider_alz_slz_lib_version}"
+    # },
+    # {
+    #   path = "platform/amba"
+    #   ref  = "${local.tf_provider_alz_amba_lib_version}"
+    # },
+    # {
+    #   custom_url = "${get_repo_root()}/lib"
+    # }
+  ]
+}
+%{endif}
+
+%{if contains(
+  ["az-alz-base", "ado-mpool", "az-ecp-parent", "az-launchpad-backend", "az-devcenter", "az-launchpad-network", "az-platform-subscriptions"],
   regexall("^.*/(.+?)$", get_terragrunt_dir())[0][0])}
 provider "azapi" {
   tenant_id       = "${local.merged_locals.ecp_entra_tenant_id}"
@@ -167,6 +201,15 @@ provider "azurerm" {
 %{endif}
 
 %{if contains(
+  ["az-alz-base"],
+  regexall("^.*/(.+?)$", get_terragrunt_dir()
+)[0][0])}
+provider "modtm" {
+  enabled = false
+}
+%{endif}
+
+%{if contains(
   ["entraid-policies"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
 )[0][0])}
@@ -186,6 +229,15 @@ terraform {
   required_version = "${local.tf_version}"
 
   required_providers {
+%{if contains(
+  ["az-alz-base"],
+  regexall("^.*/(.+?)$", get_terragrunt_dir()
+  )[0][0])}
+    alz = {
+      source  = "azure/alz"
+      version = "${local.tf_provider_alz_version}"
+    }
+%{endif}
 %{if contains(
   ["ado-mpool", "az-launchpad-bootstrap-finalizer", "az-launchpad-bootstrap-helper", "entraid-policies"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
@@ -209,7 +261,7 @@ terraform {
     }
 %{endif}
 %{if contains(
-  ["ado-mpool", "az-ecp-parent", "az-launchpad-backend", "az-devcenter", "az-launchpad-network", "az-platform-subscriptions"],
+  ["az-alz-base", "ado-mpool", "az-ecp-parent", "az-launchpad-backend", "az-devcenter", "az-launchpad-network", "az-platform-subscriptions"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
   )[0][0])}
     azapi = {
@@ -262,7 +314,16 @@ terraform {
     }
 %{endif}
 %{if contains(
-  ["az-devcenter","az-ecp-parent", "ado-mpool", "ado-project"],
+  ["az-alz-base"],
+  regexall("^.*/(.+?)$", get_terragrunt_dir()
+  )[0][0])}
+    modtm = {
+      source  = "azure/modtm"
+      version = "${local.tf_provider_modtm_version}"
+    }
+%{endif}
+%{if contains(
+  ["az-alz-base", "az-devcenter","az-ecp-parent", "ado-mpool", "ado-project"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
 )[0][0])}
     time = {
