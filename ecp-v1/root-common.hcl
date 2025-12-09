@@ -145,9 +145,10 @@ provider "alz" {
     #   path = "platform/amba"
     #   ref  = "${local.tf_provider_alz_amba_lib_version}"
     # },
-    # {
-    #   custom_url = "${get_repo_root()}/lib"
-    # }
+    # load additional ALZ artifacts via library
+    {
+      custom_url = "${get_repo_root()}/lib/ecp-lib/platform/alz-artefacts/"
+    }
   ]
 }
 %{endif}
