@@ -45,7 +45,7 @@ locals {
   ######## Launchpad ########
   ecp_launchpad_subscription_id     = coalesce(local.merged_locals.ecp_launchpad_subscription_id, "00000000-0000-0000-0000-000000000000")     # from env.hcl normally
   ecp_management_subscription_id    = local.merged_locals.ecp_management_subscription_id
-  ecp_network_subscription_id       = coalesce(local.merged_locals.ecp_network_subscription_id, "00000000-0000-0000-0000-000000000000")
+  ecp_connectivity_subscription_id  = coalesce(local.merged_locals.ecp_connectivity_subscription_id, "00000000-0000-0000-0000-000000000000")
   ecp_identity_subscription_id      = coalesce(local.merged_locals.ecp_identity_subscription_id, "00000000-0000-0000-0000-000000000000")
   ecp_security_subscription_id      = coalesce(local.merged_locals.ecp_security_subscription_id, "00000000-0000-0000-0000-000000000000")
   
@@ -137,6 +137,10 @@ provider "alz" {
       path = "platform/alz"
       ref  = "${local.tf_provider_alz_alz_lib_version}"
     },
+    # load additional ALZ artifacts via library
+    {
+      custom_url = "${get_repo_root()}/lib/ecp-lib/platform/alz-artefacts/"
+    },
     # {
     #   path = "platform/slz"
     #   ref  = "${local.tf_provider_alz_slz_lib_version}"
@@ -144,11 +148,7 @@ provider "alz" {
     # {
     #   path = "platform/amba"
     #   ref  = "${local.tf_provider_alz_amba_lib_version}"
-    # },
-    # load additional ALZ artifacts via library
-    {
-      custom_url = "${get_repo_root()}/lib/ecp-lib/platform/alz-artefacts/"
-    }
+    # }    
   ]
 }
 %{endif}
@@ -357,7 +357,7 @@ inputs = {
   ecp_launchpad_subscription_id     = local.ecp_launchpad_subscription_id
   ecp_identity_subscription_id      = local.ecp_identity_subscription_id
   ecp_security_subscription_id      = local.ecp_security_subscription_id
-  ecp_network_subscription_id       = local.ecp_network_subscription_id
+  ecp_connectivity_subscription_id  = local.ecp_connectivity_subscription_id
 
   ecp_azure_devops_organization_name             = local.ecp_azure_devops_organization_name
   ecp_azure_devops_project_name                  = local.ecp_azure_devops_project_name
