@@ -90,5 +90,5 @@ remote_state {
 inputs = {
     azure_tags = local.unit_common_azure_tags
 
-    alz_parent_management_group_resource_id = dependencies.az-ecp-parent.outputs.parent_management_group_id
+    alz_parent_management_group_resource_id = dependency.az-ecp-parent.outputs.parent_management_group_id
 }
