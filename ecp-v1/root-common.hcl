@@ -141,6 +141,7 @@ provider "alz" {
     {
       custom_url = "${get_repo_root()}/lib/ecp-lib/platform/alz-artefacts/"
     },
+    # template-rendered local path
     {
       custom_url = "c:/temp/ecp-alz-lib/"
     }
