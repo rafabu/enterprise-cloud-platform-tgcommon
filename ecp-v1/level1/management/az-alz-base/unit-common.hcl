@@ -28,7 +28,10 @@ locals {
   ecp_deployment_unit = "management"
   ecp_resource_name_random_length = 0
 
-  azure_tf_module_folder = "az-alz-base"  
+  azure_tf_module_folder = "az-alz-base"
+
+    alz_library_path_shared = format("%s/lib/ecp-lib/platform/alz-artefacts/", get_repo_root())
+    alz_library_path_unit   = "${get_terragrunt_dir()}/lib/"
 
   ################# terragrunt specifics #################
   TG_DOWNLOAD_DIR = coalesce(
@@ -91,4 +94,8 @@ inputs = {
     azure_tags = local.unit_common_azure_tags
 
     alz_parent_management_group_resource_id = dependency.az-ecp-parent.outputs.parent_management_group_id
+
+    # additional ALZ library paths
+    alz_library_path_shared = local.alz_library_path_shared
+    alz_library_path_unit   = local.alz_library_path_unit
 }
