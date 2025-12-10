@@ -98,40 +98,6 @@ remote_state {
   disable_init = tobool(get_env("TERRAGRUNT_DISABLE_INIT", "false"))
 }
 
-generate "provider" {
-  path      = "providers_alz.tf"
-  if_exists = "overwrite"
-  contents = <<EOF
-provider "alz" {
-  tenant_id       = "${local.merged_locals.ecp_entra_tenant_id}"
-  subscription_id = "${local.ecp_management_subscription_id}"
-  environment         = "public"
-  library_references = [
-    {
-      path = "platform/alz"
-      ref  = "${local.tf_provider_alz_alz_lib_version}"
-    },
-    # load additional ALZ artifacts via library
-    {
-      custom_url = "file::${get_repo_root()}/lib/ecp-lib/platform/alz-artefacts/?archive=false"
-    },
-    # template-rendered local path
-    {
-      custom_url = "file::c:/temp/ecp-alz-lib/?archive=false"
-    }
-    # {
-    #   path = "platform/slz"
-    #   ref  = "${local.tf_provider_alz_slz_lib_version}"
-    # },
-    # {
-    #   path = "platform/amba"
-    #   ref  = "${local.tf_provider_alz_amba_lib_version}"
-    # }    
-  ]
-}
-EOF
-}
-
 inputs = {
   ecp_deployment_entraid_contributor_group_member_principal_ids = [
     "111d8248-5407-4cc2-8482-67f182b8cd78" # Adele Vance / AdeleV@m365.rabuzu.com
