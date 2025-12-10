@@ -124,39 +124,6 @@ generate "provider" {
   path      = "providers.tf"
   if_exists = "overwrite"
   contents = <<EOF
-
-%{if contains(
-  ["az-alz-base"],
-  regexall("^.*/(.+?)$", get_terragrunt_dir())[0][0])}
-provider "alz" {
-  tenant_id       = "${local.merged_locals.ecp_entra_tenant_id}"
-  subscription_id = "${local.ecp_management_subscription_id}"
-  environment         = "public"
-  library_references = [
-    {
-      path = "platform/alz"
-      ref  = "${local.tf_provider_alz_alz_lib_version}"
-    },
-    # load additional ALZ artifacts via library
-    {
-      custom_url = "${get_repo_root()}/lib/ecp-lib/platform/alz-artefacts/"
-    },
-    # template-rendered local path
-    {
-      custom_url = "c:/temp/ecp-alz-lib/"
-    }
-    # {
-    #   path = "platform/slz"
-    #   ref  = "${local.tf_provider_alz_slz_lib_version}"
-    # },
-    # {
-    #   path = "platform/amba"
-    #   ref  = "${local.tf_provider_alz_amba_lib_version}"
-    # }    
-  ]
-}
-%{endif}
-
 %{if contains(
   ["az-alz-base", "ado-mpool", "az-ecp-parent", "az-launchpad-backend", "az-devcenter", "az-launchpad-network", "az-platform-subscriptions"],
   regexall("^.*/(.+?)$", get_terragrunt_dir())[0][0])}
