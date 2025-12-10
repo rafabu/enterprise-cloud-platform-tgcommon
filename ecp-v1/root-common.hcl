@@ -141,6 +141,9 @@ provider "alz" {
     {
       custom_url = "${get_repo_root()}/lib/ecp-lib/platform/alz-artefacts/"
     },
+    {
+      custom_url = "c:/temp/ecp-alz-lib/"
+    }
     # {
     #   path = "platform/slz"
     #   ref  = "${local.tf_provider_alz_slz_lib_version}"
