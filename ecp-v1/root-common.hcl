@@ -350,7 +350,7 @@ generate "import" {
   regexall("^.*/(.+?)$", get_terragrunt_dir()
   )[0][0]) && get_terraform_command() != "destroy"}}
 # re-use the pre-created ECP parent management group
-#     note: id must match ecp-deployment-${deployment-code}
+#     note: id must match ${local.ecp_environment_name}-mg-ecpa-deployment
 import {
   to = module.alz.azapi_resource.management_groups_level_0["${local.ecp_environment_name}-mg-ecpa-deployment"] # Must be YOUR resource
   id = var.alz_parent_management_group_resource_id
@@ -364,7 +364,7 @@ import {
 
 # prevent destruction of pre-created parent management group
 removed {
-  from = module.alz.azapi_resource.management_groups_level_0["${local.ecp_environment_name}-mg-ecpa-deployment"]
+  from = module.alz.azapi_resource.management_groups_level_0 # ["${local.ecp_environment_name}-mg-ecpa-deployment"]
   
   lifecycle {
     destroy = false  # Keep the resource in Azure when destroying
