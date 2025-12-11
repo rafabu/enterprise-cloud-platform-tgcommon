@@ -374,6 +374,7 @@ removed {
     destroy = false  # Keep the resource in Azure when destroying
   }
 }
+
 %{endif}
 EOF
 }
