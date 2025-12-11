@@ -140,9 +140,10 @@ provider "alz" {
     {
       custom_url = "file::${get_repo_root()}/lib/ecp-lib/platform/alz-artefacts/?archive=false"
     },
-    # template-rendered local path
+    # template-rendered local path (variable interpreted by terraform, not terragrunt)
     {
-      custom_url = "file::c:/temp/ecp-alz-lib/?archive=false"
+      # custom_url = "file::c:/temp/ecp-alz-lib/?archive=false"
+      custom_url = "file::$${var.alz_library_path_shared_rendered}?archive=false"
     }
     # {
     #   path = "platform/slz"
