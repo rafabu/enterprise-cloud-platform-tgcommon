@@ -144,7 +144,6 @@ provider "alz" {
     },
     # template-rendered local path (variable interpreted by terraform, not terragrunt)
     {
-      # custom_url = "file::c:/temp/ecp-alz-lib/?archive=false"
       custom_url = "file::$${var.alz_library_path_shared_rendered}?archive=false"
     }
     # {
