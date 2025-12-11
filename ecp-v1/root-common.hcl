@@ -24,7 +24,7 @@ locals {
   ecp_azure_devops_project_name                  = "ECP"
   ecp_azure_devops_automation_repository_name    = "ECP.Automation"
   ecp_azure_devops_configuration_repository_name = "ECP.Configuration"
-  ecp_azure_root_parent_management_group_id      = "ecp-root"
+  ecp_azure_root_parent_management_group_id      = "mg-ecpa-root"
 
   deployment_unit_default = "main"
 
@@ -337,6 +337,25 @@ terraform {
 %{endif}
   }
 }
+EOF
+}
+
+# allows importing pre-existing resources into terraform state
+generate "import" {
+  path      = "import-resources.tf"
+  if_exists = "overwrite"
+  contents = <<EOF
+%{if contains(
+  ["az-alz-base"],
+  regexall("^.*/(.+?)$", get_terragrunt_dir()
+  )[0][0])}
+# re-use the pre-created ECP parent management group
+#     note: id must match ecp-deployment-${deployment-code}
+import {
+  to = module.alz.azapi_resource.management_groups_level_0["${local.ecp_environment_name}-mg-ecpa-deployment"] # Must be YOUR resource
+  id = var.alz_parent_management_group_resource_id
+}
+%{endif}
 EOF
 }
 
