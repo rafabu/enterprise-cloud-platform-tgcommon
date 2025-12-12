@@ -345,41 +345,41 @@ EOF
 
 ################# Terraform Import Statements #################
 #      allows importing pre-existing resources into terraform state
-# # # # generate "import" {
-# # # #   path      = "import-resources.tf"
-# # # #   if_exists = "overwrite"
-# # # #   contents = <<EOF
-# # # # %{if contains(
-# # # #   ["az-alz-base"],
-# # # #   regexall("^.*/(.+?)$", get_terragrunt_dir()
-# # # #   )[0][0]) && "${local.terraform_command}" != "destroy"}
+generate "import" {
+  path      = "import-resources.tf"
+  if_exists = "overwrite"
+  contents = <<EOF
+%{if contains(
+  ["az-alz-base"],
+  regexall("^.*/(.+?)$", get_terragrunt_dir()
+  )[0][0]) && "${local.terraform_command}" != "destroy"}
 
-# # # # # re-use the pre-created ECP parent management group
-# # # # #     note: id must match ${local.ecp_environment_name}-mg-ecpa-deployment
-# # # # import {
-# # # #   to = module.alz.azapi_resource.management_groups_level_0["${local.ecp_environment_name}-mg-ecpa-deployment"] # Must be YOUR resource
-# # # #   id = var.alz_parent_management_group_resource_id
-# # # # }
+# re-use the pre-created ECP parent management group
+#     note: id must match ${local.ecp_environment_name}-mg-ecpa-deployment
+import {
+  to = module.alz.azapi_resource.management_groups_level_0["${local.ecp_environment_name}-mg-ecpa-deployment"] # Must be YOUR resource
+  id = var.alz_parent_management_group_resource_id
+}
 
-# # # # %{endif}
+%{endif}
 
-# # # # %{if contains(
-# # # #   ["az-alz-base"],
-# # # #   regexall("^.*/(.+?)$", get_terragrunt_dir()
-# # # #   )[0][0]) && "${local.terraform_command}" == "destroy"}
+%{if contains(
+  ["az-alz-base"],
+  regexall("^.*/(.+?)$", get_terragrunt_dir()
+  )[0][0]) && "${local.terraform_command}" == "destroy"}
 
-# # # # # prevent destruction of pre-created parent management group
-# # # # removed {
-# # # #   from = module.alz.azapi_resource.management_groups_level_0 # ["${local.ecp_environment_name}-mg-ecpa-deployment"]
+# prevent destruction of pre-created parent management group
+removed {
+  from = module.alz.azapi_resource.management_groups_level_0 # ["${local.ecp_environment_name}-mg-ecpa-deployment"]
   
-# # # #   lifecycle {
-# # # #     destroy = false  # Keep the resource in Azure when destroying
-# # # #   }
-# # # # }
+  lifecycle {
+    destroy = false  # Keep the resource in Azure when destroying
+  }
+}
 
-# # # # %{endif}
-# # # # EOF
-# # # # }
+%{endif}
+EOF
+}
 
 inputs = {
   azure_location = local.ecp_azure_main_location
