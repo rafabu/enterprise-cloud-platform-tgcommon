@@ -209,6 +209,21 @@ provider "azurerm" {
 %{endif}
 
 %{if contains(
+["az-alz-base"],
+  regexall("^.*/(.+?)$", get_terragrunt_dir()
+  )[0][0])}
+provider "azurerm" {
+  tenant_id       = "${local.merged_locals.ecp_entra_tenant_id}"
+  subscription_id = "${local.ecp_management_subscription_id}"
+
+  environment         = "public"
+  storage_use_azuread = true
+
+  features {}
+}
+%{endif}
+
+%{if contains(
   ["az-alz-base"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
 )[0][0])}
@@ -259,7 +274,7 @@ terraform {
       version = "${local.tf_provider_azurecaf_version}"
     }
 %{if contains(
-  ["ado-mpool", "az-devcenter", "az-launchpad-bootstrap-helper", "az-launchpad-backend", "az-launchpad-network", "az-launchpad-main"],
+  ["ado-mpool", "az-alz-base", "az-devcenter", "az-launchpad-bootstrap-helper", "az-launchpad-backend", "az-launchpad-network", "az-launchpad-main"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
   )[0][0])}
     azurerm = {
