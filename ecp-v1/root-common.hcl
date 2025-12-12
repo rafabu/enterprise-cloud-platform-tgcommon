@@ -145,17 +145,7 @@ provider "alz" {
     # template-rendered local path (variable interpreted by terraform, not terragrunt)
     {
       custom_url = "file::$${var.alz_library_path_shared_rendered}?archive=false"
-      # custom_url = "/tmp/ff45fba2-09a4-52a6-94d7-4ef12bdfcfa4"
-      # custom_url = "$${var.alz_library_path_shared_rendered}"
     }
-    # {
-    #   path = "platform/slz"
-    #   ref  = "${local.tf_provider_alz_slz_lib_version}"
-    # },
-    # {
-    #   path = "platform/amba"
-    #   ref  = "${local.tf_provider_alz_amba_lib_version}"
-    # }    
   ]
 }
 %{endif}
