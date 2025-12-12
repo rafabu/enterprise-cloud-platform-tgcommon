@@ -33,7 +33,7 @@ locals {
     alz_library_path_shared = format("%s/lib/ecp-lib/platform/alz-artefacts/", get_repo_root())
     alz_library_path_unit   = "${get_terragrunt_dir()}/lib/"
     # folder where rendered template alz library files are places (temporarily)
-    alz_library_path_shared_rendered  = "${local.TG_DOWNLOAD_DIR}/${uuidv5("dns", "${local.alz_library_path_shared}")}/"
+    alz_library_path_shared_rendered  = "${trimsuffix(local.TG_DOWNLOAD_DIR, "/")}/${uuidv5("dns", "${local.alz_library_path_shared}")}/"
 
   ################# terragrunt specifics #################
   TG_DOWNLOAD_DIR = coalesce(
