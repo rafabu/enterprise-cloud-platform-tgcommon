@@ -9,6 +9,37 @@ dependencies {
   )))
 }
 
+dependency "l0-lp-az-lp-net" {
+  config_path = format("%s/../../../level0/launchpad/az-launchpad-network", get_original_terragrunt_dir())
+  mock_outputs = {
+    virtual_networks = {
+      l0-launchpad-main = {
+        id                  = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualNetworks/mock-vnet"
+        name                = "mock-vnet"
+        resource_group_name = "mock-rg"
+        location            = "westeurope"
+        address_space = [
+          "192.0.2.0/24"
+        ]
+      }
+    }
+    virtual_network_subnets = {
+      l0-launchpad-main-default = {
+        id                   = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualNetworks/mock-vnet/subnets/mock"
+        name                 = "mock"
+        resource_group_name  = "mock-rg"
+        virtual_network_name = "mock-vnet"
+        address_prefixes = [
+          "192.0.2.0/24"
+        ]
+      }
+    }
+  }
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
+  mock_outputs_merge_strategy_with_state  = "shallow"
+}
+
+
 dependency "az-ecp-parent" {
   config_path = format("%s/../../ecproot/az-ecp-parent", get_original_terragrunt_dir())
    mock_outputs = {
@@ -97,10 +128,8 @@ remote_state {
 inputs = {
     azure_tags = local.unit_common_azure_tags
 
-    # alz_parent_management_group_resource_id = dependency.az-ecp-parent.outputs.parent_management_group_id
-
-    # additional ALZ library paths
-    # alz_library_path_shared = local.alz_library_path_shared
-    # alz_library_path_unit   = local.alz_library_path_unit
-    # alz_library_path_shared_rendered = local.alz_library_path_shared_rendered
+    # link launchpad network to private DNS zones
+    virtual_network_link_id_list = [
+      dependency.l0-lp-az-lp-net.outputs.virtual_network_subnets.l0-launchpad-main-default.id
+    ]
 }
