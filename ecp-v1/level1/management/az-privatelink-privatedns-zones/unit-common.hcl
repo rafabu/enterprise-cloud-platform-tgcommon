@@ -130,6 +130,6 @@ inputs = {
 
     # link launchpad network to private DNS zones
     virtual_network_link_id_list = [
-      dependency.l0-lp-az-lp-net.outputs.virtual_network_subnets.l0-launchpad-main-default.id
+      dependency.l0-lp-az-lp-net.outputs.virtual_networks.l0-launchpad-main.id
     ]
 }
