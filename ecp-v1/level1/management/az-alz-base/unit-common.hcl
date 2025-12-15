@@ -23,6 +23,20 @@ dependency "az-ecp-parent" {
   mock_outputs_merge_strategy_with_state  = "shallow"
 }
 
+dependency "az-privatelink-privatedns-zones" {
+  config_path = format("%s/../az-privatelink-privatedns-zones", get_original_terragrunt_dir())
+   mock_outputs = {
+    private_link_private_dns_zones_resource_ids = [
+      "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/placeholder/providers/Microsoft.Network/privateDnsZones//providers/Microsoft.Network/privateDnsZones/privatelink.azurecr.io"
+    ]
+    private_link_private_dns_zones = {
+      azure_acr_registry = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/placeholder/providers/Microsoft.Network/privateDnsZones//providers/Microsoft.Network/privateDnsZones/privatelink.azurecr.io"
+    }
+  }
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
+  mock_outputs_merge_strategy_with_state  = "shallow"
+}
+
 locals {
   ecp_deployment_area = "ecpa"
   ecp_deployment_unit = "mgmt"
@@ -101,4 +115,6 @@ inputs = {
     alz_library_path_shared = local.alz_library_path_shared
     alz_library_path_unit   = local.alz_library_path_unit
     alz_library_path_shared_rendered = local.alz_library_path_shared_rendered
+
+    private_dns_zone_configuration = dependency.az-privatelink-privatedns-zones.outputs.private_link_private_dns_zones
 }
