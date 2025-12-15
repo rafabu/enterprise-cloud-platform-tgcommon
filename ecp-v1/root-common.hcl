@@ -199,7 +199,7 @@ provider "azurerm" {
 %{endif}
 
 %{if contains(
-  ["az-privatelink-privatedns-zones"],
+  [],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
   )[0][0])}
 provider "azurerm" {
