@@ -30,7 +30,7 @@ locals {
 
   azure_tf_module_folder = "az-privatedns-zones"
 
-# alz library paths (learn what provate DNS zones exist in ALZ's own policy initiative artefacts)
+# alz library paths (learn what private DNS zones exist in ALZ's own policy initiative artefacts)
 #     - Deploy-Private-DNS-Zones
     # alz_library_path_shared = format("%s/lib/ecp-lib/platform/alz-artefacts/", get_repo_root())
     # alz_library_path_unit   = "${get_terragrunt_dir()}/lib/"
