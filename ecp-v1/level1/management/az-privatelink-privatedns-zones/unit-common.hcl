@@ -28,7 +28,7 @@ locals {
   ecp_deployment_unit = "conn"
   ecp_resource_name_random_length = 0
 
-  azure_tf_module_folder = "az-privatedns-zones"
+  azure_tf_module_folder = "az-privatelink-privatedns-zones"
 
 # alz library paths (learn what private DNS zones exist in ALZ's own policy initiative artefacts)
 #     - Deploy-Private-DNS-Zones
