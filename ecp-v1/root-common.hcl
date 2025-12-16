@@ -385,21 +385,21 @@ import {
 
 %{endif}
 
-%{if contains(
-  ["az-alz-base"],
-  regexall("^.*/(.+?)$", get_terragrunt_dir()
-  )[0][0]) && "${local.terraform_command}" == "destroy"}
+# %{if contains(
+#   ["az-alz-base"],
+#   regexall("^.*/(.+?)$", get_terragrunt_dir()
+#   )[0][0]) && "${local.terraform_command}" == "destroy"}
 
-# prevent destruction of pre-created parent management group
-removed {
-  from = module.alz.azapi_resource.management_groups_level_0 # ["${local.ecp_environment_name}-mg-ecpa-deployment"]
+# # prevent destruction of pre-created parent management group
+# removed {
+#   from = module.alz.azapi_resource.management_groups_level_0 # ["${local.ecp_environment_name}-mg-ecpa-deployment"]
   
-  lifecycle {
-    destroy = false  # Keep the resource in Azure when destroying
-  }
-}
+#   lifecycle {
+#     destroy = false  # Keep the resource in Azure when destroying
+#   }
+# }
 
-%{endif}
+# %{endif}
 EOF
 }
 
