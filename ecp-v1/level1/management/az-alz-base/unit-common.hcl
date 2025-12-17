@@ -4,7 +4,8 @@ dependencies {
       format("%s/../../../level0/bootstrap/az-launchpad-bootstrap-helper", get_original_terragrunt_dir())
     ] : [],
     [ 
-    format("%s/../../ecproot/az-platform-subscriptions", get_original_terragrunt_dir())
+    format("%s/../../ecproot/az-platform-subscriptions", get_original_terragrunt_dir()),
+    format("%s/../az-alz-shared-library-render", get_original_terragrunt_dir())
     ]
   )))
 }
@@ -46,10 +47,10 @@ locals {
 
   azure_tf_module_folder = "az-alz-base"
 
-    alz_library_path_shared = format("%s/lib/ecp-lib/platform/alz-artefacts/", get_repo_root())
-    alz_library_path_unit   = "${get_terragrunt_dir()}/lib/"
-    # folder where rendered template alz library files are places (temporarily)
-    alz_library_path_shared_rendered  = "${trimsuffix(local.TG_DOWNLOAD_DIR, "/")}/${uuidv5("dns", "${local.alz_library_path_shared}")}/"
+  alz_library_path_shared = format("%s/lib/ecp-lib/platform/alz-artefacts/", get_repo_root())
+  alz_library_path_unit   = "${get_terragrunt_dir()}/lib/"
+  # folder where rendered template alz library files are places (temporarily)
+  alz_library_path_shared_rendered  = "${trimsuffix(local.TG_DOWNLOAD_DIR, "/")}/${uuidv5("dns", "${local.alz_library_path_shared}")}/"
 
   ################# terragrunt specifics #################
   TG_DOWNLOAD_DIR = coalesce(
@@ -113,9 +114,7 @@ inputs = {
 
     alz_parent_management_group_resource_id = dependency.az-ecp-parent.outputs.parent_management_group_id
 
-    # additional ALZ library paths
-    alz_library_path_shared = local.alz_library_path_shared
-    alz_library_path_unit   = local.alz_library_path_unit
+    # additional ALZ library paths (for ALZ provider configuration)
     alz_library_path_shared_rendered = local.alz_library_path_shared_rendered
 
     private_dns_zone_configuration = dependency.az-privatelink-privatedns-zones.outputs.private_link_private_dns_zones
