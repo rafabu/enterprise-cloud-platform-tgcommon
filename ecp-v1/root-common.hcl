@@ -392,7 +392,7 @@ import {
 
 ###### terraform state remove 'module.alz.azapi_resource.management_groups_level_0'
 ###### move subscription out of management group before destroying the mg itself --> ECP root
-###### az account management-group subscription add --name GroupName --subscription Subscription
+###### az account management-group subscription add --name "${var.ecp_environment_name}-mg-ecpa-deployment" --subscription Subscription
 
 # prevent destruction of pre-created parent management group
 # removed {
