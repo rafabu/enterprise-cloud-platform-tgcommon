@@ -132,7 +132,7 @@ inputs = {
     # additional ALZ library paths (for ALZ provider configuration)
     alz_library_path_shared_rendered = local.alz_library_path_shared_rendered
 
-alz_management_resource_ids {
+alz_management_resource_ids = {
     log_analytics_workspace_id = dependency.az-alz-management-resources.outputs.log_analytics_workspace_id
     ama_change_tracking_data_collection_rule_id = dependency.az-alz-management-resources.outputs.ama_change_tracking_data_collection_rule_id
     ama_vm_insights_data_collection_rule_id = dependency.az-alz-management-resources.outputs.ama_vm_insights_data_collection_rule_id
