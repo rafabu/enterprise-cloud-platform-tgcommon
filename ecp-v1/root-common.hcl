@@ -119,6 +119,16 @@ terraform {
       "-lock=false" # assure we don't need "Blob Data Contributor"
     ]
   }
+  # TODO:
+  # WHEN IN AUTOMATION and plan file exists:
+  #     run apply using the previously saved plan file
+  # # # extra_arguments "apply_from_saved_plan" {
+  # # #   commands  = ["apply"]
+  # # #   arguments = [
+  # # #     "-input=false",
+  # # #     "${local.tfplan_path}${basename(path_relative_to_include())}.tfplan"
+  # # #   ]
+  # # # }
 }
 
 # add providers conditionally based on module name
