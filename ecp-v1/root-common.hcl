@@ -232,6 +232,21 @@ provider "azurerm" {
 %{endif}
 
 %{if contains(
+["az-alz-base"],
+  regexall("^.*/(.+?)$", get_terragrunt_dir()
+  )[0][0])}
+provider "azurerm" {
+  tenant_id       = "${local.merged_locals.ecp_entra_tenant_id}"
+  subscription_id = "${local.ecp_management_subscription_id}"
+
+  environment         = "public"
+  storage_use_azuread = true
+
+  features {}
+}
+%{endif}
+
+%{if contains(
   ["az-alz-base", "az-privatelink-privatedns-zones"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
 )[0][0])}
