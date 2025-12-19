@@ -24,6 +24,21 @@ dependency "az-ecp-parent" {
   mock_outputs_merge_strategy_with_state  = "shallow"
 }
 
+dependency "az-alz-management-resources" {
+  config_path = format("%s/../az-alz-management-resources", get_original_terragrunt_dir())
+   mock_outputs = {
+    automation_account_id = "00000000-0000-0000-0000-000000000000"
+    resource_group_id = "00000000-0000-0000-0000-000000000000"
+    log_analytics_workspace_id = "00000000-0000-0000-0000-000000000000"
+    ama_user_assigned_identity_id = "00000000-0000-0000-0000-000000000000"
+    ama_change_tracking_data_collection_rule_id = "00000000-0000-0000-0000-000000000000"
+    ama_defender_sqls_data_collection_rule_id = "00000000-0000-0000-0000-000000000000"
+    ama_vm_insights_data_collection_rule_id = "00000000-0000-0000-0000-000000000000"  
+  }
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
+  mock_outputs_merge_strategy_with_state  = "shallow"
+}
+
 dependency "az-privatelink-privatedns-zones" {
   config_path = format("%s/../az-privatelink-privatedns-zones", get_original_terragrunt_dir())
    mock_outputs = {
@@ -117,5 +132,13 @@ inputs = {
     # additional ALZ library paths (for ALZ provider configuration)
     alz_library_path_shared_rendered = local.alz_library_path_shared_rendered
 
+alz_management_resource_ids {
+    log_analytics_workspace_id = dependency.az-alz-management-resources.outputs.log_analytics_workspace_id
+    ama_change_tracking_data_collection_rule_id = dependency.az-alz-management-resources.outputs.ama_change_tracking_data_collection_rule_id
+    ama_vm_insights_data_collection_rule_id = dependency.az-alz-management-resources.outputs.ama_vm_insights_data_collection_rule_id
+    ama_defender_sqls_data_collection_rule_id = dependency.az-alz-management-resources.outputs.ama_defender_sqls_data_collection_rule_id
+    ama_user_assigned_managed_identity_id = dependency.az-alz-management-resources.outputs.ama_user_assigned_identity_id
+    ddos_protection_plan_id = null
+  }
     private_dns_zone_configuration = dependency.az-privatelink-privatedns-zones.outputs.private_link_private_dns_zones
 }
