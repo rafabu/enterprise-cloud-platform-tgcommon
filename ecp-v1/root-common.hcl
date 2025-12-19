@@ -216,10 +216,11 @@ provider "azurerm" {
 %{endif}
 
 %{if contains(
-["az-alz-base"],
+["az-alz-management-resources"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
   )[0][0])}
 provider "azurerm" {
+  alias  = "management"
   tenant_id       = "${local.merged_locals.ecp_entra_tenant_id}"
   subscription_id = "${local.ecp_management_subscription_id}"
 
@@ -281,7 +282,7 @@ terraform {
       version = "${local.tf_provider_azurecaf_version}"
     }
 %{if contains(
-  ["ado-mpool", "az-alz-base", "az-alz-management-resources", "az-devcenter", "az-launchpad-bootstrap-helper", "az-launchpad-backend", "az-launchpad-network", "az-launchpad-main"],
+  ["ado-mpool", "az-alz-management-resources", "az-devcenter", "az-launchpad-bootstrap-helper", "az-launchpad-backend", "az-launchpad-network", "az-launchpad-main"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
   )[0][0])}
     azurerm = {
@@ -325,7 +326,7 @@ terraform {
     }
 %{endif}
 %{if contains(
-  ["az-alz-base", "az-ecp-parent", "az-launchpad-bootstrap-helper"],
+  ["az-alz-shared-library-render", "az-ecp-parent", "az-launchpad-bootstrap-helper"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
   )[0][0])}
     external = {
