@@ -2,7 +2,7 @@ dependencies {
   paths = [
     format("%s/../../bootstrap/az-launchpad-bootstrap-helper", get_original_terragrunt_dir()),
     format("%s/../ado-repo-sync-automation", get_original_terragrunt_dir()),
-    format("%s/../../launchpad/ado-mpool", get_original_terragrunt_dir())
+    
   ]
 }
 
@@ -18,6 +18,21 @@ dependency "l0-lp-az-lp-main" {
     ecp_azure_devops_automation_repository_name    = "mock.automation"
     ecp_azure_devops_configuration_repository_name = "mock.configuration"
     azuredevops_organization_name                  = "mock-ado-org"
+  }
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
+  mock_outputs_merge_strategy_with_state  = "shallow"
+}
+
+dependency "l0-lp-ado-mpool" {
+  config_path = format("%s/../../launchpad/ado-mpool", get_original_terragrunt_dir())
+  mock_outputs = {
+    managed_devops_pool = {
+      id       = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.DevOpsInfrastructure/pools/mock-pool"
+      id_azuredevops      = "0"
+      name     = "mock-pool"
+      resource_group_name = "mock-rg"
+      location            = "westeurope"
+    }
   }
   mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
   mock_outputs_merge_strategy_with_state  = "shallow"
@@ -209,4 +224,6 @@ inputs = {
   ecp_environment_name = dependency.l0-lp-az-lp-main.outputs.ecp_environment_name
 
   ecp_azure_devops_repository_name = dependency.l0-lp-az-lp-main.outputs.ecp_azure_devops_automation_repository_name
+
+  ecp_azure_devops_pool_name = dependency.l0-lp-ado-mpool.outputs.managed_devops_pool.name
 }
