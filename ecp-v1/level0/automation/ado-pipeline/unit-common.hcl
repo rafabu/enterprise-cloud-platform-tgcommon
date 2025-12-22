@@ -217,8 +217,9 @@ inputs = {
   # define which artefacts from the libraries we need to create
   ado_yaml_pipeline_artefact_names = [
     "ECP-Deploy-Platform-Infrastructure",
-    "ECP-Deployment-Testing-Disabled",
-    "ECP-Deployment-Testing-Enabled"
+    "ECP-Debug-ADOPool-Analysis",
+    # "ECP-Deployment-Testing-Disabled",
+    # "ECP-Deployment-Testing-Enabled"
   ]
 
   ecp_environment_name = dependency.l0-lp-az-lp-main.outputs.ecp_environment_name
