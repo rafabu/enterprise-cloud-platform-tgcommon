@@ -174,6 +174,7 @@ inputs = {
 
   # get configuration folder and sync only the parts of the current environment.
   local_git_submodule_path = get_repo_root()
+  filter_git_subfolders = true
 
   # sparse = dependency.l0-lp-az-lp-main.outputs.ecp_configuration_repo_deployment_root_path
 

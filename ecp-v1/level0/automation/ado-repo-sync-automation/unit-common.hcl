@@ -173,6 +173,7 @@ inputs = {
   azure_tags = local.unit_common_azure_tags
 
   local_git_submodule_path = local.automation_path
+  filter_git_subfolders = false
 
   ecp_azure_devops_repository_name = dependency.l0-lp-az-lp-main.outputs.ecp_azure_devops_automation_repository_name
 
