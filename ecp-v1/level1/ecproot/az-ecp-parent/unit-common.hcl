@@ -99,16 +99,11 @@ remote_state {
 }
 
 inputs = {
-  # ecp_deployment_entraid_contributor_group_member_principal_ids = [
-  #   "111d8248-5407-4cc2-8482-67f182b8cd78" # Adele Vance / AdeleV@m365.rabuzu.com
-  # ]
+  # ecp_deployment_entraid_contributor_group_member_principal_ids = []
   ecp_deployment_entraid_contributor_groups_protected = true
   ecp_deployment_entraid_contributor_group_pim_enabled = true
 
-  # ecp_deployment_entraid_reader_group_member_principal_ids      = [
-  #   "111d8248-5407-4cc2-8482-67f182b8cd78", # Adele Vance / AdeleV@m365.rabuzu.com
-  #   "5c929fb8-b2eb-46de-99e3-c7a63127358a" # Alex Wilber / AlexW@m365.rabuzu.com
-  # ]
+  # ecp_deployment_entraid_reader_group_member_principal_ids      = []
   ecp_deployment_entraid_reader_groups_protected = false
   ecp_deployment_entraid_reader_group_pim_enabled = false
 
