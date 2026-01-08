@@ -1,11 +1,11 @@
 dependencies {
   paths = flatten(distinct(concat(
-    get_env("ECP_TF_BACKEND_STORAGE_AZURE_L1", "") == "" ? [
+    get_env("ECP_TF_BACKEND_STORAGE_AZURE_L2", "") == "" ? [
       format("%s/../../../level0/bootstrap/az-launchpad-bootstrap-helper", get_original_terragrunt_dir())
     ] : [],
     [ 
-    format("%s/../../ecproot/az-platform-subscriptions", get_original_terragrunt_dir()),
-    format("%s/../az-alz-shared-library-render", get_original_terragrunt_dir())
+    # format("%s/../../ecproot/az-platform-subscriptions", get_original_terragrunt_dir()),
+    # format("%s/../az-alz-shared-library-render", get_original_terragrunt_dir())
     ]
   )))
 }
