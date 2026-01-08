@@ -96,7 +96,7 @@ locals {
 
 terraform {
   # source = "git::${local.ecp_azure_modules_repo}/modules-tf//${local.unit_common_vars.locals.azure_tf_module_folder}" # ?ref=${include.root.locals.ecp_azure_modules_repo_version}"
-  source = "local::D:/Repos/isol-ecp/enterprise-cloud-platform-azure/modules-tf//${local.unit_common_vars.locals.azure_tf_module_folder}"
+  source = "file::D:/Repos/isol-ecp/enterprise-cloud-platform-azure/modules-tf//${local.unit_common_vars.locals.azure_tf_module_folder}"
 
   # Force Terraform to keep trying to acquire a lock for
   # up to 20 minutes if someone else already has the lock
