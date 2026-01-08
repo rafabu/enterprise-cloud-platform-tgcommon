@@ -72,7 +72,7 @@ locals {
   tf_provider_http_version        = "~> 3.5"
   tf_provider_local_version       = "~> 2.6"
   tf_provider_random_version      = "~> 3.7"
-  tf_provider_msgraph_version     = "~> 0.1"
+  tf_provider_msgraph_version     = "~> 0.3"
   tf_provider_time_version        = "~> 0.13"
   # ALZ
   tf_provider_alz_version        = "~> 0.20"
@@ -161,7 +161,7 @@ provider "alz" {
 %{endif}
 
 %{if contains(
-  ["az-alz-base", "az-alz-management-resources", "az-privatelink-privatedns-zones", "ado-mpool", "az-ecp-parent", "az-launchpad-backend", "az-devcenter", "az-launchpad-network", "az-platform-subscriptions"],
+  ["az-alz-base", "az-alz-connectivity-virtual-wan", "az-alz-management-resources", "az-privatelink-privatedns-zones", "ado-mpool", "az-ecp-parent", "az-launchpad-backend", "az-devcenter", "az-launchpad-network", "az-platform-subscriptions"],
   regexall("^.*/(.+?)$", get_terragrunt_dir())[0][0])}
 provider "azapi" {
   tenant_id       = "${local.merged_locals.ecp_entra_tenant_id}"
@@ -209,7 +209,7 @@ provider "azurerm" {
 %{endif}
 
 %{if contains(
-  ["az-alz-management-resources"],
+  ["az-alz-connectivity-virtual-wan", "az-alz-management-resources"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
   )[0][0])}
 provider "azurerm" {
@@ -257,7 +257,7 @@ provider "azurerm" {
 %{endif}
 
 %{if contains(
-  ["az-alz-base", "az-privatelink-privatedns-zones"],
+  ["az-alz-base", "az-alz-connectivity-virtual-wan", "az-privatelink-privatedns-zones"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
 )[0][0])}
 provider "modtm" {
@@ -307,7 +307,7 @@ terraform {
       version = "${local.tf_provider_azurecaf_version}"
     }
 %{if contains(
-  ["ado-mpool", "az-alz-management-resources", "az-devcenter", "az-launchpad-bootstrap-helper", "az-launchpad-backend", "az-launchpad-network", "az-launchpad-main"],
+  ["ado-mpool", "az-alz-connectivity-virtual-wan", "az-alz-management-resources", "az-devcenter", "az-launchpad-bootstrap-helper", "az-launchpad-backend", "az-launchpad-network", "az-launchpad-main"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
   )[0][0])}
     azurerm = {
@@ -316,7 +316,7 @@ terraform {
     }
 %{endif}
 %{if contains(
-  ["az-alz-base", "az-alz-management-resources", "az-privatelink-privatedns-zones", "ado-mpool", "az-ecp-parent", "az-launchpad-backend", "az-devcenter", "az-launchpad-network", "az-platform-subscriptions"],
+  ["az-alz-base", "az-alz-connectivity-virtual-wan", "az-alz-management-resources", "az-privatelink-privatedns-zones", "ado-mpool", "az-ecp-parent", "az-launchpad-backend", "az-devcenter", "az-launchpad-network", "az-platform-subscriptions"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
   )[0][0])}
     azapi = {
@@ -369,7 +369,7 @@ terraform {
     }
 %{endif}
 %{if contains(
-  ["az-alz-base", "az-privatelink-privatedns-zones"],
+  ["az-alz-base", "az-alz-connectivity-virtual-wan", "az-privatelink-privatedns-zones"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
   )[0][0])}
     modtm = {
