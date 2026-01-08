@@ -17,9 +17,9 @@ locals {
 
   azure_tf_module_folder = "az-alz-connectivity-virtual-wan"
 
-  alz_library_path_shared = format("%s/lib/ecp-lib/platform/alz-artefacts/", get_repo_root())
-  alz_library_path_unit   = "${get_terragrunt_dir()}/lib/"
-  
+  library_path_shared = format("%s/lib/ecp-lib", get_repo_root())
+  library_path_unit   = "${get_terragrunt_dir()}/lib"
+
   ################# virtual network artefacts #################
   # exclude the ones named in the *.exclude.json
   library_virtualNetworks_path_shared    = "${local.library_path_shared}/platform/ecp-artefacts/ms-azure/network/virtualNetworks"
