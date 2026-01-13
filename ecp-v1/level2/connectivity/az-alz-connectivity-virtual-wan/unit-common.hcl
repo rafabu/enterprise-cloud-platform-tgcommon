@@ -140,7 +140,7 @@ inputs = {
   virtual_network_definitions        = local.virtualNetwork_definition_merged
   
   virtual_wan_hubs = {
-    "default-basic" = {
+    "ecpa-default-location" = {
       # if not given; default ecpa location is chosen
       location = null
       # vnet artefact (defines address space))
