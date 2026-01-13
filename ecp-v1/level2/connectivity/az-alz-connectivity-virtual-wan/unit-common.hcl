@@ -10,6 +10,36 @@ dependencies {
   )))
 }
 
+dependency "l0-lp-az-lp-net" {
+  config_path = format("%s/../../../level0/launchpad/az-launchpad-network", get_original_terragrunt_dir())
+  mock_outputs = {
+    virtual_networks = {
+      l0-launchpad-main = {
+        id                  = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualNetworks/mock-vnet"
+        name                = "mock-vnet"
+        resource_group_name = "mock-rg"
+        location            = "westeurope"
+        address_space = [
+          "192.0.2.0/24"
+        ]
+      }
+    }
+    virtual_network_subnets = {
+      l0-launchpad-main-default = {
+        id                   = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualNetworks/mock-vnet/subnets/mock"
+        name                 = "mock"
+        resource_group_name  = "mock-rg"
+        virtual_network_name = "mock-vnet"
+        address_prefixes = [
+          "192.0.2.0/24"
+        ]
+      }
+    }
+  }
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
+  mock_outputs_merge_strategy_with_state  = "shallow"
+}
+
 locals {
   ecp_deployment_area = "ecpa"
   ecp_deployment_unit = "conn"
@@ -111,8 +141,19 @@ inputs = {
   
   virtual_wan_hubs = {
     "default-basic" = {
+      # if not given; default ecpa location is chosen
+      location = null
+      # vnet artefact (defines address space))
       address_prefix_artefact_name    = "l2-connectivity-vwan-hub" 
+      
       sku = "Basic"
+
+      virtual_network_connections = {
+        ecpa-launchpad = {
+          remote_virtual_network_id = dependency.l0-lp-az-lp-net.outputs.virtual_network_subnets.l0-launchpad-main-default.id
+          internet_security_enabled = true
+        }
+      }
     }
   }
 }
