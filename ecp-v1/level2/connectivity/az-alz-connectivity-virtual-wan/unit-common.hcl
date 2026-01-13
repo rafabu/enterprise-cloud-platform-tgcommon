@@ -150,7 +150,7 @@ inputs = {
 
       virtual_network_connections = {
         ecpa-launchpad = {
-          remote_virtual_network_id = dependency.l0-lp-az-lp-net.outputs.virtual_network_subnets.l0-launchpad-main-default.id
+          remote_virtual_network_id = dependency.l0-lp-az-lp-net.outputs.virtual_networks.l0-launchpad-main.id
           internet_security_enabled = true
         }
       }
