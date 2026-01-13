@@ -151,7 +151,8 @@ inputs = {
       virtual_network_connections = {
         ecpa-launchpad = {
           remote_virtual_network_id = dependency.l0-lp-az-lp-net.outputs.virtual_networks.l0-launchpad-main.id
-          internet_security_enabled = true
+          # internet_security_enabled (route via Azure firewall) has been superseded by routing_intent
+          internet_security_enabled = false
         }
       }
     }
