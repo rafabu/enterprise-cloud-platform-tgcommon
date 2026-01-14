@@ -160,6 +160,7 @@ inputs = {
       virtual_network_gateways = {
           vpn = {
             name = "vpn-gw-name"
+            scale_units = 5
         }
       }
     }
