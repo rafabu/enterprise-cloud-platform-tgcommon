@@ -231,7 +231,7 @@ inputs = {
 
           vpn_links = [
             {
-              name                 = "link1"
+              name                 = "link1-connection"
               vpn_site_link_number = 0
               vpn_site_key         = "ExAmPlE_SeCrEt_KeY_NoT_ReAl_12345!@#$%"
               connection_mode      = null
@@ -254,7 +254,7 @@ inputs = {
               protocol = "IKEv2"
             },
             {
-              name                 = "link2"
+              name                 = "link2-connection"
               vpn_site_link_number = 1
               vpn_site_key         = "ExAmPlE_SeCrEt_KeY_NoT_ReAl_12345!@#$%"
               connection_mode      = null
