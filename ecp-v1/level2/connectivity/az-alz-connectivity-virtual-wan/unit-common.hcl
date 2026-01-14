@@ -198,7 +198,7 @@ inputs = {
               #   peering_address = "192.168.0.1"
               # }
               fqdn          = null
-              ip_address    = "192.168.1.1"
+              ip_address    = "192.0.2.2"
               provider_name = null
               speed_in_mbps = null
             }
@@ -210,12 +210,14 @@ inputs = {
               #   peering_address = "192.168.0.1"
               # }
               fqdn          = null
-              ip_address    = "192.168.1.2"
+              ip_address    = "192.0.2.3"
               provider_name = null
               speed_in_mbps = null
             }
           ]
-          address_cidrs = []
+          address_cidrs = [
+             "192.0.2.0/24"
+          ]
           device_model  = null
           device_vendor = null
           o365_policy   = null
