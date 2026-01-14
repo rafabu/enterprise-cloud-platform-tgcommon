@@ -1,5 +1,5 @@
-dependencies{
-   paths = [
+dependencies {
+  paths = [
     format("%s/../../bootstrap/az-launchpad-bootstrap-helper", get_original_terragrunt_dir()),
     format("%s/../../launchpad/az-launchpad-main", get_original_terragrunt_dir()),
     format("%s/../../launchpad/az-launchpad-network", get_original_terragrunt_dir()),
@@ -19,26 +19,26 @@ dependency "l0-lp-ado-mpool" {
       location = "westeurope"
     }
     managed_devops_pool = {
-      id   = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.DevOps/managedDevOpsPools/mock-pool"
-      id_azuredevops = "0"
-      name = "mock-pool"
+      id                  = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.DevOps/managedDevOpsPools/mock-pool"
+      id_azuredevops      = "0"
+      name                = "mock-pool"
       resource_group_name = "mock-rg"
-      location = "westeurope"
+      location            = "westeurope"
     }
-     service_principals = {
+    service_principals = {
       "l0-contribute" = {
-        id   = "00000000-0000-0000-0000-000000000000"
+        id           = "00000000-0000-0000-0000-000000000000"
         display_name = "mock_name"
-        client_id = "00000000-0000-0000-0000-000000000000"
-        object_id = "00000000-0000-0000-0000-000000000000"
-        type = "managedIdentity"
+        client_id    = "00000000-0000-0000-0000-000000000000"
+        object_id    = "00000000-0000-0000-0000-000000000000"
+        type         = "managedIdentity"
       }
       "l0-read" = {
-        id   = "00000000-0000-0000-0000-000000000000"
+        id           = "00000000-0000-0000-0000-000000000000"
         display_name = "mock_name"
-        client_id = "00000000-0000-0000-0000-000000000000"
-        object_id = "00000000-0000-0000-0000-000000000000"
-        type = "managedIdentity"
+        client_id    = "00000000-0000-0000-0000-000000000000"
+        object_id    = "00000000-0000-0000-0000-000000000000"
+        type         = "managedIdentity"
       }
     }
   }
@@ -66,15 +66,15 @@ locals {
   ])
 
   ################# bootstrap-helper unit output (fallback) #################
-  bootstrap_helper_folder        = "${local.TG_DOWNLOAD_DIR}/${uuidv5("dns", "az-launchpad-bootstrap-helper")}"
-  bootstrap_helper_output        = jsondecode(
+  bootstrap_helper_folder = "${local.TG_DOWNLOAD_DIR}/${uuidv5("dns", "az-launchpad-bootstrap-helper")}"
+  bootstrap_helper_output = jsondecode(
     try(file("${local.bootstrap_helper_folder}/terraform_output.json"), "{}")
   )
   bootstrap_backend_type_changed = try(local.bootstrap_helper_output.backend_storage_accounts["l0"].ecp_terraform_backend_changed_since_last_apply, false)
   # assure local state resides in bootstrap-helper folder
   bootstrap_local_backend_path = "${local.bootstrap_helper_folder}/${basename(path_relative_to_include())}.tfstate"
 
-  backend_type         = local.backend_config_present ? "azurerm" : try(local.bootstrap_helper_output.backend_storage_accounts["l0"].ecp_resource_exists == true && get_terraform_command() != "destroy" ? "azurerm" : "local", "local")
+  backend_type = local.backend_config_present ? "azurerm" : try(local.bootstrap_helper_output.backend_storage_accounts["l0"].ecp_resource_exists == true && get_terraform_command() != "destroy" ? "azurerm" : "local", "local")
   backend_config = local.backend_config_present ? {
     subscription_id      = get_env("ECP_TG_BACKEND_LEVEL0_SUBSCRIPTION_ID")
     resource_group_name  = get_env("ECP_TG_BACKEND_LEVEL0_RESOURCE_GROUP_NAME")
@@ -82,7 +82,7 @@ locals {
     container_name       = get_env("ECP_TG_BACKEND_LEVEL0_CONTAINER")
     use_azuread_auth     = true
     key                  = "${basename(path_relative_to_include())}.tfstate"
-  } : local.backend_type == "azurerm" ? {
+    } : local.backend_type == "azurerm" ? {
     subscription_id      = local.bootstrap_helper_output.backend_storage_accounts["l0"].subscription_id
     resource_group_name  = local.bootstrap_helper_output.backend_storage_accounts["l0"].resource_group_name
     storage_account_name = local.bootstrap_helper_output.backend_storage_accounts["l0"].name
@@ -106,7 +106,7 @@ remote_state {
     path      = "backend.tf"
     if_exists = "overwrite"
   }
-  config = local.backend_config
+  config       = local.backend_config
   disable_init = tobool(get_env("TERRAGRUNT_DISABLE_INIT", "false"))
 }
 
@@ -184,25 +184,25 @@ SCRIPT
     run_on_error = false
   }
 
-    after_hook "Close-RemoteBackend-Access" {
-       commands     = [
-        "apply",
-        # "destroy",  # during destroy the remote state should no longer be present
-        "force-unlock",
-        "import",
-        # "init", 
-        # "output",
-        # "plan", 
-        # "refresh",
-        # "state",
-        # "taint",
-        # "untaint",
-        # "validate"
-        ]
-      execute      = [
-        "pwsh",
-        "-Command", 
-  <<-SCRIPT
+  after_hook "Close-RemoteBackend-Access" {
+    commands = [
+      "apply",
+      # "destroy",  # during destroy the remote state should no longer be present
+      "force-unlock",
+      "import",
+      # "init", 
+      # "output",
+      # "plan", 
+      # "refresh",
+      # "state",
+      # "taint",
+      # "untaint",
+      # "validate"
+    ]
+    execute = [
+      "pwsh",
+      "-Command",
+      <<-SCRIPT
   Write-Output "INFO: TG_CTX_COMMAND: $env:TG_CTX_COMMAND"
   # if not running from within launchpad network, access to backend will be blocked by storage account firewall
   #     always(!) need to remove access again --> run_on_error = true
@@ -294,10 +294,10 @@ SCRIPT
   }
   Write-Output ""
   SCRIPT
-      ]
-      # run regardless of whether the terraform command failed
-      run_on_error = true
-    }
+    ]
+    # run regardless of whether the terraform command failed
+    run_on_error = true
+  }
 }
 
 inputs = {

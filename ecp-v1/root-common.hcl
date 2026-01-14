@@ -32,25 +32,25 @@ locals {
 
   ######## Merged ECP Data Object ########
   ecp_deployment_data_object = {
-    deployment_code                = local.merged_locals.ecp_deployment_code
-    deployment_env                 = local.merged_locals.ecp_deployment_env
-    deployment_number              = local.merged_locals.ecp_deployment_number
-    deployment_area                = local.merged_locals.ecp_deployment_area
-    deployment_unit                = try(local.merged_locals.ecp_deployment_unit, local.deployment_unit_default)
-    environment_name               = lower("${local.merged_locals.ecp_deployment_code}-${substr(local.merged_locals.ecp_deployment_env, 0, 1)}${local.merged_locals.ecp_deployment_number}")
-    launchpad_subscription_id      = local.merged_locals.ecp_launchpad_subscription_id
-    management_subscription_id      = local.merged_locals.ecp_management_subscription_id
+    deployment_code            = local.merged_locals.ecp_deployment_code
+    deployment_env             = local.merged_locals.ecp_deployment_env
+    deployment_number          = local.merged_locals.ecp_deployment_number
+    deployment_area            = local.merged_locals.ecp_deployment_area
+    deployment_unit            = try(local.merged_locals.ecp_deployment_unit, local.deployment_unit_default)
+    environment_name           = lower("${local.merged_locals.ecp_deployment_code}-${substr(local.merged_locals.ecp_deployment_env, 0, 1)}${local.merged_locals.ecp_deployment_number}")
+    launchpad_subscription_id  = local.merged_locals.ecp_launchpad_subscription_id
+    management_subscription_id = local.merged_locals.ecp_management_subscription_id
     # launchpad_resource_group_name  = local.merged_locals.ecp_launchpad_resource_group_name
     # launchpad_storage_account_name = local.merged_locals.ecp_launchpad_storage_account_name
   }
 
   ######## Launchpad ########
-  ecp_launchpad_subscription_id     = coalesce(local.merged_locals.ecp_launchpad_subscription_id, "00000000-0000-0000-0000-000000000000")     # from env.hcl normally
-  ecp_management_subscription_id    = local.merged_locals.ecp_management_subscription_id
-  ecp_connectivity_subscription_id  = coalesce(local.merged_locals.ecp_connectivity_subscription_id, "00000000-0000-0000-0000-000000000000")
-  ecp_identity_subscription_id      = coalesce(local.merged_locals.ecp_identity_subscription_id, "00000000-0000-0000-0000-000000000000")
-  ecp_security_subscription_id      = coalesce(local.merged_locals.ecp_security_subscription_id, "00000000-0000-0000-0000-000000000000")
-  
+  ecp_launchpad_subscription_id    = coalesce(local.merged_locals.ecp_launchpad_subscription_id, "00000000-0000-0000-0000-000000000000") # from env.hcl normally
+  ecp_management_subscription_id   = local.merged_locals.ecp_management_subscription_id
+  ecp_connectivity_subscription_id = coalesce(local.merged_locals.ecp_connectivity_subscription_id, "00000000-0000-0000-0000-000000000000")
+  ecp_identity_subscription_id     = coalesce(local.merged_locals.ecp_identity_subscription_id, "00000000-0000-0000-0000-000000000000")
+  ecp_security_subscription_id     = coalesce(local.merged_locals.ecp_security_subscription_id, "00000000-0000-0000-0000-000000000000")
+
   ecp_environment_name = lower("${local.merged_locals.ecp_deployment_code}-${substr(local.merged_locals.ecp_deployment_env, 0, 1)}${local.merged_locals.ecp_deployment_number}")
 
   ecp_configuration_repo         = "github.com/rafabu/enterprise-cloud-platform-conf.git"
@@ -75,12 +75,12 @@ locals {
   tf_provider_msgraph_version     = "~> 0.3"
   tf_provider_time_version        = "~> 0.13"
   # ALZ
-  tf_provider_alz_version        = "~> 0.20"
-  tf_provider_alz_alz_lib_version = "2025.09.3"
-  tf_provider_alz_slz_lib_version = "2025.10.1"
+  tf_provider_alz_version          = "~> 0.20"
+  tf_provider_alz_alz_lib_version  = "2025.09.3"
+  tf_provider_alz_slz_lib_version  = "2025.10.1"
   tf_provider_alz_amba_lib_version = "2025.10.1"
   # Azure Verified Modules
-  tf_provider_modtm_version        = "~> 0.3"
+  tf_provider_modtm_version = "~> 0.3"
 
   ############ Tags ############
   root_common_azure_tags = {
@@ -227,7 +227,7 @@ provider "azurerm" {
 %{endif}
 
 %{if contains(
-["az-alz-management-resources"],
+  ["az-alz-management-resources"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
   )[0][0])}
 provider "azurerm" {
@@ -243,7 +243,7 @@ provider "azurerm" {
 %{endif}
 
 %{if contains(
-["az-alz-base"],
+  ["az-alz-base"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
   )[0][0])}
 provider "azurerm" {
@@ -260,7 +260,7 @@ provider "azurerm" {
 %{if contains(
   ["az-alz-base", "az-alz-connectivity-virtual-wan", "az-privatelink-privatedns-zones"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
-)[0][0])}
+  )[0][0])}
 provider "modtm" {
   enabled = false
 }
@@ -363,7 +363,7 @@ terraform {
 %{if contains(
   ["az-launchpad-bootstrap-helper"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
-)[0][0])}
+  )[0][0])}
     http = {
       source  = "hashicorp/http"
       version = "${local.tf_provider_http_version}"
@@ -379,7 +379,7 @@ terraform {
     }
 %{endif}
 %{if contains(
-  ["az-alz-base", "az-devcenter","az-ecp-parent", "ado-mpool", "ado-project"],
+  ["az-alz-base", "az-devcenter", "az-ecp-parent", "ado-mpool", "ado-project"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
 )[0][0])}
     time = {
@@ -415,7 +415,7 @@ import {
 %{if contains(
   ["az-alz-base"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
-  )[0][0]) && "${local.terraform_command}" == "destroy"}
+)[0][0]) && "${local.terraform_command}" == "destroy"}
 
 ###### terraform state remove 'module.alz.azapi_resource.management_groups_level_0'
 ###### move subscription out of management group before destroying the mg itself --> ECP root
@@ -446,14 +446,14 @@ inputs = {
 
   ecp_environment_name = local.ecp_environment_name
 
-  ecp_network_main_ipv4_address_space            = local.ecp_network_main_ipv4_address_space
+  ecp_network_main_ipv4_address_space = local.ecp_network_main_ipv4_address_space
 
   # ECP Platform Azure Subscriptions variables
-  ecp_management_subscription_id    = local.ecp_management_subscription_id
-  ecp_launchpad_subscription_id     = local.ecp_launchpad_subscription_id
-  ecp_identity_subscription_id      = local.ecp_identity_subscription_id
-  ecp_security_subscription_id      = local.ecp_security_subscription_id
-  ecp_connectivity_subscription_id  = local.ecp_connectivity_subscription_id
+  ecp_management_subscription_id   = local.ecp_management_subscription_id
+  ecp_launchpad_subscription_id    = local.ecp_launchpad_subscription_id
+  ecp_identity_subscription_id     = local.ecp_identity_subscription_id
+  ecp_security_subscription_id     = local.ecp_security_subscription_id
+  ecp_connectivity_subscription_id = local.ecp_connectivity_subscription_id
 
   ecp_azure_devops_organization_name             = local.ecp_azure_devops_organization_name
   ecp_azure_devops_project_name                  = local.ecp_azure_devops_project_name
@@ -465,4 +465,15 @@ inputs = {
   ecp_configuration_repo_version = local.ecp_configuration_repo_version
   # extract relative path from git repo root to root.hcl file (and remove leading slash if any)
   ecp_configuration_repo_deployment_root_path = replace(replace(replace(dirname(abspath(format("%s/../../../../root.hcl", get_terragrunt_dir()))), "\\", "/"), get_repo_root(), ""), "/^//", "")
+
+
+  ##################################################################################15
+  ###  Level2
+  ##################################################################################15
+  ###  Connectivity - Virtual WAN
+  virtual_wan_hubs = {
+    "ecpa-default-location" = {
+      sku = "Basic"
+    }
+  }
 }

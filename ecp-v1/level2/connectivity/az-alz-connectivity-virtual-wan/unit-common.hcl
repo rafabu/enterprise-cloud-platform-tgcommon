@@ -3,9 +3,9 @@ dependencies {
     get_env("ECP_TF_BACKEND_STORAGE_AZURE_L2", "") == "" ? [
       format("%s/../../../level0/bootstrap/az-launchpad-bootstrap-helper", get_original_terragrunt_dir())
     ] : [],
-    [ 
-    # format("%s/../../ecproot/az-platform-subscriptions", get_original_terragrunt_dir()),
-    # format("%s/../az-alz-shared-library-render", get_original_terragrunt_dir())
+    [
+      # format("%s/../../ecproot/az-platform-subscriptions", get_original_terragrunt_dir()),
+      # format("%s/../az-alz-shared-library-render", get_original_terragrunt_dir())
     ]
   )))
 }
@@ -41,8 +41,8 @@ dependency "l0-lp-az-lp-net" {
 }
 
 locals {
-  ecp_deployment_area = "ecpa"
-  ecp_deployment_unit = "conn"
+  ecp_deployment_area             = "ecpa"
+  ecp_deployment_unit             = "conn"
   ecp_resource_name_random_length = 0
 
   azure_tf_module_folder = "az-alz-connectivity-virtual-wan"
@@ -84,7 +84,7 @@ locals {
     "/tmp"
   )
 
- # see if backend variables are set
+  # see if backend variables are set
   backend_config_present = alltrue([
     get_env("ECP_TG_BACKEND_LEVEL2_SUBSCRIPTION_ID", "") != "",
     get_env("ECP_TG_BACKEND_LEVEL2_RESOURCE_GROUP_NAME", "") != "",
@@ -93,22 +93,22 @@ locals {
   ])
 
   ################# bootstrap-helper unit output (fallback) #################
-  bootstrap_helper_folder        = "${local.TG_DOWNLOAD_DIR}/${uuidv5("dns", "az-launchpad-bootstrap-helper")}"
-  bootstrap_helper_output        = jsondecode(
-      try(file("${local.bootstrap_helper_folder}/terraform_output.json"), "{}")
+  bootstrap_helper_folder = "${local.TG_DOWNLOAD_DIR}/${uuidv5("dns", "az-launchpad-bootstrap-helper")}"
+  bootstrap_helper_output = jsondecode(
+    try(file("${local.bootstrap_helper_folder}/terraform_output.json"), "{}")
   )
 
   bootstrap_backend_type         = "azurerm"
   bootstrap_backend_type_changed = false
 
-   backend_config = local.backend_config_present ? {
+  backend_config = local.backend_config_present ? {
     subscription_id      = get_env("ECP_TG_BACKEND_LEVEL2_SUBSCRIPTION_ID")
     resource_group_name  = get_env("ECP_TG_BACKEND_LEVEL2_RESOURCE_GROUP_NAME")
     storage_account_name = get_env("ECP_TG_BACKEND_LEVEL2_NAME")
     container_name       = get_env("ECP_TG_BACKEND_LEVEL2_CONTAINER")
     use_azuread_auth     = true
     key                  = "${basename(path_relative_to_include())}.tfstate"
-  } : {
+    } : {
     subscription_id      = local.bootstrap_helper_output.backend_storage_accounts["l2"].subscription_id
     resource_group_name  = local.bootstrap_helper_output.backend_storage_accounts["l2"].resource_group_name
     storage_account_name = local.bootstrap_helper_output.backend_storage_accounts["l2"].name
@@ -117,11 +117,11 @@ locals {
     key                  = "${basename(path_relative_to_include())}.tfstate"
   }
 
-    ################# tags #################
+  ################# tags #################
   unit_common_azure_tags = {
     # "hidden-ecpTgUnitCommon" = format("%s/unit-common.hcl", get_parent_terragrunt_dir())
   }
-} 
+}
 
 remote_state {
   backend = local.bootstrap_backend_type
@@ -129,7 +129,7 @@ remote_state {
     path      = "backend.tf"
     if_exists = "overwrite"
   }
-  config = local.backend_config
+  config       = local.backend_config
   disable_init = tobool(get_env("TERRAGRUNT_DISABLE_INIT", "false"))
 }
 
@@ -137,16 +137,17 @@ inputs = {
   azure_tags = local.unit_common_azure_tags
 
   # load merged vnet artefact objects
-  virtual_network_definitions        = local.virtualNetwork_definition_merged
-  
+  virtual_network_definitions = local.virtualNetwork_definition_merged
+
   virtual_wan_hubs = {
     "ecpa-default-location" = {
       # if not given; default ecpa location is chosen
       location = null
       # vnet artefact (defines address space))
-      address_prefix_artefact_name    = "l2-connectivity-vwan-hub" 
+      address_prefix_artefact_name = "l2-connectivity-vwan-hub"
       
-      # sku = "Standard"
+      # SKU defined in root-common such that it can be overridden on the entire unit config tree of deployments
+      # sku = "Basic"
 
       virtual_network_connections = {
         ecpa-launchpad = {
