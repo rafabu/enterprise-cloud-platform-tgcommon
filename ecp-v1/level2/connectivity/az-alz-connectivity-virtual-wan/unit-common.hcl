@@ -234,7 +234,7 @@ inputs = {
             {
               name                 = "link0-connection"
               vpn_site_link_number = 0
-              vpn_site_key         = "ecpa_switzerlandnorth-ecp-onprem-mock" # "ExAmPlE_SeCrEt_KeY_NoT_ReAl_12345!@#$%"
+              vpn_site_key         = "ecpa_switzerlandnorth-ecp-onprem-mock"
               connection_mode      = null
 
               ipsec_policy = {
@@ -257,7 +257,7 @@ inputs = {
             {
               name                 = "link1-connection"
               vpn_site_link_number = 1
-              vpn_site_key         = "ecpa_switzerlandnorth-ecp-onprem-mock" # "ExAmPlE_SeCrEt_KeY_NoT_ReAl_12345!@#$%"
+              vpn_site_key         = "ecpa_switzerlandnorth-ecp-onprem-mock"
               connection_mode      = null
 
               ipsec_policy = {
@@ -276,6 +276,7 @@ inputs = {
               }
 
               protocol = "IKEv2"
+              shared_key = "ExAmPlE_SeCrEt_KeY_NoT_ReAl_12345!@#$%"
             }
           ]
         }
