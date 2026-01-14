@@ -159,7 +159,7 @@ inputs = {
 
       virtual_network_gateways = {
         vpn-gateway = {
-          vpn {
+          vpn = {
             name = "vpn-gw-name"
           }
         }
