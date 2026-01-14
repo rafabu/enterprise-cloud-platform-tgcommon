@@ -191,7 +191,7 @@ inputs = {
           name = "ecp-onprem-mock"
           links = [
             {
-              name = "link1"
+              name = "link0"
               bgp  = null
               # bgp = {
               #   asn             = 3321
@@ -203,7 +203,7 @@ inputs = {
               speed_in_mbps = null
             },
             {
-              name = "link2"
+              name = "link1"
               bgp  = null
               # bgp = {
               #   asn             = 3321
@@ -231,7 +231,7 @@ inputs = {
 
           vpn_links = [
             {
-              name                 = "link1-connection"
+              name                 = "link0-connection"
               vpn_site_link_number = 0
               vpn_site_key         = "ExAmPlE_SeCrEt_KeY_NoT_ReAl_12345!@#$%"
               connection_mode      = null
@@ -254,7 +254,7 @@ inputs = {
               protocol = "IKEv2"
             },
             {
-              name                 = "link2-connection"
+              name                 = "link1-connection"
               vpn_site_link_number = 1
               vpn_site_key         = "ExAmPlE_SeCrEt_KeY_NoT_ReAl_12345!@#$%"
               connection_mode      = null
