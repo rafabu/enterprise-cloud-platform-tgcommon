@@ -146,7 +146,7 @@ inputs = {
       # vnet artefact (defines address space))
       address_prefix_artefact_name    = "l2-connectivity-vwan-hub" 
       
-      sku = "Standard"
+      # sku = "Standard"
 
       virtual_network_connections = {
         ecpa-launchpad = {
