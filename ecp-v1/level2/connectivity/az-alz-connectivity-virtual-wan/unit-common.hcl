@@ -201,18 +201,6 @@ inputs = {
               ip_address    = "192.0.2.2"
               provider_name = null
               speed_in_mbps = null
-            },
-            {
-              name = "link1"
-              bgp  = null
-              # bgp = {
-              #   asn             = 3321
-              #   peering_address = "192.168.0.1"
-              # }
-              fqdn          = null
-              ip_address    = "192.0.2.3"
-              provider_name = null
-              speed_in_mbps = null
             }
           ]
           address_cidrs = [
@@ -226,16 +214,14 @@ inputs = {
 
       vpn_site_connections = {
         "ecp-onprem-mock-connection" = {
-          name                = "ecp-onprem-mock-connection"
+          name = "ecp-onprem-mock-connection"
           # must match key of vpn_sites
-          # remote_vpn_site_key = "ecpa_switzerlandnorth-ecp-onprem-mock"
           vpn_site_key = "ecp-onprem-mock"
 
           vpn_links = [
             {
               name                 = "link0-connection"
               vpn_site_link_number = 0
-              # vpn_site_key         = "ecpa_switzerlandnorth-ecp-onprem-mock"
               connection_mode      = null
 
               ipsec_policy = {
@@ -253,30 +239,7 @@ inputs = {
                 sa_lifetime_sec      = 27000
               }
 
-              protocol = "IKEv2"
-            },
-            {
-              name                 = "link1-connection"
-              vpn_site_link_number = 1
-              # vpn_site_key         = "ecpa_switzerlandnorth-ecp-onprem-mock"
-              connection_mode      = null
-
-              ipsec_policy = {
-                #                                         Portal Names
-                # IKE Mode (Phase 1)                    --------------------------
-                dh_group                 = "DHGroup14" # Phase 1: DH Group
-                ike_encryption_algorithm = "AES256"    # Phase 1: Encryption
-                ike_integrity_algorithm  = "SHA384"    # Phase 1: Integrity/PRF
-
-                # IPSec Mode (Phase 2)
-                pfs_group            = "PFS14"     # Phase 2: PFS Group
-                encryption_algorithm = "GCMAES256" # Phase 2: IPsec Encryption
-                integrity_algorithm  = "GCMAES256" # Phase 2: IPsec Integrity
-                sa_data_size_kb      = 0
-                sa_lifetime_sec      = 27000
-              }
-
-              protocol = "IKEv2"
+              protocol   = "IKEv2"
               shared_key = "ExAmPlE_SeCrEt_KeY_NoT_ReAl_12345!@#$%"
             }
           ]
