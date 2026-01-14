@@ -156,6 +156,14 @@ inputs = {
           internet_security_enabled = false
         }
       }
+
+      virtual_network_gateways = {
+        vpn-gateway = {
+          vpn {
+            name = "vpn-gw-name"
+          }
+        }
+      }
     }
   }
 }
