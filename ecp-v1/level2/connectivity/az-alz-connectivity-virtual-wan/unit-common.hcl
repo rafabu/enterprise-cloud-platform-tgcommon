@@ -188,10 +188,11 @@ inputs = {
 
       vpn_sites = {
         "ecp-onprem-mock" = {
-          name = "ecp-onprem-mock"
+          # display name - free text
+          name = "ECP OnPrem Mock"
           links = [
             {
-              name = "link0"
+              name = "link1"
               bgp  = null
               # bgp = {
               #   asn             = 3321
@@ -220,7 +221,7 @@ inputs = {
 
           vpn_links = [
             {
-              name                 = "link0-connection"
+              name                 = "link1-connection"
               vpn_site_link_number = 0
               connection_mode      = null
 
