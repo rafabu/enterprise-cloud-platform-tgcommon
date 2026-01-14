@@ -228,7 +228,7 @@ inputs = {
         "ecp-onprem-mock-connection" = {
           name                = "ecp-onprem-mock-connection"
           # must match key of vpn_sites
-          remote_vpn_site_key = "ecp-onprem-mock"
+          remote_vpn_site_key = "ecpa_switzerlandnorth-ecp-onprem-mock"
 
           vpn_links = [
             {
