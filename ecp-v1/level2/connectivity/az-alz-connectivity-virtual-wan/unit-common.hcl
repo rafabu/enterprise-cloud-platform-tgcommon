@@ -158,9 +158,19 @@ inputs = {
       }
 
       virtual_network_gateways = {
+        subnet_address_prefix = null
+        subnet_default_outbound_access_enabled = null
+        route_table_creation_enabled = null
+        route_table_name = null
+        route_table_bgp_route_propagation_enabled = null
+          express_route = {
+            allow_non_virtual_wan_traffic = null
+            scale_units = null
+          }
           vpn = {
-            name = "vpn-gw-name"
-            scale_units = 5
+            name = null
+            bgp_settings = null
+            scale_unit = 5
         }
       }
     }
