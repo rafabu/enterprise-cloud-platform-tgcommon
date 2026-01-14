@@ -201,7 +201,7 @@ inputs = {
               ip_address    = "192.0.2.2"
               provider_name = null
               speed_in_mbps = null
-            }
+            },
             {
               name = "link2"
               bgp  = null
@@ -216,11 +216,67 @@ inputs = {
             }
           ]
           address_cidrs = [
-             "192.0.2.0/24"
+            "192.0.2.0/24"
           ]
           device_model  = null
           device_vendor = null
           o365_policy   = null
+        }
+      }
+
+      vpn_site_connections = {
+        "ecp-onprem-mock-connection" = {
+          name                = "ecp-onprem-mock"
+          remote_vpn_site_key = "ExAmPlE_SeCrEt_KeY_NoT_ReAl_12345!@#$%"
+
+          vpn_links = [
+            {
+              name                 = "link1"
+              vpn_site_link_number = 0
+              vpn_site_key         = "ExAmPlE_SeCrEt_KeY_NoT_ReAl_12345!@#$%"
+              connection_mode      = null
+
+              ipsec_policy = {
+                #                                         Portal Names
+                # IKE Mode (Phase 1)                    --------------------------
+                dh_group                 = "DHGroup14" # Phase 1: DH Group
+                ike_encryption_algorithm = "AES256"    # Phase 1: Encryption
+                ike_integrity_algorithm  = "SHA384"    # Phase 1: Integrity/PRF
+
+                # IPSec Mode (Phase 2)
+                pfs_group            = "PFS14"     # Phase 2: PFS Group
+                encryption_algorithm = "GCMAES256" # Phase 2: IPsec Encryption
+                integrity_algorithm  = "GCMAES256" # Phase 2: IPsec Integrity
+                sa_data_size_kb      = 0
+                sa_lifetime_sec      = 27000
+              }
+
+              protocol = "IKEv2"
+            },
+            {
+              name                 = "link2"
+              vpn_site_link_number = 1
+              vpn_site_key         = "ExAmPlE_SeCrEt_KeY_NoT_ReAl_12345!@#$%"
+              connection_mode      = null
+
+              ipsec_policy = {
+                #                                         Portal Names
+                # IKE Mode (Phase 1)                    --------------------------
+                dh_group                 = "DHGroup14" # Phase 1: DH Group
+                ike_encryption_algorithm = "AES256"    # Phase 1: Encryption
+                ike_integrity_algorithm  = "SHA384"    # Phase 1: Integrity/PRF
+
+                # IPSec Mode (Phase 2)
+                pfs_group            = "PFS14"     # Phase 2: PFS Group
+                encryption_algorithm = "GCMAES256" # Phase 2: IPsec Encryption
+                integrity_algorithm  = "GCMAES256" # Phase 2: IPsec Integrity
+                sa_data_size_kb      = 0
+                sa_lifetime_sec      = 27000
+              }
+
+              protocol = "IKEv2"
+            }
+          ]
         }
       }
     }
