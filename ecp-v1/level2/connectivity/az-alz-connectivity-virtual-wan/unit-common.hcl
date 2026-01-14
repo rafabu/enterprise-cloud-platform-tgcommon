@@ -170,7 +170,7 @@ inputs = {
           vpn = {
             name = null
             bgp_settings = null
-            scale_unit = 5
+            scale_unit = null
         }
       }
     }
