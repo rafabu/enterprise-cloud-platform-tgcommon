@@ -226,8 +226,8 @@ inputs = {
 
       vpn_site_connections = {
         "ecp-onprem-mock-connection" = {
-          name                = "ecp-onprem-mock"
-          remote_vpn_site_key = "ExAmPlE_SeCrEt_KeY_NoT_ReAl_12345!@#$%"
+          name                = "ecp-onprem-mock-connection"
+          remote_vpn_site_key = "ecp-onprem-mock"
 
           vpn_links = [
             {
