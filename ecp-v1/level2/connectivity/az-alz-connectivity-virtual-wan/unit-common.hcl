@@ -215,13 +215,11 @@ inputs = {
 
       vpn_site_connections = {
         "ecp-onprem-mock-connection" = {
-          # name = "ecp-onprem-mock-connection"
           # must match key of vpn_sites
           vpn_site_key = "ecp-onprem-mock"
 
           vpn_links = [
             {
-              name                 = "link1-connection"
               vpn_site_link_number = 0
               connection_mode      = null
 
@@ -241,7 +239,7 @@ inputs = {
               }
 
               protocol   = "IKEv2"
-              shared_key = "ExAmPlE_SeCrEt_KeY_NoT_ReAl_12345!@#$%"
+              shared_key = null # "ExAmPlE_SeCrEt_KeY_NoT_ReAl_12345!@#$%"
             }
           ]
         }
