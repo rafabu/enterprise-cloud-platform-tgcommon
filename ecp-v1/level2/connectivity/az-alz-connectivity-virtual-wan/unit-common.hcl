@@ -157,7 +157,7 @@ inputs = {
       location = null
       # vnet artefact (defines address space))
       address_prefix_artefact_name = "l2-connectivity-vwan-hub"
-      
+
       # SKU defined in root-common such that it can be overridden on the entire unit config tree of deployments
       # sku = "Basic"
 
@@ -170,19 +170,55 @@ inputs = {
       }
 
       virtual_network_gateways = {
-        subnet_address_prefix = null
-        subnet_default_outbound_access_enabled = null
-        route_table_creation_enabled = null
-        route_table_name = null
+        subnet_address_prefix                     = null
+        subnet_default_outbound_access_enabled    = null
+        route_table_creation_enabled              = null
+        route_table_name                          = null
         route_table_bgp_route_propagation_enabled = null
-          express_route = {
-            allow_non_virtual_wan_traffic = null
-            scale_units = null
-          }
-          vpn = {
-            name = null
-            bgp_settings = null
-            scale_unit = null
+        express_route = {
+          allow_non_virtual_wan_traffic = null
+          scale_units                   = null
+        }
+        vpn = {
+          name         = null
+          bgp_settings = null
+          scale_unit   = null
+        }
+      }
+
+      vpn_sites = {
+        "ecp-onprem-mock" = {
+          name = "ecp-onprem-mock"
+          links = [
+            {
+              name = "link1"
+              bgp  = null
+              # bgp = {
+              #   asn             = 3321
+              #   peering_address = "192.168.0.1"
+              # }
+              fqdn          = null
+              ip_address    = "192.168.1.1"
+              provider_name = null
+              speed_in_mbps = null
+            }
+            {
+              name = "link2"
+              bgp  = null
+              # bgp = {
+              #   asn             = 3321
+              #   peering_address = "192.168.0.1"
+              # }
+              fqdn          = null
+              ip_address    = "192.168.1.2"
+              provider_name = null
+              speed_in_mbps = null
+            }
+          ]
+          address_cidrs = []
+          device_model  = null
+          device_vendor = null
+          o365_policy   = null
         }
       }
     }
