@@ -141,6 +141,18 @@ inputs = {
 
   virtual_wan_hubs = {
     "ecpa-default-location" = {
+
+      enabled_resources = {
+        firewall                              = null
+        firewall_policy                       = null
+        bastion                               = null
+        virtual_network_gateway_express_route = null
+        virtual_network_gateway_vpn           = true
+        private_dns_zones                     = null
+        private_dns_resolver                  = null
+        sidecar_virtual_network               = null
+      }
+
       # if not given; default ecpa location is chosen
       location = null
       # vnet artefact (defines address space))
