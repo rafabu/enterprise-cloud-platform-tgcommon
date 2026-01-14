@@ -188,8 +188,8 @@ inputs = {
 
       vpn_sites = {
         "ecp-onprem-mock" = {
-          # display name - free text
-          name = "ECP OnPrem Mock"
+          # display name - 80 char; no spaces
+          name = "ECP-OnPrem-Mock"
           links = [
             {
               name = "link1"
