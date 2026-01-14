@@ -228,13 +228,14 @@ inputs = {
         "ecp-onprem-mock-connection" = {
           name                = "ecp-onprem-mock-connection"
           # must match key of vpn_sites
-          remote_vpn_site_key = "ecpa_switzerlandnorth-ecp-onprem-mock"
+          # remote_vpn_site_key = "ecpa_switzerlandnorth-ecp-onprem-mock"
+          vpn_site_key = "ecp-onprem-mock"
 
           vpn_links = [
             {
               name                 = "link0-connection"
               vpn_site_link_number = 0
-              vpn_site_key         = "ecpa_switzerlandnorth-ecp-onprem-mock"
+              # vpn_site_key         = "ecpa_switzerlandnorth-ecp-onprem-mock"
               connection_mode      = null
 
               ipsec_policy = {
@@ -257,7 +258,7 @@ inputs = {
             {
               name                 = "link1-connection"
               vpn_site_link_number = 1
-              vpn_site_key         = "ecpa_switzerlandnorth-ecp-onprem-mock"
+              # vpn_site_key         = "ecpa_switzerlandnorth-ecp-onprem-mock"
               connection_mode      = null
 
               ipsec_policy = {
