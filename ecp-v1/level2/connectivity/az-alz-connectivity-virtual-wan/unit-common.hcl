@@ -171,9 +171,18 @@ inputs = {
   # load merged vnet artefact objects
   virtual_network_definitions = local.virtualNetwork_definition_merged
 
-  zzz_virtual_hub_artefacts = local.virtualHub_definition_merged
+  
 
   zzz_library_virtualhub_path_shared = local.library_virtualhub_path_shared
+
+  zzz_virtualHub_definition_shared = local.virtualHub_definition_shared
+
+  zzz_virtualHub_definition_unit = local.virtualHub_definition_unit
+
+  zzz_virtualHub_definition_exclude_unit = local.virtualHub_definition_exclude_unit
+
+  zzz_virtual_hub_artefacts = local.virtualHub_definition_merged
+
 
   virtual_wan_hubs = {
     "ecpa-default-location" = {
