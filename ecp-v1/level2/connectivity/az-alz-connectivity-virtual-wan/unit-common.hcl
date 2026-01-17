@@ -75,6 +75,38 @@ locals {
     local.virtualNetwork_definition_unit
   )
 
+################# virtual WAN hub #################
+  # exclude the ones named in the *.exclude.json
+  library_virtualhub_path_shared    = "${local.library_path_shared}/platform/ecp-artefacts/ms-azure/network/virtualHubs"
+  library_virtualhub_path_unit      = "${local.library_path_unit}/virtualHubs"
+  library_virtualhub_filter         = "*.virtualHub.json"
+  library_virtualhub_exclude_filter = "*.virtualHub.exclude.json"
+
+  # read JSON artefact files and bring them into a map with artefactName and filePath as input to the terraform module
+  virtualHub_definition_shared = try({
+    for fileName in fileset(local.library_virtualhub_path_shared, local.library_virtualhub_filter) : jsondecode(file(format("%s/%s", local.library_virtualhub_path_shared, fileName))).artefactName => {
+      filePath = format("%s/%s", local.library_virtualhub_path_shared, fileName)
+    }
+  }, {})
+  virtualHub_definition_unit = try({
+    for fileName in fileset(local.library_virtualhub_path_unit, local.library_virtualhub_filter) : jsondecode(file(format("%s/%s", local.library_virtualhub_path_unit, fileName))).artefactName => {
+      filePath = format("%s/%s", local.library_virtualhub_path_unit, fileName)
+    }
+  }, {})
+  virtualHub_definition_exclude_unit = try({
+    for fileName in fileset(local.library_virtualhub_path_unit, local.library_virtualhub_exclude_filter) : jsondecode(file(format("%s/%s", local.library_virtualhub_path_unit, fileName))).artefactName => {
+      filePath = format("%s/%s", local.library_virtualhub_path_unit, fileName)
+    }
+  }, {})
+  virtualHub_definition_merged = merge(
+    {
+      for key, val in local.virtualHub_definition_shared : key => val
+      if(contains(keys(local.virtualHub_definition_exclude_unit), key) == false)
+    },
+    local.virtualHub_definition_unit
+  )
+
+
 
   ################# terragrunt specifics #################
   TG_DOWNLOAD_DIR = coalesce(
@@ -168,6 +200,8 @@ inputs = {
           internet_security_enabled = false
         }
       }
+
+      virtual_hub_artefacts = local.virtualHub_definition_merged
 
       virtual_network_gateways = {
         subnet_address_prefix                     = null
