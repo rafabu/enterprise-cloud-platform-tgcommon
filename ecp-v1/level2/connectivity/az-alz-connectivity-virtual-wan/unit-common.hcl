@@ -181,11 +181,11 @@ inputs = {
   azure_tags = local.unit_common_azure_tags
 
   # load merged vnet artefact objects
-  zzz_virtual_network_artefacts = local.virtualNetwork_definition_merged
+  virtual_network_artefacts = local.virtualNetwork_definition_merged
   # virtual_network_definitions = local.virtualNetwork_definition_merged
 
   # load merged virtual hub artefact objects
-  zzz_virtual_hub_artefacts = local.virtualHub_definition_merged
+  virtual_hub_artefacts = local.virtualHub_definition_merged
 
 
   virtual_wan_hubs = {
