@@ -60,14 +60,14 @@ locals {
   # load JSON artefact files and bring them into hcl map of objects as input to the terraform module
   virtualNetwork_definition_shared = try({
     # for fileName in fileset(local.library_virtualNetworks_path_shared, local.library_virtualNetworks_filter) : jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_shared, fileName))).artefactName => jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_shared, fileName)))
-    for fileName in fileset(local.library_virtualNetworks_path_shared, local.library_virtualhub_filter) : jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_shared, fileName))).artefactName => {
+    for fileName in fileset(local.library_virtualNetworks_path_shared, local.library_virtualNetworks_filter) : jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_shared, fileName))).artefactName => {
       filePath = format("%s/%s", local.library_virtualNetworks_path_shared, fileName)
       artefact = jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_shared, fileName)))
     }
   }, {})
   virtualNetwork_definition_unit = try({
     # for fileName in fileset(local.library_virtualNetworks_path_unit, local.library_virtualNetworks_filter) : jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_unit, fileName))).artefactName => jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_unit, fileName)))
-    for fileName in fileset(local.library_virtualNetworks_path_unit, local.library_virtualhub_filter) : jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_unit, fileName))).artefactName => {
+    for fileName in fileset(local.library_virtualNetworks_path_unit, local.library_virtualNetworks_filter) : jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_unit, fileName))).artefactName => {
       filePath = format("%s/%s", local.library_virtualNetworks_path_unit, fileName)
       artefact = jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_unit, fileName)))
     }
