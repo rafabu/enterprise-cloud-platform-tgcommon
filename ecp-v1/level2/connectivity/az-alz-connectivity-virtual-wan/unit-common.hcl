@@ -171,6 +171,10 @@ inputs = {
   # load merged vnet artefact objects
   virtual_network_definitions = local.virtualNetwork_definition_merged
 
+  virtual_hub_artefacts = local.virtualHub_definition_merged
+
+  zzz_virtual_hub_artefacts = "testing"
+
   virtual_wan_hubs = {
     "ecpa-default-location" = {
 
@@ -200,8 +204,6 @@ inputs = {
           internet_security_enabled = false
         }
       }
-
-      virtual_hub_artefacts = local.virtualHub_definition_merged
 
       virtual_network_gateways = {
         subnet_address_prefix                     = null
