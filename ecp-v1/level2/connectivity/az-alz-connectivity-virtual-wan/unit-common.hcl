@@ -103,6 +103,7 @@ locals {
     for fileName in fileset(local.library_virtualhub_path_unit, local.library_virtualhub_filter) : jsondecode(file(format("%s/%s", local.library_virtualhub_path_unit, fileName))).artefactName => {
       filePath = format("%s/%s", local.library_virtualhub_path_unit, fileName)
       artefact = jsondecode(file(format("%s/%s", local.library_virtualhub_path_unit, fileName)))
+    }
   }, {})
   virtualHub_definition_exclude_unit = try({
     for fileName in fileset(local.library_virtualhub_path_unit, local.library_virtualhub_exclude_filter) : jsondecode(file(format("%s/%s", local.library_virtualhub_path_unit, fileName))).artefactName => {
