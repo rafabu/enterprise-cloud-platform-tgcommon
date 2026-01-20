@@ -162,7 +162,7 @@ provider "alz" {
 %{endif}
 
 %{if contains(
-  ["az-alz-base", "az-alz-connectivity-virtual-wan", "az-alz-management-resources", "az-privatelink-privatedns-zones", "ado-mpool", "az-ecp-parent", "az-launchpad-backend", "az-devcenter", "az-launchpad-network", "az-platform-subscriptions"],
+  ["az-alz-base", "az-alz-connectivity-virtual-wan-main-location", "az-alz-management-resources", "az-privatelink-privatedns-zones", "ado-mpool", "az-ecp-parent", "az-launchpad-backend", "az-devcenter", "az-launchpad-network", "az-platform-subscriptions"],
   regexall("^.*/(.+?)$", get_terragrunt_dir())[0][0])}
 provider "azapi" {
   tenant_id       = "${local.merged_locals.ecp_entra_tenant_id}"
@@ -210,7 +210,7 @@ provider "azurerm" {
 %{endif}
 
 %{if contains(
-  ["az-alz-connectivity-virtual-wan", "az-alz-management-resources"],
+  ["az-alz-connectivity-virtual-wan-main-location", "az-alz-management-resources"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
   )[0][0])}
 provider "azurerm" {
@@ -258,7 +258,7 @@ provider "azurerm" {
 %{endif}
 
 %{if contains(
-  ["az-alz-base", "az-alz-connectivity-virtual-wan", "az-privatelink-privatedns-zones"],
+  ["az-alz-base", "az-alz-connectivity-virtual-wan-main-location", "az-privatelink-privatedns-zones"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
   )[0][0])}
 provider "modtm" {
@@ -317,7 +317,7 @@ terraform {
     }
 %{endif}
 %{if contains(
-  ["az-alz-base", "az-alz-connectivity-virtual-wan", "az-alz-management-resources", "az-privatelink-privatedns-zones", "ado-mpool", "az-ecp-parent", "az-launchpad-backend", "az-devcenter", "az-launchpad-network", "az-platform-subscriptions"],
+  ["az-alz-base", "az-alz-connectivity-virtual-wan-main-location", "az-alz-management-resources", "az-privatelink-privatedns-zones", "ado-mpool", "az-ecp-parent", "az-launchpad-backend", "az-devcenter", "az-launchpad-network", "az-platform-subscriptions"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
   )[0][0])}
     azapi = {
@@ -370,7 +370,7 @@ terraform {
     }
 %{endif}
 %{if contains(
-  ["az-alz-base", "az-alz-connectivity-virtual-wan", "az-privatelink-privatedns-zones"],
+  ["az-alz-base", "az-alz-connectivity-virtual-wan-main-location", "az-privatelink-privatedns-zones"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
   )[0][0])}
     modtm = {
