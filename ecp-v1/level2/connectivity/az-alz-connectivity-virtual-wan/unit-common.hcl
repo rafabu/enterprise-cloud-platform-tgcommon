@@ -59,18 +59,18 @@ locals {
 
   # load JSON artefact files and bring them into hcl map of objects as input to the terraform module
   virtualNetwork_definition_shared = try({
-    # for fileName in fileset(local.library_virtualNetworks_path_shared, local.library_virtualNetworks_filter) : jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_shared, fileName))).artefactName => jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_shared, fileName)))
-    for fileName in fileset(local.library_virtualNetworks_path_shared, local.library_virtualNetworks_filter) : jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_shared, fileName))).artefactName => {
-      filePath = format("%s/%s", local.library_virtualNetworks_path_shared, fileName)
-      artefact = jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_shared, fileName)))
-    }
+    for fileName in fileset(local.library_virtualNetworks_path_shared, local.library_virtualNetworks_filter) : jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_shared, fileName))).artefactName => jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_shared, fileName)))
+    # for fileName in fileset(local.library_virtualNetworks_path_shared, local.library_virtualNetworks_filter) : jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_shared, fileName))).artefactName => {
+    #   filePath = format("%s/%s", local.library_virtualNetworks_path_shared, fileName)
+    #   artefact = jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_shared, fileName)))
+    # }
   }, {})
   virtualNetwork_definition_unit = try({
-    # for fileName in fileset(local.library_virtualNetworks_path_unit, local.library_virtualNetworks_filter) : jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_unit, fileName))).artefactName => jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_unit, fileName)))
-    for fileName in fileset(local.library_virtualNetworks_path_unit, local.library_virtualNetworks_filter) : jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_unit, fileName))).artefactName => {
-      filePath = format("%s/%s", local.library_virtualNetworks_path_unit, fileName)
-      artefact = jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_unit, fileName)))
-    }
+    for fileName in fileset(local.library_virtualNetworks_path_unit, local.library_virtualNetworks_filter) : jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_unit, fileName))).artefactName => jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_unit, fileName)))
+    # for fileName in fileset(local.library_virtualNetworks_path_unit, local.library_virtualNetworks_filter) : jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_unit, fileName))).artefactName => {
+    #   filePath = format("%s/%s", local.library_virtualNetworks_path_unit, fileName)
+    #   artefact = jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_unit, fileName)))
+    # }
   }, {})
   virtualNetwork_definition_exclude_unit = try({
     for fileName in fileset(local.library_virtualNetworks_path_unit, local.library_virtualNetworks_exclude_filter) : jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_unit, fileName))).artefactName => jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_unit, fileName)))
@@ -181,8 +181,8 @@ inputs = {
   azure_tags = local.unit_common_azure_tags
 
   # load merged vnet artefact objects
-  virtual_network_artefacts = local.virtualNetwork_definition_merged
-  # virtual_network_definitions = local.virtualNetwork_definition_merged
+  # virtual_network_artefacts = local.virtualNetwork_definition_merged
+  virtual_network_definitions = local.virtualNetwork_definition_merged
 
   # load merged virtual hub artefact objects
   virtual_hub_artefacts = local.virtualHub_definition_merged
