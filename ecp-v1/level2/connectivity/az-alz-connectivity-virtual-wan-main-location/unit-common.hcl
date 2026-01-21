@@ -188,6 +188,41 @@ locals {
     local.vpnSite_definition_unit
   )
 
+  ################# vpn connections #################
+  # exclude the ones named in the *.exclude.json
+  library_vpnconnection_path_shared    = "${local.library_path_shared}/platform/ecp-artefacts/ms-azure/network/vpnConnections"
+  library_vpnconnection_path_unit      = "${local.library_path_unit}/vpnConnections"
+  library_vpnconnection_filter         = "*.vpnConnection.json"
+  library_vpnconnection_exclude_filter = "*.vpnConnection.exclude.json"
+
+  # read JSON artefact files and bring them into a map of
+  # - artefactName
+  #    - filePath
+  vpnConnection_definition_shared = try({
+    for fileName in fileset(local.library_vpnconnection_path_shared, local.library_vpnconnection_filter) : jsondecode(file(format("%s/%s", local.library_vpnconnection_path_shared, fileName))).artefactName => {
+      filePath = format("%s/%s", local.library_vpnconnection_path_shared, fileName)
+      artefact = jsondecode(file(format("%s/%s", local.library_vpnconnection_path_shared, fileName)))
+    }
+  }, {})
+  vpnConnection_definition_unit = try({
+    for fileName in fileset(local.library_vpnconnection_path_unit, local.library_vpnconnection_filter) : jsondecode(file(format("%s/%s", local.library_vpnconnection_path_unit, fileName))).artefactName => {
+      filePath = format("%s/%s", local.library_vpnconnection_path_unit, fileName)
+      artefact = jsondecode(file(format("%s/%s", local.library_vpnconnection_path_unit, fileName)))
+    }
+  }, {})
+  vpnConnection_definition_exclude_unit = try({
+    for fileName in fileset(local.library_vpnconnection_path_unit, local.library_vpnconnection_exclude_filter) : jsondecode(file(format("%s/%s", local.library_vpnconnection_path_unit, fileName))).artefactName => {
+      filePath = format("%s/%s", local.library_vpnconnection_path_unit, fileName)
+    }
+  }, {})
+  vpnConnection_definition_merged = merge(
+    {
+      for key, val in local.vpnConnection_definition_shared : key => val
+      if(contains(keys(local.vpnConnection_definition_exclude_unit), key) == false)
+    },
+    local.vpnConnection_definition_unit
+  )
+
 
   ################# terragrunt specifics #################
   TG_DOWNLOAD_DIR = coalesce(
@@ -265,6 +300,9 @@ inputs = {
   # load merged vpnSite artefact objects
   vpn_site_artefacts = local.vpnSite_definition_merged
 
+  # load merged vpnConnection artefact objects
+  vpn_connection_artefacts = local.vpnConnection_definition_merged
+
   virtual_wan_hubs = {
     "ecpa-default-location" = {
 
@@ -312,64 +350,64 @@ inputs = {
         }
       }
 
-      vpn_sites = {
-        "ecp-onprem-mock" = {
-          # display name - 80 char; no spaces
-          name = "ECP-OnPrem-Mock"
-          links = [
-            {
-              name = "link1"
-              bgp  = null
-              # bgp = {
-              #   asn             = 3321
-              #   peering_address = "192.168.0.1"
-              # }
-              fqdn          = null
-              ip_address    = "192.0.2.2"
-              provider_name = null
-              speed_in_mbps = null
-            }
-          ]
-          address_cidrs = [
-            "192.0.2.0/24"
-          ]
-          device_model  = null
-          device_vendor = null
-          o365_policy   = null
-        }
-      }
+      # vpn_sites = {
+      #   "ecp-onprem-mock" = {
+      #     # display name - 80 char; no spaces
+      #     name = "ECP-OnPrem-Mock"
+      #     links = [
+      #       {
+      #         name = "link1"
+      #         bgp  = null
+      #         # bgp = {
+      #         #   asn             = 3321
+      #         #   peering_address = "192.168.0.1"
+      #         # }
+      #         fqdn          = null
+      #         ip_address    = "192.0.2.2"
+      #         provider_name = null
+      #         speed_in_mbps = null
+      #       }
+      #     ]
+      #     address_cidrs = [
+      #       "192.0.2.0/24"
+      #     ]
+      #     device_model  = null
+      #     device_vendor = null
+      #     o365_policy   = null
+      #   }
+      # }
 
-      vpn_site_connections = {
-        "ecp-onprem-mock-connection" = {
-          # must match key of vpn_sites
-          vpn_site_key = "ecp-onprem-mock"
+      # vpn_site_connections = {
+      #   "ecp-onprem-mock-connection" = {
+      #     # must match key of vpn_sites
+      #     vpn_site_key = "ecp-onprem-mock"
 
-          vpn_links = [
-            {
-              vpn_site_link_number = 0
-              connection_mode      = null
+      #     vpn_links = [
+      #       {
+      #         vpn_site_link_number = 0
+      #         connection_mode      = null
 
-              ipsec_policy = {
-                #                                         Portal Names
-                # IKE Mode (Phase 1)                    --------------------------
-                dh_group                 = "DHGroup14" # Phase 1: DH Group
-                ike_encryption_algorithm = "AES256"    # Phase 1: Encryption
-                ike_integrity_algorithm  = "SHA384"    # Phase 1: Integrity/PRF
+      #         ipsec_policy = {
+      #           #                                         Portal Names
+      #           # IKE Mode (Phase 1)                    --------------------------
+      #           dh_group                 = "DHGroup14" # Phase 1: DH Group
+      #           ike_encryption_algorithm = "AES256"    # Phase 1: Encryption
+      #           ike_integrity_algorithm  = "SHA384"    # Phase 1: Integrity/PRF
 
-                # IPSec Mode (Phase 2)
-                pfs_group            = "PFS14"     # Phase 2: PFS Group
-                encryption_algorithm = "GCMAES256" # Phase 2: IPsec Encryption
-                integrity_algorithm  = "GCMAES256" # Phase 2: IPsec Integrity
-                sa_data_size_kb      = 0
-                sa_lifetime_sec      = 27000
-              }
+      #           # IPSec Mode (Phase 2)
+      #           pfs_group            = "PFS14"     # Phase 2: PFS Group
+      #           encryption_algorithm = "GCMAES256" # Phase 2: IPsec Encryption
+      #           integrity_algorithm  = "GCMAES256" # Phase 2: IPsec Integrity
+      #           sa_data_size_kb      = 0
+      #           sa_lifetime_sec      = 27000
+      #         }
 
-              protocol   = "IKEv2"
-              shared_key = null # "ExAmPlE_SeCrEt_KeY_NoT_ReAl_12345!@#$%"
-            }
-          ]
-        }
-      }
+      #         protocol   = "IKEv2"
+      #         shared_key = null # "ExAmPlE_SeCrEt_KeY_NoT_ReAl_12345!@#$%"
+      #       }
+      #     ]
+      #   }
+      # }
     }
   }
 }
