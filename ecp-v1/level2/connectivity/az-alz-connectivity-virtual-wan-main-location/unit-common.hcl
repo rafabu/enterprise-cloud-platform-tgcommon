@@ -153,6 +153,41 @@ locals {
     local.vpnGateway_definition_unit
   )
 
+  ################# virtual vpn Remote Sites #################
+  # exclude the ones named in the *.exclude.json
+  library_vpnsite_path_shared    = "${local.library_path_shared}/platform/ecp-artefacts/ms-azure/network/vpnSites"
+  library_vpnsite_path_unit      = "${local.library_path_unit}/vpnSites"
+  library_vpnsite_filter         = "*.vpnSite.json"
+  library_vpnsite_exclude_filter = "*.vpnSite.exclude.json"
+
+  # read JSON artefact files and bring them into a map of
+  # - artefactName
+  #    - filePath
+  vpnSite_definition_shared = try({
+    for fileName in fileset(local.library_vpnsite_path_shared, local.library_vpnsite_filter) : jsondecode(file(format("%s/%s", local.library_vpnsite_path_shared, fileName))).artefactName => {
+      filePath = format("%s/%s", local.library_vpnsite_path_shared, fileName)
+      artefact = jsondecode(file(format("%s/%s", local.library_vpnsite_path_shared, fileName)))
+    }
+  }, {})
+  vpnSite_definition_unit = try({
+    for fileName in fileset(local.library_vpnsite_path_unit, local.library_vpnsite_filter) : jsondecode(file(format("%s/%s", local.library_vpnsite_path_unit, fileName))).artefactName => {
+      filePath = format("%s/%s", local.library_vpnsite_path_unit, fileName)
+      artefact = jsondecode(file(format("%s/%s", local.library_vpnsite_path_unit, fileName)))
+    }
+  }, {})
+  vpnSite_definition_exclude_unit = try({
+    for fileName in fileset(local.library_vpnsite_path_unit, local.library_vpnsite_exclude_filter) : jsondecode(file(format("%s/%s", local.library_vpnsite_path_unit, fileName))).artefactName => {
+      filePath = format("%s/%s", local.library_vpnsite_path_unit, fileName)
+    }
+  }, {})
+  vpnSite_definition_merged = merge(
+    {
+      for key, val in local.vpnSite_definition_shared : key => val
+      if(contains(keys(local.vpnSite_definition_exclude_unit), key) == false)
+    },
+    local.vpnSite_definition_unit
+  )
+
 
   ################# terragrunt specifics #################
   TG_DOWNLOAD_DIR = coalesce(
@@ -227,6 +262,8 @@ inputs = {
   # load merged expressRoute gateway artefact objects
   # express_route_gateway_artefacts = local.erGateway_definition_merged
 
+  # load merged vpnSite artefact objects
+  vpn_site_artefacts = local.vpnSite_definition_merged
 
   virtual_wan_hubs = {
     "ecpa-default-location" = {
