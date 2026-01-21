@@ -118,6 +118,40 @@ locals {
     local.virtualHub_definition_unit
   )
 
+  ################# virtual vpn Gateway #################
+  # exclude the ones named in the *.exclude.json
+  library_vpngateway_path_shared    = "${local.library_path_shared}/platform/ecp-artefacts/ms-azure/network/vpnGateways"
+  library_vpngateway_path_unit      = "${local.library_path_unit}/vpnGateways"
+  library_vpngateway_filter         = "*.vpnGateway.json"
+  library_vpngateway_exclude_filter = "*.vpnGateway.exclude.json"
+
+  # read JSON artefact files and bring them into a map of
+  # - artefactName
+  #    - filePath
+  vpnGateway_definition_shared = try({
+    for fileName in fileset(local.library_vpngateway_path_shared, local.library_vpngateway_filter) : jsondecode(file(format("%s/%s", local.library_vpngateway_path_shared, fileName))).artefactName => {
+      filePath = format("%s/%s", local.library_vpngateway_path_shared, fileName)
+      artefact = jsondecode(file(format("%s/%s", local.library_vpngateway_path_shared, fileName)))
+    }
+  }, {})
+  vpnGateway_definition_unit = try({
+    for fileName in fileset(local.library_vpngateway_path_unit, local.library_vpngateway_filter) : jsondecode(file(format("%s/%s", local.library_vpngateway_path_unit, fileName))).artefactName => {
+      filePath = format("%s/%s", local.library_vpngateway_path_unit, fileName)
+      artefact = jsondecode(file(format("%s/%s", local.library_vpngateway_path_unit, fileName)))
+    }
+  }, {})
+  vpnGateway_definition_exclude_unit = try({
+    for fileName in fileset(local.library_vpngateway_path_unit, local.library_vpngateway_exclude_filter) : jsondecode(file(format("%s/%s", local.library_vpngateway_path_unit, fileName))).artefactName => {
+      filePath = format("%s/%s", local.library_vpngateway_path_unit, fileName)
+    }
+  }, {})
+  vpnGateway_definition_merged = merge(
+    {
+      for key, val in local.vpnGateway_definition_shared : key => val
+      if(contains(keys(local.vpnGateway_definition_exclude_unit), key) == false)
+    },
+    local.vpnGateway_definition_unit
+  )
 
 
   ################# terragrunt specifics #################
@@ -186,6 +220,12 @@ inputs = {
 
   # load merged virtual hub artefact objects
   virtual_hub_artefacts = local.virtualHub_definition_merged
+
+  # load merged vpnGateway artefact objects
+  vpn_gateway_artefacts = local.vpnGateway_definition_merged
+
+  # load merged expressRoute gateway artefact objects
+  # express_route_gateway_artefacts = local.erGateway_definition_merged
 
 
   virtual_wan_hubs = {
