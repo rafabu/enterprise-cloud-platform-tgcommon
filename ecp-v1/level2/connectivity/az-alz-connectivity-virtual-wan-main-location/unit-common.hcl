@@ -359,7 +359,6 @@ inputs = {
 
   # direct inputs to AVM ALZ vWAN module (merged with artefacts)
   virtual_wan_hubs = {
-    # "ecpa-default-location" = {
     "l2-connectivity-default-vwan-hub" = {
 
       virtual_network_connections = {
