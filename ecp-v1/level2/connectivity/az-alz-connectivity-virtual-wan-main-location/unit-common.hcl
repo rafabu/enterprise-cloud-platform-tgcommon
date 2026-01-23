@@ -303,6 +303,7 @@ inputs = {
   # load merged vpnConnection artefact objects
   vpn_connection_artefacts = local.vpnConnection_definition_merged
 
+  # direct inputs to AVM ALZ vWAN module (merged with artefacts)
   virtual_wan_hubs = {
     "ecpa-default-location" = {
 
@@ -317,10 +318,10 @@ inputs = {
       #   sidecar_virtual_network               = null
       # }
 
-      # if not given; default ecpa location (var.azure_location) is chosen
-      location = null
-      # virtualNetwork artefactName (defines address space))
-      address_prefix_artefact_name = "l2-connectivity-vwan-hub"
+      # # if not given; default ecpa location (var.azure_location) is chosen
+      # location = null
+      # # virtualNetwork artefactName (defines address space))
+      # address_prefix_artefact_name = "l2-connectivity-vwan-hub"
 
       # SKU defined in root-common such that it can be overridden on the entire unit config tree of deployments
       # sku = "Basic"
@@ -333,22 +334,22 @@ inputs = {
         }
       }
 
-      virtual_network_gateways = {
-        subnet_address_prefix                     = null
-        subnet_default_outbound_access_enabled    = null
-        route_table_creation_enabled              = null
-        route_table_name                          = null
-        route_table_bgp_route_propagation_enabled = null
-        express_route = {
-          allow_non_virtual_wan_traffic = null
-          scale_units                   = null
-        }
-        vpn = {
-          name         = null
-          bgp_settings = null
-          scale_unit   = null
-        }
-      }
+      # virtual_network_gateways = {
+      #   subnet_address_prefix                     = null
+      #   subnet_default_outbound_access_enabled    = null
+      #   route_table_creation_enabled              = null
+      #   route_table_name                          = null
+      #   route_table_bgp_route_propagation_enabled = null
+      #   express_route = {
+      #     allow_non_virtual_wan_traffic = null
+      #     scale_units                   = null
+      #   }
+      #   vpn = {
+      #     name         = null
+      #     bgp_settings = null
+      #     scale_unit   = null
+      #   }
+      # }
 
       # vpn_sites = {
       #   "ecp-onprem-mock" = {
