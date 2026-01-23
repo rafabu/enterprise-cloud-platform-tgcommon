@@ -350,7 +350,9 @@ inputs = {
       "l2-connectivity-default-vwan-hub"
     ]
     vpn_gateway    = []
-    vpn_site       = []
+    vpn_site       = [
+      "l2-connectivity-example-staticrouting-vpnsite"
+    ]
     vpn_connection = []
     er_gateway     = []
     er_connection  = []
