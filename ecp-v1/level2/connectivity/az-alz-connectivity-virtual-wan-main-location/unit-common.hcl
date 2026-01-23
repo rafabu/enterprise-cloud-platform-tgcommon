@@ -344,7 +344,7 @@ inputs = {
   ecp_archetype_definitions = {
     name = "ecp-vwan"
     virtual_wan = [
-      "l2-connectivity-vwan-standard-sku"
+      "l2-connectivity-vwan-basic-sku"
     ]
     virtual_hub = [
       "l2-connectivity-default-vwan-hub"
