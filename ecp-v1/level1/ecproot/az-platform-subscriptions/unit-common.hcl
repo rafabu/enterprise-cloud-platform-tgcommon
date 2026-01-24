@@ -85,7 +85,7 @@ inputs = {
     workloadDescription = "ecpa management"
   }
   connectivity_azure_tags = {
-    workloadName        = "ecpanet"
+    workloadName        = "ecpacon"
     workloadDescription = "ecpa connectivity"
   }
   identity_azure_tags = {
