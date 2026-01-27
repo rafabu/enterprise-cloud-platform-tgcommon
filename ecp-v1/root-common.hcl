@@ -379,7 +379,7 @@ terraform {
     }
 %{endif}
 %{if contains(
-  ["az-alz-base", "az-devcenter", "az-ecp-parent", "ado-mpool", "ado-project"],
+  ["az-alz-base", "az-alz-connectivity-virtual-wan-main-location", "az-devcenter", "az-ecp-parent", "ado-mpool", "ado-project"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
 )[0][0])}
     time = {
