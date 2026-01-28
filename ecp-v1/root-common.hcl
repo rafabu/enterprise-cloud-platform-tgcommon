@@ -162,7 +162,7 @@ provider "alz" {
 %{endif}
 
 %{if contains(
-  ["az-alz-base", "az-alz-connectivity-virtual-wan-main-location", "az-alz-management-resources", "az-privatelink-privatedns-zones", "ado-mpool", "az-ecp-parent", "az-launchpad-backend", "az-devcenter", "az-launchpad-network", "az-platform-subscriptions"],
+  ["az-alz-base", "az-alz-connectivity-virtual-wan-main-location", "az-alz-management-resources", "az-connectivity-management", "az-privatelink-privatedns-zones", "ado-mpool", "az-ecp-parent", "az-launchpad-backend", "az-devcenter", "az-launchpad-network", "az-platform-subscriptions"],
   regexall("^.*/(.+?)$", get_terragrunt_dir())[0][0])}
 provider "azapi" {
   tenant_id       = "${local.merged_locals.ecp_entra_tenant_id}"
@@ -210,7 +210,7 @@ provider "azurerm" {
 %{endif}
 
 %{if contains(
-  ["az-alz-connectivity-virtual-wan-main-location", "az-alz-management-resources"],
+  ["az-alz-connectivity-virtual-wan-main-location", "az-alz-management-resources", "az-connectivity-management"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
   )[0][0])}
 provider "azurerm" {
@@ -227,7 +227,7 @@ provider "azurerm" {
 %{endif}
 
 %{if contains(
-  ["az-alz-management-resources"],
+  ["az-alz-management-resources", "az-connectivity-management"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
   )[0][0])}
 provider "azurerm" {
@@ -308,7 +308,7 @@ terraform {
       version = "${local.tf_provider_azurecaf_version}"
     }
 %{if contains(
-  ["ado-mpool", "az-alz-connectivity-virtual-wan", "az-alz-management-resources", "az-devcenter", "az-launchpad-bootstrap-helper", "az-launchpad-backend", "az-launchpad-network", "az-launchpad-main"],
+  ["ado-mpool", "az-alz-connectivity-virtual-wan", "az-alz-management-resources", "az-connectivity-management", "az-devcenter", "az-launchpad-bootstrap-helper", "az-launchpad-backend", "az-launchpad-network", "az-launchpad-main"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
   )[0][0])}
     azurerm = {
@@ -317,7 +317,7 @@ terraform {
     }
 %{endif}
 %{if contains(
-  ["az-alz-base", "az-alz-connectivity-virtual-wan-main-location", "az-alz-management-resources", "az-privatelink-privatedns-zones", "ado-mpool", "az-ecp-parent", "az-launchpad-backend", "az-devcenter", "az-launchpad-network", "az-platform-subscriptions"],
+  ["az-alz-base", "az-alz-connectivity-virtual-wan-main-location", "az-alz-management-resources", "az-connectivity-management", "az-privatelink-privatedns-zones", "ado-mpool", "az-ecp-parent", "az-launchpad-backend", "az-devcenter", "az-launchpad-network", "az-platform-subscriptions"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
   )[0][0])}
     azapi = {
@@ -379,7 +379,7 @@ terraform {
     }
 %{endif}
 %{if contains(
-  ["az-alz-base", "az-alz-connectivity-virtual-wan-main-location", "az-devcenter", "az-ecp-parent", "ado-mpool", "ado-project"],
+  ["az-alz-base", "az-alz-connectivity-virtual-wan-main-location", "az-connectivity-management", "az-devcenter", "az-ecp-parent", "ado-mpool", "ado-project"],
   regexall("^.*/(.+?)$", get_terragrunt_dir()
 )[0][0])}
     time = {
