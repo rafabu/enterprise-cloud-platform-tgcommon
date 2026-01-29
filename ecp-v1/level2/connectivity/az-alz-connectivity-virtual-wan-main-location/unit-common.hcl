@@ -1,78 +1,78 @@
-dependencies {
-  paths = flatten(distinct(concat(
-    get_env("ECP_TF_BACKEND_STORAGE_AZURE_L2", "") == "" ? [
-      format("%s/../../../level0/bootstrap/az-launchpad-bootstrap-helper", get_original_terragrunt_dir())
-    ] : [],
-    [
-      # format("%s/../../ecproot/az-platform-subscriptions", get_original_terragrunt_dir()),
-      # format("%s/../az-alz-shared-library-render", get_original_terragrunt_dir())
-    ]
-  )))
-}
+# dependencies {
+#   paths = flatten(distinct(concat(
+#     get_env("ECP_TF_BACKEND_STORAGE_AZURE_L2", "") == "" ? [
+#       format("%s/../../../level0/bootstrap/az-launchpad-bootstrap-helper", get_original_terragrunt_dir())
+#     ] : [],
+#     [
+#       # format("%s/../../ecproot/az-platform-subscriptions", get_original_terragrunt_dir()),
+#       # format("%s/../az-alz-shared-library-render", get_original_terragrunt_dir())
+#     ]
+#   )))
+# }
 
-dependency "l0-lp-az-lp-net" {
-  config_path = format("%s/../../../level0/launchpad/az-launchpad-network", get_original_terragrunt_dir())
-  mock_outputs = {
-    virtual_networks = {
-      l0-launchpad-main = {
-        id                  = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualNetworks/mock-vnet"
-        name                = "mock-vnet"
-        resource_group_name = "mock-rg"
-        location            = "westeurope"
-        address_space = [
-          "192.0.2.0/24"
-        ]
-      }
-    }
-    virtual_network_subnets = {
-      l0-launchpad-main-default = {
-        id                   = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualNetworks/mock-vnet/subnets/mock"
-        name                 = "mock"
-        resource_group_name  = "mock-rg"
-        virtual_network_name = "mock-vnet"
-        address_prefixes = [
-          "192.0.2.0/24"
-        ]
-      }
-    }
-  }
-  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
-  mock_outputs_merge_strategy_with_state  = "shallow"
-}
+# dependency "l0-lp-az-lp-net" {
+#   config_path = format("%s/../../../level0/launchpad/az-launchpad-network", get_original_terragrunt_dir())
+#   mock_outputs = {
+#     virtual_networks = {
+#       l0-launchpad-main = {
+#         id                  = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualNetworks/mock-vnet"
+#         name                = "mock-vnet"
+#         resource_group_name = "mock-rg"
+#         location            = "westeurope"
+#         address_space = [
+#           "192.0.2.0/24"
+#         ]
+#       }
+#     }
+#     virtual_network_subnets = {
+#       l0-launchpad-main-default = {
+#         id                   = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualNetworks/mock-vnet/subnets/mock"
+#         name                 = "mock"
+#         resource_group_name  = "mock-rg"
+#         virtual_network_name = "mock-vnet"
+#         address_prefixes = [
+#           "192.0.2.0/24"
+#         ]
+#       }
+#     }
+#   }
+#   mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
+#   mock_outputs_merge_strategy_with_state  = "shallow"
+# }
 
-dependency "l2-con-az-con-mgmt" {
-  config_path = format("%s/../az-connectivity-management", get_original_terragrunt_dir())
-  mock_outputs = {
-    virtual_network = {
-        id                  = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualNetworks/mock-vnet"
-        name                = "mock-vnet"
-        resource_group_name = "mock-rg"
-        location            = "westeurope"
-        address_space = [
-          "192.0.2.0/24"
-        ]
-    }
-    virtual_network_subnets = {
-      l2-connectivity-management-default = {
-        id                   = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualNetworks/mock-vnet/subnets/mock"
-        name                 = "mock"
-        resource_group_name  = "mock-rg"
-        virtual_network_name = "mock-vnet"
-        address_prefixes = [
-          "192.0.2.0/24"
-        ]
-      }
-    }
-    key_vault = {
-      id                  = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.KeyVault/vaults/mock-kv"
-      name                = "mock-kv"
-      resource_group_name = "mock-rg"
-      location            = "westeurope"
-    }
-  }
-  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
-  mock_outputs_merge_strategy_with_state  = "shallow"
-}
+# dependency "l2-con-az-con-mgmt" {
+#   config_path = format("%s/../az-connectivity-management", get_original_terragrunt_dir())
+#   mock_outputs = {
+#     virtual_network = {
+#         id                  = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualNetworks/mock-vnet"
+#         name                = "mock-vnet"
+#         resource_group_name = "mock-rg"
+#         location            = "westeurope"
+#         address_space = [
+#           "192.0.2.0/24"
+#         ]
+#     }
+#     virtual_network_subnets = {
+#       l2-connectivity-management-default = {
+#         id                   = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualNetworks/mock-vnet/subnets/mock"
+#         name                 = "mock"
+#         resource_group_name  = "mock-rg"
+#         virtual_network_name = "mock-vnet"
+#         address_prefixes = [
+#           "192.0.2.0/24"
+#         ]
+#       }
+#     }
+#     key_vault = {
+#       id                  = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.KeyVault/vaults/mock-kv"
+#       name                = "mock-kv"
+#       resource_group_name = "mock-rg"
+#       location            = "westeurope"
+#     }
+#   }
+#   mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
+#   mock_outputs_merge_strategy_with_state  = "shallow"
+# }
 
 locals {
   ecp_deployment_area             = "ecpa"
@@ -390,27 +390,28 @@ inputs = {
     er_connection  = []
   }
 
-
   # direct inputs to AVM ALZ vWAN module (merged with artefacts)
-  virtual_wan_hubs = {
-    "l2-connectivity-default-vwan-hub" = {
+  # virtual_wan_hubs = {
+  #   # required pre-defined vnet links to upstream vnets
+  #   #     - launchpad
+  #   #     - connectivity management
+  #   "l2-connectivity-default-vwan-hub" = {
+  #     virtual_network_connections = {
+  #       ecpa-launchpad = {
+  #         remote_virtual_network_id = dependency.l0-lp-az-lp-net.outputs.virtual_networks.l0-launchpad-main.id
+  #         # internet_security_enabled (route via Azure firewall) has been superseded by routing_intent
+  #         internet_security_enabled = false
+  #       }
+  #       ecpa-connectivity = {
+  #         remote_virtual_network_id = dependency.l2-con-az-con-mgmt.outputs.virtual_network.id
+  #         # internet_security_enabled (route via Azure firewall) has been superseded by routing_intent
+  #         internet_security_enabled = false
+  #       }
+  #     }
 
-      virtual_network_connections = {
-        ecpa-launchpad = {
-          remote_virtual_network_id = dependency.l0-lp-az-lp-net.outputs.virtual_networks.l0-launchpad-main.id
-          # internet_security_enabled (route via Azure firewall) has been superseded by routing_intent
-          internet_security_enabled = false
-        }
-        ecpa-connectivity = {
-          remote_virtual_network_id = dependency.l2-con-az-con-mgmt.outputs.virtual_network.id
-          # internet_security_enabled (route via Azure firewall) has been superseded by routing_intent
-          internet_security_enabled = false
-        }
-      }
-
-      virtual_network_gateways = {}
-      vpn_sites = {}
-      vpn_site_connections = {}
-    }
-  }
+  #     virtual_network_gateways = {}
+  #     vpn_sites = {}
+  #     vpn_site_connections = {}
+  #   }
+  # }
 }
