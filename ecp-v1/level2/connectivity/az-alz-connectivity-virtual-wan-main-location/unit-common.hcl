@@ -402,7 +402,7 @@ inputs = {
           internet_security_enabled = false
         }
         ecpa-connectivity = {
-          remote_virtual_network_id = dependency.l2-connectivity-management.outputs.virtual_network.id
+          remote_virtual_network_id = dependency.l2-con-az-con-mgmt.outputs.virtual_network.id
           # internet_security_enabled (route via Azure firewall) has been superseded by routing_intent
           internet_security_enabled = false
         }
