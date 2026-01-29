@@ -414,4 +414,8 @@ inputs = {
       vpn_site_connections = {}
     }
   }
+
+  # key vault for PSK secrets
+  key_vault_id = dependency.l2-con-az-con-mgmt.outputs.key_vault.id
+
 }
