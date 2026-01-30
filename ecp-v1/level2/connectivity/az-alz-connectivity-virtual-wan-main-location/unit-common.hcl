@@ -353,6 +353,8 @@ remote_state {
 inputs = {
   azure_tags = local.unit_common_azure_tags
 
+   ecp_hub_locations = {}
+
   # load merged vnet artefact objects
   virtual_network_artefacts = local.virtualNetwork_definition_merged
   
@@ -391,29 +393,29 @@ inputs = {
   }
 
   # direct inputs to AVM ALZ vWAN module (merged with artefacts)
-  virtual_wan_hubs = {
-    # required pre-defined vnet links to upstream vnets
-    #     - launchpad
-    #     - connectivity management
-    "l2-connectivity-default-vwan-hub" = {
-      virtual_network_connections = {
-        ecpa-launchpad = {
-          remote_virtual_network_id = dependency.l0-lp-az-lp-net.outputs.virtual_networks.l0-launchpad-main.id
-          # internet_security_enabled (route via Azure firewall) has been superseded by routing_intent
-          internet_security_enabled = false
-        }
-        ecpa-connectivity = {
-          remote_virtual_network_id = dependency.l2-con-az-con-mgmt.outputs.virtual_network.id
-          # internet_security_enabled (route via Azure firewall) has been superseded by routing_intent
-          internet_security_enabled = false
-        }
-      }
+  # virtual_wan_hubs = {
+  #   # required pre-defined vnet links to upstream vnets
+  #   #     - launchpad
+  #   #     - connectivity management
+  #   "l2-connectivity-default-vwan-hub" = {
+  #     virtual_network_connections = {
+  #       ecpa-launchpad = {
+  #         remote_virtual_network_id = dependency.l0-lp-az-lp-net.outputs.virtual_networks.l0-launchpad-main.id
+  #         # internet_security_enabled (route via Azure firewall) has been superseded by routing_intent
+  #         internet_security_enabled = false
+  #       }
+  #       ecpa-connectivity = {
+  #         remote_virtual_network_id = dependency.l2-con-az-con-mgmt.outputs.virtual_network.id
+  #         # internet_security_enabled (route via Azure firewall) has been superseded by routing_intent
+  #         internet_security_enabled = false
+  #       }
+  #     }
 
-      virtual_network_gateways = {}
-      vpn_sites = {}
-      vpn_site_connections = {}
-    }
-  }
+  #     virtual_network_gateways = {}
+  #     vpn_sites = {}
+  #     vpn_site_connections = {}
+  #   }
+  # }
 
   # key vault for PSK secrets
   key_vault_id = dependency.l2-con-az-con-mgmt.outputs.key_vault.id
