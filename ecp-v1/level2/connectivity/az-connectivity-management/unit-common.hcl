@@ -155,6 +155,8 @@ remote_state {
 inputs = {
   azure_tags = local.unit_common_azure_tags
 
+  ecp_hub_locations = {}
+
   # load merged vnet artefact objects
   virtual_network_artefacts = local.virtualNetwork_definition_merged
 
