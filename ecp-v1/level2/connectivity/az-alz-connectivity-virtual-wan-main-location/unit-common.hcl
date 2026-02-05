@@ -43,7 +43,8 @@ dependency "l0-lp-az-lp-net" {
 dependency "l2-con-az-con-mgmt" {
   config_path = format("%s/../az-connectivity-management", get_original_terragrunt_dir())
   mock_outputs = {
-    virtual_network = {
+    virtual_networks = {
+      main_l2-connectivity-management-vnet = {
         id                  = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualNetworks/mock-vnet"
         name                = "mock-vnet"
         resource_group_name = "mock-rg"
@@ -52,8 +53,9 @@ dependency "l2-con-az-con-mgmt" {
           "192.0.2.0/24"
         ]
     }
+    }
     virtual_network_subnets = {
-      l2-connectivity-management-default = {
+      main-l2-connectivity-management-default = {
         id                   = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualNetworks/mock-vnet/subnets/mock"
         name                 = "mock"
         resource_group_name  = "mock-rg"
