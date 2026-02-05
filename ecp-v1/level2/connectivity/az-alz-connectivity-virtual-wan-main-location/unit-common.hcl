@@ -410,6 +410,7 @@ inputs = {
           # internet_security_enabled (route via Azure firewall) has been superseded by routing_intent
           internet_security_enabled = false
           connect_to_main_location = true
+        }
       }
 
       virtual_network_gateways = {}
