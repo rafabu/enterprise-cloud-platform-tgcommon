@@ -400,14 +400,14 @@ inputs = {
     "l2-connectivity-default-vwan-hub" = {
       virtual_network_connections = {
         ecpa-launchpad = {
-          remote_virtual_network_id = dependency.l0-lp-az-lp-net.outputs.virtual_networks.l0-launchpad-main.id
+          remote_virtual_network_id = dependency.l0-lp-az-lp-net.outputs.virtual_networks["l0-launchpad-main"].id
           # internet_security_enabled (route via Azure firewall) has been superseded by routing_intent
           internet_security_enabled = false
           # only connect at main location
           connect_to_main_location = true
         }
         ecpa-connectivity = {
-          remote_virtual_network_id = dependency.l2-con-az-con-mgmt.outputs.virtual_network.id
+          remote_virtual_network_id = dependency.l2-con-az-con-mgmt.outputs.virtual_networks["main_l2-connectivity-management-vnet"].id
           # internet_security_enabled (route via Azure firewall) has been superseded by routing_intent
           internet_security_enabled = false
           # only connect at main location
