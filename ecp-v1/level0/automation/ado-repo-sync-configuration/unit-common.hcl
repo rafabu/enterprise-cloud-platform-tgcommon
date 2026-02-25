@@ -184,5 +184,7 @@ inputs = {
 
   zzz_get_original_terragrunt_dir = get_original_terragrunt_dir()
 
+  zzz_get_terragrunt_dir = get_terragrunt_dir()
+
   template_replacements = {}
 }
