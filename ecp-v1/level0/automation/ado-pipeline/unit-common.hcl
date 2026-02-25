@@ -222,9 +222,9 @@ inputs = {
     # "ECP-Deployment-Testing-Enabled"
   ]
 
-  ecp_environment_name = dependency.l0-lp-az-lp-main.outputs.ecp_environment_name
+  ecp_environment_name = "" #dependency.l0-lp-az-lp-main.outputs.ecp_environment_name
 
-  ecp_azure_devops_repository_name = dependency.l0-lp-az-lp-main.outputs.ecp_azure_devops_automation_repository_name
+  ecp_azure_devops_repository_name = "" # dependency.l0-lp-az-lp-main.outputs.ecp_azure_devops_automation_repository_name
 
-  ecp_azure_devops_pool_name = dependency.l0-lp-ado-mpool.outputs.managed_devops_pool.name
+  ecp_azure_devops_pool_name = "" # dependency.l0-lp-ado-mpool.outputs.managed_devops_pool.name
 }

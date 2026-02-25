@@ -175,7 +175,9 @@ inputs = {
   local_git_submodule_path = local.automation_path
   filter_git_subfolders    = false
 
-  ecp_azure_devops_repository_name = dependency.l0-lp-az-lp-main.outputs.ecp_azure_devops_automation_repository_name
+  ecp_azure_devops_repository_name = "blabla" # dependency.l0-lp-az-lp-main.outputs.ecp_azure_devops_automation_repository_name
+
+  zzz_get_original_terragrunt_dir = get_original_terragrunt_dir()
 
   template_replacements = {
     "ecp_environment_name_replacement" = {
@@ -183,13 +185,15 @@ inputs = {
         "**/pipelines-ado"
       ]
       name_replacements = {
-        "pipelines-ado" = "pipelines-${dependency.l0-lp-az-lp-main.outputs.ecp_environment_name}-ado"
+        # "pipelines-ado" = "pipelines-${dependency.l0-lp-az-lp-main.outputs.ecp_environment_name}-ado"
+        "pipelines-ado" = "pipelines-blablba-ado"
       }
       file_patterns = [
         "**/ecp-tg-deploy-platform-infrastructure.yaml"
       ]
       content_replacements = {
-        "<ecp_environment_name>" = "${dependency.l0-lp-az-lp-main.outputs.ecp_environment_name}"
+        # "<ecp_environment_name>" = "${dependency.l0-lp-az-lp-main.outputs.ecp_environment_name}"
+        "<ecp_environment_name>" = "blablabla"
       }
     }
   }

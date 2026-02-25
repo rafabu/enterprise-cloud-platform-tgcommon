@@ -178,7 +178,11 @@ inputs = {
 
   # sparse = dependency.l0-lp-az-lp-main.outputs.ecp_configuration_repo_deployment_root_path
 
-  ecp_azure_devops_repository_name = dependency.l0-lp-az-lp-main.outputs.ecp_azure_devops_configuration_repository_name
+  # ecp_azure_devops_repository_name = dependency.l0-lp-az-lp-main.outputs.ecp_azure_devops_configuration_repository_name
+
+  ecp_azure_devops_repository_name = "blabla" # dependency.l0-lp-az-lp-main.outputs.ecp_azure_devops_automation_repository_name
+
+  zzz_get_original_terragrunt_dir = get_original_terragrunt_dir()
 
   template_replacements = {}
 }
