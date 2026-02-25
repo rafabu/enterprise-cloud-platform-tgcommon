@@ -1,12 +1,12 @@
 dependencies {
   paths = [
-    format("%s/../../bootstrap/az-launchpad-bootstrap-helper", get_terragrunt_dir()),
-    format("%s/../../launchpad/ado-project", get_terragrunt_dir())
+    format("%s/../../bootstrap/az-launchpad-bootstrap-helper", get_original_terragrunt_dir()),
+    format("%s/../../launchpad/ado-project", get_original_terragrunt_dir())
   ]
 }
 
 dependency "l0-lp-az-lp-main" {
-  config_path = format("%s/../../launchpad/az-launchpad-main", get_terragrunt_dir())
+  config_path = format("%s/../../launchpad/az-launchpad-main", get_original_terragrunt_dir())
   mock_outputs = {
     resource_group = {
       id       = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg"
@@ -178,13 +178,7 @@ inputs = {
 
   # sparse = dependency.l0-lp-az-lp-main.outputs.ecp_configuration_repo_deployment_root_path
 
-  # ecp_azure_devops_repository_name = dependency.l0-lp-az-lp-main.outputs.ecp_azure_devops_configuration_repository_name
-
-  ecp_azure_devops_repository_name = "blabla" # dependency.l0-lp-az-lp-main.outputs.ecp_azure_devops_automation_repository_name
-
-  zzz_get_original_terragrunt_dir = get_original_terragrunt_dir()
-
-  zzz_get_terragrunt_dir = get_terragrunt_dir()
+  ecp_azure_devops_repository_name = dependency.l0-lp-az-lp-main.outputs.ecp_azure_devops_configuration_repository_name
 
   template_replacements = {}
 }

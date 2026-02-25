@@ -1,13 +1,13 @@
 dependencies {
   paths = [
-    format("%s/../../bootstrap/az-launchpad-bootstrap-helper", get_terragrunt_dir()),
-    format("%s/../ado-repo-sync-automation", get_terragrunt_dir()),
+    format("%s/../../bootstrap/az-launchpad-bootstrap-helper", get_original_terragrunt_dir()),
+    format("%s/../ado-repo-sync-automation", get_original_terragrunt_dir()),
 
   ]
 }
 
 dependency "l0-lp-az-lp-main" {
-  config_path = format("%s/../../launchpad/az-launchpad-main", get_terragrunt_dir())
+  config_path = format("%s/../../launchpad/az-launchpad-main", get_original_terragrunt_dir())
   mock_outputs = {
     resource_group = {
       id       = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg"
@@ -24,7 +24,7 @@ dependency "l0-lp-az-lp-main" {
 }
 
 dependency "l0-lp-ado-mpool" {
-  config_path = format("%s/../../launchpad/ado-mpool", get_terragrunt_dir())
+  config_path = format("%s/../../launchpad/ado-mpool", get_original_terragrunt_dir())
   mock_outputs = {
     managed_devops_pool = {
       id                  = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.DevOpsInfrastructure/pools/mock-pool"
@@ -222,9 +222,9 @@ inputs = {
     # "ECP-Deployment-Testing-Enabled"
   ]
 
-  ecp_environment_name = "" #dependency.l0-lp-az-lp-main.outputs.ecp_environment_name
+  ecp_environment_name = dependency.l0-lp-az-lp-main.outputs.ecp_environment_name
 
-  ecp_azure_devops_repository_name = "" # dependency.l0-lp-az-lp-main.outputs.ecp_azure_devops_automation_repository_name
+  ecp_azure_devops_repository_name = dependency.l0-lp-az-lp-main.outputs.ecp_azure_devops_automation_repository_name
 
-  ecp_azure_devops_pool_name = "" # dependency.l0-lp-ado-mpool.outputs.managed_devops_pool.name
+  ecp_azure_devops_pool_name = dependency.l0-lp-ado-mpool.outputs.managed_devops_pool.name
 }
