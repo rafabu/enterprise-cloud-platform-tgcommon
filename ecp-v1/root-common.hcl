@@ -417,7 +417,7 @@ import {
 %{if contains(
   ["az-alz-base"],
   basename(get_terragrunt_dir())
-)} && "${local.terraform_command}" == "destroy"}
+) && "${local.terraform_command}" == "destroy"}
 
 ###### terraform state remove 'module.alz.azapi_resource.management_groups_level_0'
 ###### move subscription out of management group before destroying the mg itself --> ECP root
