@@ -52,7 +52,7 @@ dependency "l2-con-az-con-mgmt" {
         address_space = [
           "192.0.2.0/24"
         ]
-    }
+      }
     }
     virtual_network_subnets = {
       main-l2-connectivity-management-default = {
@@ -154,7 +154,7 @@ locals {
     local.virtualWan_definition_unit
   )
 
-################# virtual WAN hub #################
+  ################# virtual WAN hub #################
   # exclude the ones named in the *.exclude.json
   library_virtualhub_path_shared    = "${local.library_path_shared}/platform/ecp-artefacts/ms-azure/network/virtualHubs"
   library_virtualhub_path_unit      = "${local.library_path_unit}/virtualHubs"
@@ -355,12 +355,12 @@ remote_state {
 inputs = {
   azure_tags = local.unit_common_azure_tags
 
-   ecp_hub_locations = {}
+  ecp_hub_locations = {}
 
   # load merged vnet artefact objects
   virtual_network_artefacts = local.virtualNetwork_definition_merged
-  
- # load merged virtual wan artefact objects
+
+  # load merged virtual wan artefact objects
   virtual_wan_artefacts = local.virtualWan_definition_merged
 
   # load merged virtual hub artefact objects
@@ -418,8 +418,8 @@ inputs = {
       }
 
       virtual_network_gateways = {}
-      vpn_sites = {}
-      vpn_site_connections = {}
+      vpn_sites                = {}
+      vpn_site_connections     = {}
     }
   }
 
