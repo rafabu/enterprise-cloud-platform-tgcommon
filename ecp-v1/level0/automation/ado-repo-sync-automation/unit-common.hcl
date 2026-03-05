@@ -1,9 +1,7 @@
 dependencies {
   paths = [
     format("%s/../../bootstrap/az-launchpad-bootstrap-helper", get_original_terragrunt_dir()),
-    # format("%s/../../bootstrap/az-launchpad-bootstrap-helper", get_terragrunt_dir()),
     format("%s/../../launchpad/ado-project", get_original_terragrunt_dir())
-    # format("%s/../../launchpad/ado-project", get_terragrunt_dir())
   ]
 }
 
