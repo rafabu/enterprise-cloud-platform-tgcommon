@@ -403,7 +403,7 @@ generate "import" {
 %{if contains(
   ["az-alz-base"],
   basename(get_terragrunt_dir())
-  )} && "${local.terraform_command}" != "destroy"}
+  ) && "${local.terraform_command}" != "destroy"}
 
 # re-use the pre-created ECP parent management group
 #     note: id must match ${local.ecp_environment_name}-mg-ecpa-deployment
