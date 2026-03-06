@@ -13,26 +13,26 @@ dependency "l0-lp-ado-mpool" {
       location = "westeurope"
     }
     managed_devops_pool = {
-      id   = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.DevOps/managedDevOpsPools/mock-pool"
-      id_azuredevops = "0"
-      name = "mock-pool"
+      id                  = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.DevOps/managedDevOpsPools/mock-pool"
+      id_azuredevops      = "0"
+      name                = "mock-pool"
       resource_group_name = "mock-rg"
-      location = "westeurope"
+      location            = "westeurope"
     }
-     service_principals = {
+    service_principals = {
       "l0-contribute" = {
-        id   = "00000000-0000-0000-0000-000000000000"
+        id           = "00000000-0000-0000-0000-000000000000"
         display_name = "mock_name"
-        client_id = "00000000-0000-0000-0000-000000000000"
-        object_id = "00000000-0000-0000-0000-000000000000"
-        type = "managedIdentity"
+        client_id    = "00000000-0000-0000-0000-000000000000"
+        object_id    = "00000000-0000-0000-0000-000000000000"
+        type         = "managedIdentity"
       }
       "l0-read" = {
-        id   = "00000000-0000-0000-0000-000000000000"
+        id           = "00000000-0000-0000-0000-000000000000"
         display_name = "mock_name"
-        client_id = "00000000-0000-0000-0000-000000000000"
-        object_id = "00000000-0000-0000-0000-000000000000"
-        type = "managedIdentity"
+        client_id    = "00000000-0000-0000-0000-000000000000"
+        object_id    = "00000000-0000-0000-0000-000000000000"
+        type         = "managedIdentity"
       }
     }
   }
@@ -44,7 +44,7 @@ locals {
   ecp_deployment_unit             = "ecproot"
   ecp_resource_name_random_length = 0
 
-  azure_tf_module_folder = "az-ecp-parent"  
+  azure_tf_module_folder = "az-ecp-parent"
 
   ################# terragrunt specifics #################
   TG_DOWNLOAD_DIR = coalesce(
@@ -54,7 +54,7 @@ locals {
     "/tmp"
   )
 
- # see if backend variables are set
+  # see if backend variables are set
   backend_config_present = alltrue([
     get_env("ECP_TG_BACKEND_LEVEL1_SUBSCRIPTION_ID", "") != "",
     get_env("ECP_TG_BACKEND_LEVEL1_RESOURCE_GROUP_NAME", "") != "",
@@ -63,22 +63,22 @@ locals {
   ])
 
   ################# bootstrap-helper unit output (fallback) #################
-  bootstrap_helper_folder        = "${local.TG_DOWNLOAD_DIR}/${uuidv5("dns", "az-launchpad-bootstrap-helper")}"
-  bootstrap_helper_output        = jsondecode(
-      try(file("${local.bootstrap_helper_folder}/terraform_output.json"), "{}")
+  bootstrap_helper_folder = "${local.TG_DOWNLOAD_DIR}/${uuidv5("dns", "az-launchpad-bootstrap-helper")}"
+  bootstrap_helper_output = jsondecode(
+    try(file("${local.bootstrap_helper_folder}/terraform_output.json"), "{}")
   )
 
   bootstrap_backend_type         = "azurerm"
   bootstrap_backend_type_changed = false
 
-   backend_config = local.backend_config_present ? {
+  backend_config = local.backend_config_present ? {
     subscription_id      = get_env("ECP_TG_BACKEND_LEVEL1_SUBSCRIPTION_ID")
     resource_group_name  = get_env("ECP_TG_BACKEND_LEVEL1_RESOURCE_GROUP_NAME")
     storage_account_name = get_env("ECP_TG_BACKEND_LEVEL1_NAME")
     container_name       = get_env("ECP_TG_BACKEND_LEVEL1_CONTAINER")
     use_azuread_auth     = true
     key                  = "${basename(path_relative_to_include())}.tfstate"
-  } : {
+    } : {
     subscription_id      = local.bootstrap_helper_output.backend_storage_accounts["l1"].subscription_id
     resource_group_name  = local.bootstrap_helper_output.backend_storage_accounts["l1"].resource_group_name
     storage_account_name = local.bootstrap_helper_output.backend_storage_accounts["l1"].name
@@ -86,7 +86,7 @@ locals {
     use_azuread_auth     = true
     key                  = "${basename(path_relative_to_include())}.tfstate"
   }
-} 
+}
 
 remote_state {
   backend = local.bootstrap_backend_type
@@ -94,22 +94,22 @@ remote_state {
     path      = "backend.tf"
     if_exists = "overwrite"
   }
-  config = local.backend_config
+  config       = local.backend_config
   disable_init = tobool(get_env("TERRAGRUNT_DISABLE_INIT", "false"))
 }
 
 inputs = {
   # ecp_deployment_entraid_contributor_group_member_principal_ids = []
-  ecp_deployment_entraid_contributor_groups_protected = true
+  ecp_deployment_entraid_contributor_groups_protected  = true
   ecp_deployment_entraid_contributor_group_pim_enabled = true
 
   # ecp_deployment_entraid_reader_group_member_principal_ids      = []
-  ecp_deployment_entraid_reader_groups_protected = false
+  ecp_deployment_entraid_reader_groups_protected  = false
   ecp_deployment_entraid_reader_group_pim_enabled = false
 
   # ecp_deployment_contributor_workload_identity_object_id = "65b04b24-3c62-4d46-856d-059d2242637e" # dependency.l0-lp-ado-mpool.outputs.service_principals["l0-contribute"].object_id
   # ecp_deployment_reader_workload_identity_object_id  = "34e7b021-512d-4e97-93f0-c49cac2d418c" # dependency.l0-lp-ado-mpool.outputs.service_principals["l0-read"].object_id
 
   ecp_deployment_contributor_workload_identity_object_id = dependency.l0-lp-ado-mpool.outputs.service_principals["l0-contribute"].object_id
-  ecp_deployment_reader_workload_identity_object_id  = dependency.l0-lp-ado-mpool.outputs.service_principals["l0-read"].object_id
+  ecp_deployment_reader_workload_identity_object_id      = dependency.l0-lp-ado-mpool.outputs.service_principals["l0-read"].object_id
 }
