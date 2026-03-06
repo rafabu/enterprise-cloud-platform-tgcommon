@@ -95,9 +95,8 @@ locals {
 # remote_state {}
 
 terraform {
-  # source = "git::${local.ecp_azure_modules_repo}/modules-tf//${local.unit_common_vars.locals.azure_tf_module_folder}" # ?ref=${include.root.locals.ecp_azure_modules_repo_version}"
-  source = "file::D:/Repos/isol-ecp/enterprise-cloud-platform-azure/modules-tf//${local.unit_common_vars.locals.azure_tf_module_folder}"
-
+  source = "git::${local.ecp_azure_modules_repo}/modules-tf//${local.unit_common_vars.locals.azure_tf_module_folder}" # ?ref=${include.root.locals.ecp_azure_modules_repo_version}"
+  
   # Force Terraform to keep trying to acquire a lock for
   # up to 20 minutes if someone else already has the lock
   extra_arguments "retry_lock" {
@@ -310,7 +309,7 @@ terraform {
       version = "${local.tf_provider_azurecaf_version}"
     }
 %{if contains(
-  ["ado-mpool", "az-alz-connectivity-virtual-wan", "az-alz-management-resources", "az-connectivity-management", "az-devcenter", "az-launchpad-bootstrap-helper", "az-launchpad-backend", "az-launchpad-network", "az-launchpad-main"],
+  ["ado-mpool", "az-alz-connectivity-virtual-wan-main-location", "az-alz-management-resources", "az-connectivity-management", "az-devcenter", "az-launchpad-bootstrap-helper", "az-launchpad-backend", "az-launchpad-network", "az-launchpad-main"],
   basename(get_terragrunt_dir())
   )}
     azurerm = {
