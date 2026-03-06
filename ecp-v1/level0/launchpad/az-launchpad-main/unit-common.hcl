@@ -27,15 +27,15 @@ locals {
   ])
 
   ################# bootstrap-helper unit output (fallback) #################
-  bootstrap_helper_folder        = "${local.TG_DOWNLOAD_DIR}/${uuidv5("dns", "az-launchpad-bootstrap-helper")}"
-  bootstrap_helper_output        = jsondecode(
+  bootstrap_helper_folder = "${local.TG_DOWNLOAD_DIR}/${uuidv5("dns", "az-launchpad-bootstrap-helper")}"
+  bootstrap_helper_output = jsondecode(
     try(file("${local.bootstrap_helper_folder}/terraform_output.json"), "{}")
   )
   bootstrap_backend_type_changed = try(local.bootstrap_helper_output.backend_storage_accounts["l0"].ecp_terraform_backend_changed_since_last_apply, false)
   # assure local state resides in bootstrap-helper folder
   bootstrap_local_backend_path = "${local.bootstrap_helper_folder}/${basename(path_relative_to_include())}.tfstate"
 
-  backend_type         = local.backend_config_present ? "azurerm" : try(local.bootstrap_helper_output.backend_storage_accounts["l0"].ecp_resource_exists == true && get_terraform_command() != "destroy" ? "azurerm" : "local", "local")
+  backend_type = local.backend_config_present ? "azurerm" : try(local.bootstrap_helper_output.backend_storage_accounts["l0"].ecp_resource_exists == true && get_terraform_command() != "destroy" ? "azurerm" : "local", "local")
   backend_config = local.backend_config_present ? {
     subscription_id      = get_env("ECP_TG_BACKEND_LEVEL0_SUBSCRIPTION_ID")
     resource_group_name  = get_env("ECP_TG_BACKEND_LEVEL0_RESOURCE_GROUP_NAME")
@@ -43,7 +43,7 @@ locals {
     container_name       = get_env("ECP_TG_BACKEND_LEVEL0_CONTAINER")
     use_azuread_auth     = true
     key                  = "${basename(path_relative_to_include())}.tfstate"
-  } : local.backend_type == "azurerm" ? {
+    } : local.backend_type == "azurerm" ? {
     subscription_id      = local.bootstrap_helper_output.backend_storage_accounts["l0"].subscription_id
     resource_group_name  = local.bootstrap_helper_output.backend_storage_accounts["l0"].resource_group_name
     storage_account_name = local.bootstrap_helper_output.backend_storage_accounts["l0"].name
@@ -67,7 +67,7 @@ remote_state {
     path      = "backend.tf"
     if_exists = "overwrite"
   }
-  config = local.backend_config
+  config       = local.backend_config
   disable_init = tobool(get_env("TERRAGRUNT_DISABLE_INIT", "false"))
 }
 
