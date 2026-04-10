@@ -51,7 +51,8 @@ locals {
   ecp_identity_subscription_id     = coalesce(local.merged_locals.ecp_identity_subscription_id, "00000000-0000-0000-0000-000000000000")
   ecp_security_subscription_id     = coalesce(local.merged_locals.ecp_security_subscription_id, "00000000-0000-0000-0000-000000000000")
 
-  ecp_environment_name = lower("${local.merged_locals.ecp_deployment_code}-${substr(local.merged_locals.ecp_deployment_env, 0, 1)}${local.merged_locals.ecp_deployment_number}")
+  ecp_environment_stage = local.merged_locals.ecp_deployment_env
+  ecp_environment_name  = lower("${local.merged_locals.ecp_deployment_code}-${substr(local.merged_locals.ecp_deployment_env, 0, 1)}${local.merged_locals.ecp_deployment_number}")
 
   ecp_configuration_repo         = "github.com/rafabu/enterprise-cloud-platform-conf.git"
   ecp_configuration_repo_version = "main"
@@ -61,7 +62,7 @@ locals {
 
   tfplan_path = get_env("TF_PLAN_PATH", "./")
 
- ############ Versions ############
+  ############ Versions ############
   tf_version                      = ">= 1.14"
   tf_provider_azuread_version     = "~> 3.8"
   tf_provider_azurecaf_version    = "~> 1.2"
@@ -75,7 +76,7 @@ locals {
   tf_provider_msgraph_version     = "~> 0.3"
   tf_provider_time_version        = "~> 0.13"
   # ALZ
-  tf_provider_alz_version          = "~> 0.20"
+  tf_provider_alz_version = "~> 0.20"
 
   # refresh to newer ALZ / SLZ / AMBA
   #     IMPORTANT !!!!!
@@ -83,7 +84,7 @@ locals {
   tf_provider_alz_alz_lib_version  = "2026.01.3"
   tf_provider_alz_slz_lib_version  = "2026.02.2"
   tf_provider_alz_amba_lib_version = "2026.01.1"
-  
+
   # Azure Verified Modules
   tf_provider_modtm_version = "~> 0.3"
 
@@ -100,7 +101,7 @@ locals {
 
 terraform {
   source = "git::${local.ecp_azure_modules_repo}/modules-tf//${local.unit_common_vars.locals.azure_tf_module_folder}" # ?ref=${include.root.locals.ecp_azure_modules_repo_version}"
-  
+
   # Force Terraform to keep trying to acquire a lock for
   # up to 20 minutes if someone else already has the lock
   extra_arguments "retry_lock" {
@@ -449,7 +450,8 @@ inputs = {
   }
   azure_tags = local.root_common_azure_tags
 
-  ecp_environment_name = local.ecp_environment_name
+  ecp_environment_name  = local.ecp_environment_name
+  ecp_environment_stage = local.ecp_environment_stage
 
   ecp_network_main_ipv4_address_space = local.ecp_network_main_ipv4_address_space
 
