@@ -353,7 +353,7 @@ inputs = {
     sku_name = "Standard_D2as_v5" # D2as_v5 is currently more economic than D2as_v6
     image = [
       {
-        aliases               = ["ubuntu-24.04-g2/latest"]
+        aliases               = ["ubuntu-24.04", "ubuntu-24.04-g2", "ubuntu-latest"]
         buffer                = "*"
         well_known_image_name = "ubuntu-24.04-g2/latest"
       }
