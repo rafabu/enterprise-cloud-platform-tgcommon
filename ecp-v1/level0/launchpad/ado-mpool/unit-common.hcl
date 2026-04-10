@@ -350,12 +350,12 @@ inputs = {
     }
   }
   managed_devops_pool_vmss_fabric_profile = {
-    sku_name = "Standard_D2as_v5"
+    sku_name = "Standard_D2as_v5" # D2as_v5 is currently more economic than D2as_v6
     image = [
       {
-        aliases               = ["ubuntu-24.04/latest"]
+        aliases               = ["ubuntu-24.04-g2/latest"]
         buffer                = "*"
-        well_known_image_name = "ubuntu-24.04/latest"
+        well_known_image_name = "ubuntu-24.04-g2/latest"
       }
     ]
     os_profile = {
