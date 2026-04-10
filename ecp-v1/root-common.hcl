@@ -280,6 +280,13 @@ provider "msgraph" {
   tenant_id = "${local.merged_locals.ecp_entra_tenant_id}"
 }
 %{endif}
+
+%{if contains(
+  ["ado-mpool", "ado-project", "az-alz-connectivity-virtual-wan", "az-ecp-parent", "az-platform-subscriptions", "devcenter"],
+  basename(get_terragrunt_dir())
+)}
+provider "time" {}
+%{endif}
 EOF
 }
 
