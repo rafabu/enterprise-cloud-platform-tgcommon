@@ -76,14 +76,13 @@ locals {
   tf_provider_time_version        = "~> 0.13"
   # ALZ
   tf_provider_alz_version          = "~> 0.20"
-  tf_provider_alz_alz_lib_version  = "2025.09.3" # "2026.01.0"
-  tf_provider_alz_slz_lib_version  = "2025.10.1"
-  tf_provider_alz_amba_lib_version = "2025.10.1"
-  
+
   # refresh to newer ALZ / SLZ / AMBA
-  # tf_provider_alz_alz_lib_version  = "2026.01.3"
-  # tf_provider_alz_slz_lib_version  = "2026.02.2"
-  # tf_provider_alz_amba_lib_version = "2026.01.1"
+  #     IMPORTANT !!!!!
+  #     --> also update "alz_library_metadata.json" to reference the same version of ALZ / SLZ
+  tf_provider_alz_alz_lib_version  = "2026.01.3"
+  tf_provider_alz_slz_lib_version  = "2026.02.2"
+  tf_provider_alz_amba_lib_version = "2026.01.1"
   
   # Azure Verified Modules
   tf_provider_modtm_version = "~> 0.3"
@@ -91,7 +90,6 @@ locals {
   ############ Tags ############
   root_common_azure_tags = {
     # "hidden-ecpTgUnitRootCommon" = format("%s/root-common.hcl", get_parent_terragrunt_dir())
-
     createdBy = "ecp-terraform"
   }
 
