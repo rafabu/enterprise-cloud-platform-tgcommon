@@ -61,17 +61,17 @@ locals {
 
   tfplan_path = get_env("TF_PLAN_PATH", "./")
 
-  ############ Versions ############
+ ############ Versions ############
   tf_version                      = ">= 1.14"
-  tf_provider_azuread_version     = "~> 3.7"
+  tf_provider_azuread_version     = "~> 3.8"
   tf_provider_azurecaf_version    = "~> 1.2"
-  tf_provider_azurerm_version     = "~> 4.55"
-  tf_provider_azapi_version       = "~> 2.7"
-  tf_provider_azuredevops_version = "~> 1.11"
+  tf_provider_azurerm_version     = "~> 4.68"
+  tf_provider_azapi_version       = "~> 2.8"
+  tf_provider_azuredevops_version = "~> 1.15"
   tf_provider_external_version    = "~> 2.3"
   tf_provider_http_version        = "~> 3.5"
-  tf_provider_local_version       = "~> 2.6"
-  tf_provider_random_version      = "~> 3.7"
+  tf_provider_local_version       = "~> 2.8"
+  tf_provider_random_version      = "~> 3.8"
   tf_provider_msgraph_version     = "~> 0.3"
   tf_provider_time_version        = "~> 0.13"
   # ALZ
