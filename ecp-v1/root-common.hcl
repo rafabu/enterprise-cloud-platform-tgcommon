@@ -51,7 +51,8 @@ locals {
   ecp_identity_subscription_id     = coalesce(local.merged_locals.ecp_identity_subscription_id, "00000000-0000-0000-0000-000000000000")
   ecp_security_subscription_id     = coalesce(local.merged_locals.ecp_security_subscription_id, "00000000-0000-0000-0000-000000000000")
 
-  ecp_environment_name = lower("${local.merged_locals.ecp_deployment_code}-${substr(local.merged_locals.ecp_deployment_env, 0, 1)}${local.merged_locals.ecp_deployment_number}")
+  ecp_environment_stage = local.merged_locals.ecp_deployment_env
+  ecp_environment_name  = lower("${local.merged_locals.ecp_deployment_code}-${substr(local.merged_locals.ecp_deployment_env, 0, 1)}${local.merged_locals.ecp_deployment_number}")
 
   ecp_configuration_repo         = "github.com/rafabu/enterprise-cloud-platform-conf.git"
   ecp_configuration_repo_version = "main"
@@ -63,29 +64,33 @@ locals {
 
   ############ Versions ############
   tf_version                      = ">= 1.14"
-  tf_provider_azuread_version     = "~> 3.7"
+  tf_provider_azuread_version     = "~> 3.8"
   tf_provider_azurecaf_version    = "~> 1.2"
-  tf_provider_azurerm_version     = "~> 4.55"
-  tf_provider_azapi_version       = "~> 2.7"
-  tf_provider_azuredevops_version = "~> 1.11"
+  tf_provider_azurerm_version     = "~> 4.68"
+  tf_provider_azapi_version       = "~> 2.8"
+  tf_provider_azuredevops_version = "~> 1.15"
   tf_provider_external_version    = "~> 2.3"
   tf_provider_http_version        = "~> 3.5"
-  tf_provider_local_version       = "~> 2.6"
-  tf_provider_random_version      = "~> 3.7"
+  tf_provider_local_version       = "~> 2.8"
+  tf_provider_random_version      = "~> 3.8"
   tf_provider_msgraph_version     = "~> 0.3"
   tf_provider_time_version        = "~> 0.13"
   # ALZ
-  tf_provider_alz_version          = "~> 0.20"
-  tf_provider_alz_alz_lib_version  = "2025.09.3"
-  tf_provider_alz_slz_lib_version  = "2025.10.1"
-  tf_provider_alz_amba_lib_version = "2025.10.1"
+  tf_provider_alz_version = "~> 0.20"
+
+  # refresh to newer ALZ / SLZ / AMBA
+  #     IMPORTANT !!!!!
+  #     --> also update "alz_library_metadata.json" to reference the same version of ALZ / SLZ
+  tf_provider_alz_alz_lib_version  = "2026.01.3"
+  tf_provider_alz_slz_lib_version  = "2026.02.2"
+  tf_provider_alz_amba_lib_version = "2026.01.1"
+
   # Azure Verified Modules
   tf_provider_modtm_version = "~> 0.3"
 
   ############ Tags ############
   root_common_azure_tags = {
     # "hidden-ecpTgUnitRootCommon" = format("%s/root-common.hcl", get_parent_terragrunt_dir())
-
     createdBy = "ecp-terraform"
   }
 
@@ -96,7 +101,7 @@ locals {
 
 terraform {
   source = "git::${local.ecp_azure_modules_repo}/modules-tf//${local.unit_common_vars.locals.azure_tf_module_folder}" # ?ref=${include.root.locals.ecp_azure_modules_repo_version}"
-  
+
   # Force Terraform to keep trying to acquire a lock for
   # up to 20 minutes if someone else already has the lock
   extra_arguments "retry_lock" {
@@ -162,7 +167,7 @@ provider "alz" {
 %{endif}
 
 %{if contains(
-  ["az-alz-base", "az-alz-connectivity-virtual-wan-main-location", "az-alz-management-resources", "az-connectivity-management", "az-privatelink-privatedns-zones", "ado-mpool", "az-ecp-parent", "az-launchpad-backend", "az-devcenter", "az-launchpad-network", "az-platform-subscriptions"],
+  ["az-alz-base", "az-alz-connectivity-virtual-wan", "az-alz-management-resources", "az-connectivity-management", "az-privatelink-privatedns-zones", "ado-mpool", "az-ecp-parent", "az-launchpad-backend", "az-devcenter", "az-launchpad-network", "az-platform-subscriptions"],
   basename(get_terragrunt_dir())
   )}
 provider "azapi" {
@@ -211,7 +216,7 @@ provider "azurerm" {
 %{endif}
 
 %{if contains(
-  ["az-alz-connectivity-virtual-wan-main-location", "az-alz-management-resources", "az-connectivity-management"],
+  ["az-alz-connectivity-virtual-wan", "az-alz-management-resources", "az-connectivity-management"],
   basename(get_terragrunt_dir())
   )}
 provider "azurerm" {
@@ -259,7 +264,7 @@ provider "azurerm" {
 %{endif}
 
 %{if contains(
-  ["az-alz-base", "az-alz-connectivity-virtual-wan-main-location", "az-privatelink-privatedns-zones"],
+  ["az-alz-base", "az-alz-connectivity-virtual-wan", "az-privatelink-privatedns-zones"],
   basename(get_terragrunt_dir())
   )}
 provider "modtm" {
@@ -274,6 +279,13 @@ provider "modtm" {
 provider "msgraph" {
   tenant_id = "${local.merged_locals.ecp_entra_tenant_id}"
 }
+%{endif}
+
+%{if contains(
+  ["ado-mpool", "ado-project", "az-alz-connectivity-virtual-wan", "az-ecp-parent", "az-platform-subscriptions", "devcenter"],
+  basename(get_terragrunt_dir())
+)}
+provider "time" {}
 %{endif}
 EOF
 }
@@ -309,7 +321,7 @@ terraform {
       version = "${local.tf_provider_azurecaf_version}"
     }
 %{if contains(
-  ["ado-mpool", "az-alz-connectivity-virtual-wan-main-location", "az-alz-management-resources", "az-connectivity-management", "az-devcenter", "az-launchpad-bootstrap-helper", "az-launchpad-backend", "az-launchpad-network", "az-launchpad-main"],
+  ["ado-mpool", "az-alz-connectivity-virtual-wan", "az-alz-management-resources", "az-connectivity-management", "az-devcenter", "az-launchpad-bootstrap-helper", "az-launchpad-backend", "az-launchpad-network", "az-launchpad-main"],
   basename(get_terragrunt_dir())
   )}
     azurerm = {
@@ -318,7 +330,7 @@ terraform {
     }
 %{endif}
 %{if contains(
-  ["az-alz-base", "az-alz-connectivity-virtual-wan-main-location", "az-alz-management-resources", "az-connectivity-management", "az-privatelink-privatedns-zones", "ado-mpool", "az-ecp-parent", "az-launchpad-backend", "az-devcenter", "az-launchpad-network", "az-platform-subscriptions"],
+  ["az-alz-base", "az-alz-connectivity-virtual-wan", "az-alz-management-resources", "az-connectivity-management", "az-privatelink-privatedns-zones", "ado-mpool", "az-ecp-parent", "az-launchpad-backend", "az-devcenter", "az-launchpad-network", "az-platform-subscriptions"],
   basename(get_terragrunt_dir())
   )}
     azapi = {
@@ -371,7 +383,7 @@ terraform {
     }
 %{endif}
 %{if contains(
-  ["az-alz-base", "az-alz-connectivity-virtual-wan-main-location", "az-privatelink-privatedns-zones"],
+  ["az-alz-base", "az-alz-connectivity-virtual-wan", "az-privatelink-privatedns-zones"],
   basename(get_terragrunt_dir())
   )}
     modtm = {
@@ -380,7 +392,7 @@ terraform {
     }
 %{endif}
 %{if contains(
-  ["az-alz-base", "az-alz-connectivity-virtual-wan-main-location", "az-connectivity-management", "az-devcenter", "az-ecp-parent", "ado-mpool", "ado-project"],
+  ["az-alz-base", "az-alz-connectivity-virtual-wan", "az-connectivity-management", "az-devcenter", "az-ecp-parent", "ado-mpool", "ado-project"],
   basename(get_terragrunt_dir())
 )}
     time = {
@@ -445,7 +457,8 @@ inputs = {
   }
   azure_tags = local.root_common_azure_tags
 
-  ecp_environment_name = local.ecp_environment_name
+  ecp_environment_name  = local.ecp_environment_name
+  ecp_environment_stage = local.ecp_environment_stage
 
   ecp_network_main_ipv4_address_space = local.ecp_network_main_ipv4_address_space
 
