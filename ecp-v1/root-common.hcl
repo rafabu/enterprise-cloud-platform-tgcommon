@@ -101,7 +101,7 @@ locals {
 
 terraform {
   source = "git::${local.ecp_azure_modules_repo}/modules-tf//${local.unit_common_vars.locals.azure_tf_module_folder}" # ?ref=${include.root.locals.ecp_azure_modules_repo_version}"
-  
+
   # Force Terraform to keep trying to acquire a lock for
   # up to 20 minutes if someone else already has the lock
   extra_arguments "retry_lock" {
@@ -275,7 +275,7 @@ provider "modtm" {
 %{if contains(
   ["entraid-policies"],
   basename(get_terragrunt_dir())
-)}
+  )}
 provider "msgraph" {
   tenant_id = "${local.merged_locals.ecp_entra_tenant_id}"
 }
