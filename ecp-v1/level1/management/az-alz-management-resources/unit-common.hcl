@@ -11,7 +11,7 @@ dependencies {
 }
 
 dependency "az-privatelink-privatedns-zones" {
-  config_path = format("%s/../az-privatelink-privatedns-zones", get_original_terragrunt_dir())
+  config_path = format("%s/../../connectivity/az-privatelink-privatedns-zones", get_original_terragrunt_dir())
   mock_outputs = {
     private_link_private_dns_zones_resource_ids = [
       "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/placeholder/providers/Microsoft.Network/privateDnsZones//providers/Microsoft.Network/privateDnsZones/privatelink.azurecr.io",
@@ -28,7 +28,7 @@ dependency "az-privatelink-privatedns-zones" {
 
 locals {
   ecp_deployment_area             = "ecpa"
-  ecp_deployment_unit             = "mgmt"
+  ecp_deployment_unit             = "mg"
   ecp_resource_name_random_length = 0
 
   azure_tf_module_folder = "az-alz-management-resources"
