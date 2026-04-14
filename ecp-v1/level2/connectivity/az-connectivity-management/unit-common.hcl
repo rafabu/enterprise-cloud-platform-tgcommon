@@ -10,7 +10,7 @@ dependencies {
 }
 
 dependency "l1-mgm-az-privatelink-privatedns" {
-  config_path = format("%s/../../../level1/management/az-privatelink-privatedns-zones", get_original_terragrunt_dir())
+  config_path = format("%s/../../../level1/connectivity/az-privatelink-privatedns-zones", get_original_terragrunt_dir())
   mock_outputs = {
     private_link_private_dns_zones_resource_ids = [
       "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/privateDnsZones/privatelink.ecpiscool.mock"
