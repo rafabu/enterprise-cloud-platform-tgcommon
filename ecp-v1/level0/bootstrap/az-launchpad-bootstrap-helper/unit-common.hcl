@@ -220,7 +220,8 @@ execute = [
   "pwsh",
   "-NoLogo", "-NoProfile", "-NonInteractive",
   "-File",
-  "${get_terragrunt_dir()}/scripts/Enable-PostHelper-RemoteBackend-Access.ps1"
+  # "${get_terragrunt_dir()}/scripts/Enable-PostHelper-RemoteBackend-Access.ps1"
+  "D:\Repos\isol-ecp\enterprise-cloud-platform-tgcommon\ecp-v1\level0\bootstrap\az-launchpad-bootstrap-helper\scripts\Enable-PostHelper-RemoteBackend-Access.ps1"
 ]
 
 
