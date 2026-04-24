@@ -221,7 +221,7 @@ execute = [
   "-NoLogo", "-NoProfile", "-NonInteractive",
   "-File",
   # "${get_terragrunt_dir()}/scripts/Enable-PostHelper-RemoteBackend-Access.ps1"
-  "./scripts/Enable-PostHelper-RemoteBackend-Access.ps1"
+  "D:/Repos/isol-ecp/enterprise-cloud-platform-tgcommon/ecp-v1/level0/bootstrap/az-launchpad-bootstrap-helper/scripts/Enable-PostHelper-RemoteBackend-Access.ps1"
 ]
 
 
@@ -445,4 +445,12 @@ inputs = {
       backend_type = "local"
     }
   })
+
+  get_repo_root  = get_repo_root() 
+  get_path_from_repo_root = get_path_from_repo_root()
+  get_path_to_repo_root = get_path_to_repo_root()
+  get_terragrunt_dir = get_terragrunt_dir()
+  get_working_dir = get_working_dir()
+  get_parent_terragrunt_dir = get_parent_terragrunt_dir()
+  get_original_terragrunt_dir = get_original_terragrunt_dir()
 }
