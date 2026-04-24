@@ -15,7 +15,7 @@ function Merge-Objects {
 
 function Set-StorageAccountAccess {
     param(
-        [level]$ecpLevel,
+        [string]$ecpLevel,
         [string]$subscriptionId,
         [bool]$resourceExists,
         [string]$accountName,
