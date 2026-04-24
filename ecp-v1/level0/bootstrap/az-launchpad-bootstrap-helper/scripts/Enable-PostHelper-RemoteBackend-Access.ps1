@@ -21,7 +21,7 @@ function Set-StorageAccountAccess {
         [string]$accountName,
         [string]$localIp,
         [string]$publicIp,
-        [bool]$ipInRange,
+        [string]$ipInRange,
         [bool]$blobPeResolution,
         [bool]$ecpIdentity,
         [string]$displayName,
