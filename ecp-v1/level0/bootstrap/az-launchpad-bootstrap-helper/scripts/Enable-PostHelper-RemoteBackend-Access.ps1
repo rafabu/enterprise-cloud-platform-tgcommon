@@ -83,6 +83,7 @@ $localIp = $tfOutput.actor_network_information.value.local_ip
 $publicIp = $tfOutput.actor_network_information.value.public_ip
 $subscriptionId = $tfOutput.backend_storage_accounts.value.l0.subscription_id
 $accountName = $tfOutput.backend_storage_accounts.value.l0.name
+$blobPeResolution = $tfOutput.backend_storage_accounts.value.l0.ecp_terraform_backend_private_endpoint_resolution_valid
 
 $roleName = "Storage Blob Data Contributor"
 
@@ -100,47 +101,12 @@ if ($true -eq $resourceExists) {
         --subscription $subscriptionId `
         --name $accountName `
         -o json | ConvertFrom-Json
-    # Get private endpoints attached to the storage account
-    $privateEndpoints = az network private-endpoint list `
-        --subscription $subscriptionId `
-        --resource-group $sa.resourceGroup `
-        -o json | ConvertFrom-Json
-    $blobPeIps = $privateEndpoints |
-    Where-Object { $_.privateLinkServiceConnections.privateLinkServiceId -like "*$($sa.id)*" } |
-    ForEach-Object {
-        $nicId = $_.networkInterfaces[0].id
-        $nic = az network nic show --ids $nicId -o json | ConvertFrom-Json
-        $nic.ipConfigurations |
-        Where-Object { $_.privateLinkConnectionProperties.requiredMemberName -eq "blob" } |
-        Select-Object -ExpandProperty privateIPAddress
-    }
-    $blobPeResolution = $false
-    # FQDN of the blob service
-    $blobFqdn = $sa.primaryEndpoints.blob -replace "https://", "" -replace "/$", ""
-    # Verify the FQDN resolves to the private endpoint IP
-    $resolvedIps = [System.Net.Dns]::GetHostAddresses($blobFqdn) | Select-Object -ExpandProperty IPAddressToString
-    foreach ($blobPeIp in $blobPeIps) {
-        if ($blobPeIp -and $resolvedIps -contains $blobPeIp) {
-            $blobPeResolution = $true
-        }
-        else {
-            $blobPeResolution = $false
-        }
-    }
-
-
-
-
-
-
-
-
-
-
 
     Write-Output "##### network access #####"
     if ($true -eq $resourceExists -and ("false" -eq $ipInRange -or $false -eq $blobPeResolution) -and $null -ne $publicIp) {
-        Write-Output "INFO: Local IP is $localIp is not in launchpad range or private endpoint resolution failed"
+        Write-Output "INFO: Local IP is $localIp is not in launchpad range  OR"
+        Write-Output " - private endpoint does not exist"
+        Write-Output " - private endpoint resolution failed"
         Write-Output "INFO:   - checking if access to storage account $accountName via public IP $publicIp is allowed..."
         if ($sa.publicNetworkAccess -ne "Enabled") {
             Write-Output "     Public network access is $($sa.publicNetworkAccess). Enabling..."
