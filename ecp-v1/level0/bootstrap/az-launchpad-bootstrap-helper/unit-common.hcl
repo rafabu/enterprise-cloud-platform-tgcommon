@@ -75,21 +75,8 @@ terraform {
     ]
     execute = [
       "pwsh",
-      "-Command",
-      <<-SCRIPT
-Write-Output "INFO: TG_CTX_COMMAND: $env:TG_CTX_COMMAND"
-$systemTempPath = [System.IO.Path]::GetTempPath()
-if ($env:TG_DOWNLOAD_DIR) {
-    $tempPath = $env:TG_DOWNLOAD_DIR
-}
-else {
-    $tempPath = $systemTempPath
-}
-$out_path = [System.IO.Path]::Combine($tempPath, "${uuidv5("dns", basename(get_original_terragrunt_dir()))}")
-if (-not (Test-Path -Path $out_path -PathType Container)) {
-    New-Item -ItemType Directory -Path $out_path -Force | Out-Null
-}
-SCRIPT
+      "-File",
+      "${get_parent_terragrunt_dir()}/scripts/Create-Terraform-Output-Folder.ps1",
     ]
     run_on_error = false
   }
@@ -101,95 +88,8 @@ SCRIPT
     ]
     execute = [
       "pwsh",
-      "-Command",
-      <<-SCRIPT
-function Merge-Objects {
-    param (
-        [object]$Object1,
-        [object]$Object2
-    )
-    $merged = [ordered]@{}
-    foreach ($prop in $Object1.PSObject.Properties) {
-        $merged[$prop.Name] = $prop.Value
-    }
-    foreach ($prop in $Object2.PSObject.Properties) {
-        $merged[$prop.Name] = $prop.Value
-    }
-    return [PSCustomObject]$merged
-}
-
-Write-Output "INFO: TG_CTX_COMMAND: $env:TG_CTX_COMMAND"
-$systemTempPath = [System.IO.Path]::GetTempPath()
-if ($env:TG_DOWNLOAD_DIR) {
-    $tempPath = $env:TG_DOWNLOAD_DIR
-}
-else {
-    $tempPath = $systemTempPath
-}
-$out_path = [System.IO.Path]::Combine($tempPath, "${uuidv5("dns", basename(get_original_terragrunt_dir()))}")
-
-# backend storage account details
-if ($env:TG_CTX_COMMAND -eq "plan") {
-    # "plan" like command - need to parse the tfplan file and build an apply-like output
-    $tfPlanOutput = (terraform show -no-color -json az-launchpad-bootstrap-helper.tfplan | ConvertFrom-Json)
-
-    # actor_identity
-    $tfOutputAIPlanned  =  $tfPlanOutput.planned_values.outputs.actor_identity.value
-    $tfOutputAIAfter = $tfPlanOutput.output_changes.actor_identity.after
-    $tfOutputAIAfterUnknown =$tfPlanOutput.output_changes.actor_identity.after_unknown
-    $tfOutputAIMerged = Merge-Objects -Object1 $tfOutputAIAfterUnknown -Object2 $tfOutputAIAfter
-    $tfOutputAIMerged = Merge-Objects -Object1 $tfOutputAIMerged -Object2 $tfOutputAIPlanned
-
-    # actor_network_information
-    $tfOutputANPlanned  =  $tfPlanOutput.planned_values.outputs.actor_network_information.value
-    $tfOutputANAfter = $tfPlanOutput.output_changes.actor_network_information.after
-    $tfOutputANAfterUnknown =$tfPlanOutput.output_changes.actor_network_information.after_unknown
-    $tfOutputANMerged = Merge-Objects -Object1 $tfOutputANAfterUnknown -Object2 $tfOutputANAfter
-    $tfOutputANMerged = Merge-Objects -Object1 $tfOutputANMerged -Object2 $tfOutputANPlanned
-    
-    # backend_resource_group
-    $tfOutputBRGPlanned  =  $tfPlanOutput.planned_values.outputs.backend_resource_group.value
-    $tfOutputBRGAfter = $tfPlanOutput.output_changes.backend_resource_group.after
-    $tfOutputBRGAfterUnknown =$tfPlanOutput.output_changes.backend_resource_group.after_unknown
-    $tfOutputBRGMerged = Merge-Objects -Object1 $tfOutputBRGAfterUnknown -Object2 $tfOutputBRGAfter
-    $tfOutputBRGMerged = Merge-Objects -Object1 $tfOutputBRGMerged -Object2 $tfOutputBRGPlanned
-
-    # backend_storage_accounts
-    $tfOutputBSPlanned  =  $tfPlanOutput.planned_values.outputs.backend_storage_accounts.value
-    $tfOutputBSAfter = $tfPlanOutput.output_changes.backend_storage_accounts.after
-    $tfOutputBSAfterUnknown =$tfPlanOutput.output_changes.backend_storage_accounts.after_unknown
-    $tfOutputBSMerged = Merge-Objects -Object1 $tfOutputBSAfterUnknown -Object2 $tfOutputBSAfter
-    $tfOutputBSMerged = Merge-Objects -Object1 $tfOutputBSMerged -Object2 $tfOutputBSPlanned
-
-    $terraform_output = @{
-        "actor_identity"            = @{
-          "value" = $tfOutputAIMerged
-          };
-        "actor_network_information" = @{
-          "value" = $tfOutputANMerged
-          };
-        "backend_resource_group"    = @{
-          "value" = $tfOutputBRGMerged
-          };
-        "backend_storage_accounts"  = @{
-          "value" = $tfOutputBSMerged
-          }
-    }
-}
-elseif ($env:TG_CTX_COMMAND -eq "apply") {
-    $terraform_output = terraform output -json | ConvertFrom-Json
-}
-
-$filePath = Join-Path $out_path "terraform_output.json"
-$terraform_output_json = @{
-    "actor_identity"            = $terraform_output.actor_identity.value
-    "actor_network_information" = $terraform_output.actor_network_information.value
-    "backend_storage_accounts"  = $terraform_output.backend_storage_accounts.value
-} | ConvertTo-Json -Depth 5
-
-Write-Output "    Writing $filePath with module's output"
-Set-Content -Path $filePath -Value $terraform_output_json -Encoding UTF8 -Force
-SCRIPT
+      "-File",
+      "${get_parent_terragrunt_dir()}/scripts/Write-Terraform-Output-to-File.ps1"
     ]
     run_on_error = false
   }
@@ -215,208 +115,13 @@ SCRIPT
       # "validate"
     ]
 
+    execute = [
+      "pwsh",
+      "-NoLogo", "-NoProfile", "-NonInteractive",
+      "-File",
+      "${get_parent_terragrunt_dir()}/scripts/Enable-PostHelper-RemoteBackend-Access.ps1"
+    ]
 
-execute = [
-  "pwsh",
-  "-NoLogo", "-NoProfile", "-NonInteractive",
-  "-File",
-  # "${get_terragrunt_dir()}/scripts/Enable-PostHelper-RemoteBackend-Access.ps1"
-  # "D:/Repos/isol-ecp/enterprise-cloud-platform-tgcommon/ecp-v1/level0/bootstrap/az-launchpad-bootstrap-helper/scripts/Enable-PostHelper-RemoteBackend-Access.ps1"
-  "${get_parent_terragrunt_dir()}/scripts/Enable-PostHelper-RemoteBackend-Access.ps1"
-]
-
-
-#     execute = [
-#       "pwsh",
-#       "-Command",
-#       <<-SCRIPT
-# function Merge-Objects {
-#     param (
-#         [object]$Object1,
-#         [object]$Object2
-#     )
-#     $merged = [ordered]@{}
-#     foreach ($prop in $Object1.PSObject.Properties) {
-#         $merged[$prop.Name] = $prop.Value
-#     }
-#     foreach ($prop in $Object2.PSObject.Properties) {
-#         $merged[$prop.Name] = $prop.Value
-#     }
-#     return [PSCustomObject]$merged
-# }
-
-# Write-Output "INFO: TG_CTX_COMMAND: $env:TG_CTX_COMMAND"
-
-# $tgWriteCommands = @(
-#     "apply",
-#     "destroy",
-#     "force-unlock",
-#     "import",
-#     "refresh",
-#     "taint",
-#     "untaint"
-# )
-
-# if ($tgWriteCommands -inotcontains $env:TG_CTX_COMMAND) {
-#     # "plan" like command - need to parse the tfplan file and build an apply-like output
-#     $tfPlanOutput = (terraform show -no-color -json az-launchpad-bootstrap-helper.tfplan | ConvertFrom-Json)
-
-#     # actor_identity
-#     $tfOutputAIPlanned  =  $tfPlanOutput.planned_values.outputs.actor_identity.value
-#     $tfOutputAIAfter = $tfPlanOutput.output_changes.actor_identity.after
-#     $tfOutputAIAfterUnknown =$tfPlanOutput.output_changes.actor_identity.after_unknown
-#     $tfOutputAIMerged = Merge-Objects -Object1 $tfOutputAIAfterUnknown -Object2 $tfOutputAIAfter
-#     $tfOutputAIMerged = Merge-Objects -Object1 $tfOutputAIMerged -Object2 $tfOutputAIPlanned
-
-#     # actor_network_information
-#     $tfOutputANPlanned  =  $tfPlanOutput.planned_values.outputs.actor_network_information.value
-#     $tfOutputANAfter = $tfPlanOutput.output_changes.actor_network_information.after
-#     $tfOutputANAfterUnknown =$tfPlanOutput.output_changes.actor_network_information.after_unknown
-#     $tfOutputANMerged = Merge-Objects -Object1 $tfOutputANAfterUnknown -Object2 $tfOutputANAfter
-#     $tfOutputANMerged = Merge-Objects -Object1 $tfOutputANMerged -Object2 $tfOutputANPlanned
-    
-#     # backend_resource_group
-#     $tfOutputBRGPlanned  =  $tfPlanOutput.planned_values.outputs.backend_resource_group.value
-#     $tfOutputBRGAfter = $tfPlanOutput.output_changes.backend_resource_group.after
-#     $tfOutputBRGAfterUnknown =$tfPlanOutput.output_changes.backend_resource_group.after_unknown
-#     $tfOutputBRGMerged = Merge-Objects -Object1 $tfOutputBRGAfterUnknown -Object2 $tfOutputBRGAfter
-#     $tfOutputBRGMerged = Merge-Objects -Object1 $tfOutputBRGMerged -Object2 $tfOutputBRGPlanned
-
-#     # backend_storage_accounts
-#     $tfOutputBSPlanned  =  $tfPlanOutput.planned_values.outputs.backend_storage_accounts.value
-#     $tfOutputBSAfter = $tfPlanOutput.output_changes.backend_storage_accounts.after
-#     $tfOutputBSAfterUnknown =$tfPlanOutput.output_changes.backend_storage_accounts.after_unknown
-#     $tfOutputBSMerged = Merge-Objects -Object1 $tfOutputBSAfterUnknown -Object2 $tfOutputBSAfter
-#     $tfOutputBSMerged = Merge-Objects -Object1 $tfOutputBSMerged -Object2 $tfOutputBSPlanned
-
-#     $tfOutput = @{
-#         "actor_identity"            = @{
-#           "value" = $tfOutputAIMerged
-#           };
-#         "actor_network_information" = @{
-#           "value" = $tfOutputANMerged
-#           };
-#         "backend_resource_group"    = @{
-#           "value" = $tfOutputBRGMerged
-#           };
-#         "backend_storage_accounts"  = @{
-#           "value" = $tfOutputBSMerged
-#           }
-#     }
-# }
-# else {
-#     # "apply" like command - write access is required
-#     $tfOutput = terraform output -json | ConvertFrom-Json
-# }
-
-# $resourceExists = if ($tfOutput.backend_storage_accounts.value.l0.ecp_resource_exists -eq "true") { $true } else { $false }
-# $ipInRange = if ($tfOutput.actor_network_information.value.is_local_ip_within_ecp_launchpad -eq "true") { "true" } else { "false" }
-# $localIp = $tfOutput.actor_network_information.value.local_ip
-# $publicIp = $tfOutput.actor_network_information.value.public_ip
-# $subscriptionId = $tfOutput.backend_storage_accounts.value.l0.subscription_id
-# $accountName = $tfOutput.backend_storage_accounts.value.l0.name
-
-# $roleName = "Storage Blob Data Contributor"
-
-# $objectId = $tfOutput.actor_identity.value.object_id
-# $displayName = $tfOutput.actor_identity.value.display_name
-# $ecpIdentity = if ("true" -eq $tfOutput.actor_identity.value.is_ecp_launchpad_identity -eq $true) { $true } else { $false }
-# $principalType = if ("user" -eq $tfOutput.actor_identity.value.type) { "User" } else { "ServicePrincipal" }
-
-# # if not running from within launchpad network, access to backend will be blocked by storage account firewall
-# #     temporarily(!) open up access for the duration of this run
-# #     plus RBAC permissions if not using ECP Identity
-# if ($true -eq $resourceExists) {
-#     Write-Output "INFO: Storage Account $accountName exists; querying"
-#     $sa = az storage account show `
-#         --subscription $subscriptionId `
-#         --name $accountName `
-#         -o json | ConvertFrom-Json
-#     Write-Output ""
-
-#     Write-Output "##### network access #####"
-#     if ($true -eq $resourceExists -and "false" -eq $ipInRange -and $null -ne $publicIp) {
-#         Write-Output "INFO: Local IP is $localIp is not in launchpad range - checking if access to storage account $accountName via public IP $publicIp is allowed..."
-#         if ($sa.publicNetworkAccess -ne "Enabled") {
-#             Write-Output "     Public network access is $($sa.publicNetworkAccess). Enabling..."
-#             az storage account update `
-#                 --subscription $subscriptionId `
-#                 --name $accountName `
-#                 --public-network-access Enabled | Out-Null
-#         }
-#         else {
-#             Write-Output "     public network access is already Enabled. No change needed."
-#         }
-#         # Get current allowed IPs
-#         $rules = az storage account network-rule list `
-#             --subscription $subscriptionId `
-#             --account-name $accountName `
-#             --query "ipRules[].ipAddressOrRange" `
-#             -o tsv
-#         if ($rules -contains $publicIp) {
-#             Write-Output "     IP $publicIp is already allowed per network-rule of storage account $accountName. No change needed."
-#         }
-#         else {
-#             Write-Output "     IP $publicIp is being added to network-rule of storage account $accountName..."
-#             az storage account network-rule add `
-#                 --subscription $subscriptionId `
-#                 --account-name $accountName `
-#                 --ip-address $publicIp | Out-Null
-#             Write-Output "     added..."
-#             $waitNeeded = $true
-#         }
-#     }
-#     elseif ("true" -eq $ipInRange) {
-#         Write-Output "INFO: Private IP $localIp is in launchpad vnet range; no need to add public IP to Storage Account $accountName."
-#     }
-#     elseif ($null -eq $publicIp) {
-#         Write-Output "WARNING: No public IP available; cannot add to Storage Account $accountName."
-#     }
-#     elseif ($false -eq $resourceExists) {
-#         Write-Output "WARNING: Storage Account $accountName does not exist yet; cannot configure network access."
-#     }
-#     Write-Output ""
-
-#     Write-Output "##### Blob Access #####"
-#     if ($false -eq $ecpIdentity) {
-#         Write-Output "INFO: identity $displayName isn't an ECP Identity; checking its '$roleName' assignment on $accountName."
-#         $assignment = az role assignment list `
-#             --subscription $subscriptionId `
-#             --assignee-object-id $objectId `
-#             --role "$roleName" `
-#             --scope $sa.id `
-#             -o tsv
-
-#         if ($assignment) {
-#             Write-Host "    identity $displayName already has role '$roleName' on $accountName (terraform command: '$env:TG_CTX_COMMAND')"
-#         }
-#         else {
-#             Write-Host "     assigning role '$roleName' to $displayName on $accountName..."
-#             az role assignment create `
-#                 --subscription $subscriptionId `
-#                 --description "ECP_BOOTSTRAP_HELPER" `
-#                 --assignee-object-id $objectId `
-#                 --assignee-principal-type $principalType `
-#                 --role "$roleName" `
-#                 --scope $sa.id | Out-Null
-#             Write-Output "     added..."
-#             $waitNeeded = $true
-#         }
-#     }
-#     else {
-#         Write-Output "INFO: Running with ECP Identity $displayName; assuming it has sufficient access. No change needed."
-#     }
-# }
-# else {
-#     Write-Output "INFO: Storage Account $accountName does not exist yet; cannot configure access. Will have to run on local terraform backend for now."
-# }
-# Write-Output ""
-# if ($waitNeeded) {
-#     Write-Output "INFO: Sleep 60 seconds for RBAC and/or SA port rule changes to propagate on $accountName"
-#     Start-Sleep -Seconds 60
-# }
-# SCRIPT
-#     ]
     run_on_error = false
   }
 }
@@ -447,11 +152,11 @@ inputs = {
     }
   })
 
-  get_repo_root  = get_repo_root() 
-  get_path_from_repo_root = get_path_from_repo_root()
-  get_path_to_repo_root = get_path_to_repo_root()
-  get_terragrunt_dir = get_terragrunt_dir()
-  get_working_dir = get_working_dir()
-  get_parent_terragrunt_dir = get_parent_terragrunt_dir()
+  get_repo_root               = get_repo_root()
+  get_path_from_repo_root     = get_path_from_repo_root()
+  get_path_to_repo_root       = get_path_to_repo_root()
+  get_terragrunt_dir          = get_terragrunt_dir()
+  get_working_dir             = get_working_dir()
+  get_parent_terragrunt_dir   = get_parent_terragrunt_dir()
   get_original_terragrunt_dir = get_original_terragrunt_dir()
 }
