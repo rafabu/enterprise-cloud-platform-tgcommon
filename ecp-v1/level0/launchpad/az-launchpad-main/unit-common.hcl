@@ -150,6 +150,7 @@ inputs = {
   azure_tags = local.unit_common_azure_tags
 
 
+  zzz_bootstrap_helper_folder = local.bootstrap_helper_folder
   zzz_bootstrap_helper_output = local.bootstrap_helper_output
 
 }
