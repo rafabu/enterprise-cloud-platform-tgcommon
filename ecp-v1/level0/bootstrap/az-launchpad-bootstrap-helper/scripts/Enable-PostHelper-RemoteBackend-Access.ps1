@@ -210,23 +210,17 @@ $subscriptionId = $tfOutput.backend_storage_accounts.value.l0.subscription_id
 $accountName = $tfOutput.backend_storage_accounts.value.l0.name
 $blobPeResolution = $tfOutput.backend_storage_accounts.value.l0.ecp_terraform_backend_private_endpoint_resolution_valid
 
-# Set-StorageAccountAccess -ecpLevel "l0" -subscriptionId $subscriptionId -resourceExists $resourceExists -accountName $accountName -localIp $localIp -publicIp $publicIp -ipInRange $ipInRange -blobPeResolution $blobPeResolution -ecpIdentity $ecpIdentity -displayName $displayName -objectId $objectId -principalType $principalType
-
 #l1
 $resourceExistsl1 = if ($tfOutput.backend_storage_accounts.value.l1.ecp_resource_exists -eq "true") { $true } else { $false }
 $subscriptionIdl1 = $tfOutput.backend_storage_accounts.value.l1.subscription_id
 $accountNamel1 = $tfOutput.backend_storage_accounts.value.l1.name
 $blobPeResolutionl1 = $tfOutput.backend_storage_accounts.value.l1.ecp_terraform_backend_private_endpoint_resolution_valid
 
-# Set-StorageAccountAccess -ecpLevel "l1" -subscriptionId $subscriptionIdl1 -resourceExists $resourceExistsl1 -accountName $accountNamel1 -localIp $localIp -publicIp $publicIp -ipInRange $ipInRange -blobPeResolution $blobPeResolutionl1 -ecpIdentity $ecpIdentity -displayName $displayName -objectId $objectId -principalType $principalType
-
 #l2
 $resourceExistsl2 = if ($tfOutput.backend_storage_accounts.value.l2.ecp_resource_exists -eq "true") { $true } else { $false }
 $subscriptionIdl2 = $tfOutput.backend_storage_accounts.value.l2.subscription_id
 $accountNamel2 = $tfOutput.backend_storage_accounts.value.l2.name
 $blobPeResolutionl2 = $tfOutput.backend_storage_accounts.value.l2.ecp_terraform_backend_private_endpoint_resolution_valid
-
-# Set-StorageAccountAccess -ecpLevel "l2" -subscriptionId $subscriptionIdl2 -resourceExists $resourceExistsl2 -accountName $accountNamel2 -localIp $localIp -publicIp $publicIp -ipInRange $ipInRange -blobPeResolution $blobPeResolutionl2 -ecpIdentity $ecpIdentity -displayName $displayName -objectId $objectId -principalType $principalType
 
 # ForEach-Object -Parallel 
 $levels = @(
