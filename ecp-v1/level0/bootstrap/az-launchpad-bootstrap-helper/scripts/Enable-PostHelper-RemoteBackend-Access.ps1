@@ -13,6 +13,120 @@ function Merge-Objects {
     return [PSCustomObject]$merged
 }
 
+function Set-StorageAccountAccess {
+    param(
+        [level]$ecpLevel,
+        [string]$subscriptionId,
+        [bool]$resourceExists,
+        [string]$accountName,
+        [string]$localIp,
+        [string]$publicIp,
+        [bool]$ipInRange,
+        [bool]$blobPeResolution,
+        [bool]$ecpIdentity,
+        [string]$displayName,
+        [string]$objectId,
+        [string]$principalType
+    )
+
+# if not running from within launchpad network, access to backend will be blocked by storage account firewall
+#     temporarily(!) open up access for the duration of this run
+#     plus RBAC permissions if not using ECP Identity
+if ($true -eq $resourceExists) {
+    Write-Output "INFO: $ecpLevel - Storage Account $accountName exists; querying"
+    $sa = az storage account show `
+        --subscription $subscriptionId `
+        --name $accountName `
+        -o json | ConvertFrom-Json
+
+    Write-Output "##### network access #####"
+    if ($true -eq $resourceExists -and ("false" -eq $ipInRange -or $false -eq $blobPeResolution) -and $null -ne $publicIp) {
+        Write-Output "INFO: $ecpLevel - Local IP is $localIp is not in launchpad range  OR"
+        Write-Output " - private endpoint does not exist"
+        Write-Output " - private endpoint resolution failed"
+        Write-Output "INFO: $ecpLevel - checking if access to storage account $accountName via public IP $publicIp is allowed..."
+        if ($sa.publicNetworkAccess -ne "Enabled") {
+            Write-Output "     Public network access is $($sa.publicNetworkAccess). Enabling..."
+            az storage account update `
+                --subscription $subscriptionId `
+                --name $accountName `
+                --public-network-access Enabled | Out-Null
+        }
+        else {
+            Write-Output "     public network access is already Enabled. No change needed."
+        }
+        # Get current allowed IPs
+        $rules = az storage account network-rule list `
+            --subscription $subscriptionId `
+            --account-name $accountName `
+            --query "ipRules[].ipAddressOrRange" `
+            -o tsv
+        if ($rules -contains $publicIp) {
+            Write-Output "     IP $publicIp is already allowed per network-rule of storage account $accountName. No change needed."
+        }
+        else {
+            Write-Output "     IP $publicIp is being added to network-rule of storage account $accountName..."
+            az storage account network-rule add `
+                --subscription $subscriptionId `
+                --account-name $accountName `
+                --ip-address $publicIp | Out-Null
+            Write-Output "     added..."
+            $waitNeeded = $true
+        }
+    }
+    elseif ("true" -eq $ipInRange) {
+        Write-Output "INFO: $ecpLevel - Private IP $localIp is in launchpad vnet range; no need to add public IP to Storage Account $accountName."
+    }
+    elseif ($null -eq $publicIp) {
+        Write-Output "WARNING: $ecpLevel - No public IP available; cannot add to Storage Account $accountName."
+    }
+    elseif ($false -eq $resourceExists) {
+        Write-Output "WARNING: $ecpLevel - Storage Account $accountName does not exist yet; cannot configure network access."
+    }
+    Write-Output ""
+
+    Write-Output "##### Blob Access #####"
+    if ($false -eq $ecpIdentity) {
+        Write-Output "INFO: identity $displayName isn't an ECP Identity; checking its '$roleName' assignment on $accountName."
+        $assignment = az role assignment list `
+            --subscription $subscriptionId `
+            --assignee-object-id $objectId `
+            --role "$roleName" `
+            --scope $sa.id `
+            -o tsv
+
+        if ($assignment) {
+            Write-Host "    identity $displayName already has role '$roleName' on $accountName (terraform command: '$env:TG_CTX_COMMAND')"
+        }
+        else {
+            Write-Host "     assigning role '$roleName' to $displayName on $accountName..."
+            az role assignment create `
+                --subscription $subscriptionId `
+                --description "ECP_BOOTSTRAP_HELPER" `
+                --assignee-object-id $objectId `
+                --assignee-principal-type $principalType `
+                --role "$roleName" `
+                --scope $sa.id | Out-Null
+            Write-Output "     added..."
+            $waitNeeded = $true
+        }
+    }
+    else {
+        Write-Output "INFO: $ecpLevel - Running with ECP Identity $displayName; assuming it has sufficient access. No change needed."
+    }
+}
+else {
+    Write-Output "INFO: $ecpLevel - Storage Account $accountName does not exist yet; cannot configure access. Will have to run on local terraform backend for now."
+}
+Write-Output ""
+if ($waitNeeded) {
+    Write-Output "INFO: $ecpLevel - Sleep 60 seconds for RBAC and/or SA port rule changes to propagate on $accountName"
+    Start-Sleep -Seconds 60
+}
+
+}
+
+
 Write-Output "INFO: TG_CTX_COMMAND: $env:TG_CTX_COMMAND"
 
 $tgWriteCommands = @(
@@ -77,13 +191,9 @@ else {
     $tfOutput = terraform output -json | ConvertFrom-Json
 }
 
-$resourceExists = if ($tfOutput.backend_storage_accounts.value.l0.ecp_resource_exists -eq "true") { $true } else { $false }
 $ipInRange = if ($tfOutput.actor_network_information.value.is_local_ip_within_ecp_launchpad -eq "true") { "true" } else { "false" }
 $localIp = $tfOutput.actor_network_information.value.local_ip
 $publicIp = $tfOutput.actor_network_information.value.public_ip
-$subscriptionId = $tfOutput.backend_storage_accounts.value.l0.subscription_id
-$accountName = $tfOutput.backend_storage_accounts.value.l0.name
-$blobPeResolution = $tfOutput.backend_storage_accounts.value.l0.ecp_terraform_backend_private_endpoint_resolution_valid
 
 $roleName = "Storage Blob Data Contributor"
 
@@ -92,97 +202,29 @@ $displayName = $tfOutput.actor_identity.value.display_name
 $ecpIdentity = if ("true" -eq $tfOutput.actor_identity.value.is_ecp_launchpad_identity -eq $true) { $true } else { $false }
 $principalType = if ("user" -eq $tfOutput.actor_identity.value.type) { "User" } else { "ServicePrincipal" }
 
-# if not running from within launchpad network, access to backend will be blocked by storage account firewall
-#     temporarily(!) open up access for the duration of this run
-#     plus RBAC permissions if not using ECP Identity
-if ($true -eq $resourceExists) {
-    Write-Output "INFO: Storage Account $accountName exists; querying"
-    $sa = az storage account show `
-        --subscription $subscriptionId `
-        --name $accountName `
-        -o json | ConvertFrom-Json
 
-    Write-Output "##### network access #####"
-    if ($true -eq $resourceExists -and ("false" -eq $ipInRange -or $false -eq $blobPeResolution) -and $null -ne $publicIp) {
-        Write-Output "INFO: Local IP is $localIp is not in launchpad range  OR"
-        Write-Output " - private endpoint does not exist"
-        Write-Output " - private endpoint resolution failed"
-        Write-Output "INFO:   - checking if access to storage account $accountName via public IP $publicIp is allowed..."
-        if ($sa.publicNetworkAccess -ne "Enabled") {
-            Write-Output "     Public network access is $($sa.publicNetworkAccess). Enabling..."
-            az storage account update `
-                --subscription $subscriptionId `
-                --name $accountName `
-                --public-network-access Enabled | Out-Null
-        }
-        else {
-            Write-Output "     public network access is already Enabled. No change needed."
-        }
-        # Get current allowed IPs
-        $rules = az storage account network-rule list `
-            --subscription $subscriptionId `
-            --account-name $accountName `
-            --query "ipRules[].ipAddressOrRange" `
-            -o tsv
-        if ($rules -contains $publicIp) {
-            Write-Output "     IP $publicIp is already allowed per network-rule of storage account $accountName. No change needed."
-        }
-        else {
-            Write-Output "     IP $publicIp is being added to network-rule of storage account $accountName..."
-            az storage account network-rule add `
-                --subscription $subscriptionId `
-                --account-name $accountName `
-                --ip-address $publicIp | Out-Null
-            Write-Output "     added..."
-            $waitNeeded = $true
-        }
-    }
-    elseif ("true" -eq $ipInRange) {
-        Write-Output "INFO: Private IP $localIp is in launchpad vnet range; no need to add public IP to Storage Account $accountName."
-    }
-    elseif ($null -eq $publicIp) {
-        Write-Output "WARNING: No public IP available; cannot add to Storage Account $accountName."
-    }
-    elseif ($false -eq $resourceExists) {
-        Write-Output "WARNING: Storage Account $accountName does not exist yet; cannot configure network access."
-    }
-    Write-Output ""
+#l0
+$resourceExists = if ($tfOutput.backend_storage_accounts.value.l0.ecp_resource_exists -eq "true") { $true } else { $false }
+$subscriptionId = $tfOutput.backend_storage_accounts.value.l0.subscription_id
+$accountName = $tfOutput.backend_storage_accounts.value.l0.name
+$blobPeResolution = $tfOutput.backend_storage_accounts.value.l0.ecp_terraform_backend_private_endpoint_resolution_valid
 
-    Write-Output "##### Blob Access #####"
-    if ($false -eq $ecpIdentity) {
-        Write-Output "INFO: identity $displayName isn't an ECP Identity; checking its '$roleName' assignment on $accountName."
-        $assignment = az role assignment list `
-            --subscription $subscriptionId `
-            --assignee-object-id $objectId `
-            --role "$roleName" `
-            --scope $sa.id `
-            -o tsv
+Set-StorageAccountAccess -ecpLevel "l0" -subscriptionId $subscriptionId -resourceExists $resourceExists -accountName $accountName -localIp $localIp -publicIp $publicIp -ipInRange $ipInRange -blobPeResolution $blobPeResolution -ecpIdentity $ecpIdentity -displayName $displayName -objectId $objectId -principalType $principalType
 
-        if ($assignment) {
-            Write-Host "    identity $displayName already has role '$roleName' on $accountName (terraform command: '$env:TG_CTX_COMMAND')"
-        }
-        else {
-            Write-Host "     assigning role '$roleName' to $displayName on $accountName..."
-            az role assignment create `
-                --subscription $subscriptionId `
-                --description "ECP_BOOTSTRAP_HELPER" `
-                --assignee-object-id $objectId `
-                --assignee-principal-type $principalType `
-                --role "$roleName" `
-                --scope $sa.id | Out-Null
-            Write-Output "     added..."
-            $waitNeeded = $true
-        }
-    }
-    else {
-        Write-Output "INFO: Running with ECP Identity $displayName; assuming it has sufficient access. No change needed."
-    }
-}
-else {
-    Write-Output "INFO: Storage Account $accountName does not exist yet; cannot configure access. Will have to run on local terraform backend for now."
-}
-Write-Output ""
-if ($waitNeeded) {
-    Write-Output "INFO: Sleep 60 seconds for RBAC and/or SA port rule changes to propagate on $accountName"
-    Start-Sleep -Seconds 60
-}
+#l1
+$resourceExistsl1 = if ($tfOutput.backend_storage_accounts.value.l1.ecp_resource_exists -eq "true") { $true } else { $false }
+$subscriptionIdl1 = $tfOutput.backend_storage_accounts.value.l1.subscription_id
+$accountNamel1 = $tfOutput.backend_storage_accounts.value.l1.name
+$blobPeResolutionl1 = $tfOutput.backend_storage_accounts.value.l1.ecp_terraform_backend_private_endpoint_resolution_valid
+
+Set-StorageAccountAccess -ecpLevel "l1" -subscriptionId $subscriptionIdl1 -resourceExists $resourceExistsl1 -accountName $accountNamel1 -localIp $localIp -publicIp $publicIp -ipInRange $ipInRange -blobPeResolution $blobPeResolutionl1 -ecpIdentity $ecpIdentity -displayName $displayName -objectId $objectId -principalType $principalType
+
+#l2
+$resourceExistsl2 = if ($tfOutput.backend_storage_accounts.value.l2.ecp_resource_exists -eq "true") { $true } else { $false }
+$subscriptionIdl2 = $tfOutput.backend_storage_accounts.value.l2.subscription_id
+$accountNamel2 = $tfOutput.backend_storage_accounts.value.l2.name
+$blobPeResolutionl2 = $tfOutput.backend_storage_accounts.value.l2.ecp_terraform_backend_private_endpoint_resolution_valid
+
+Set-StorageAccountAccess -ecpLevel "l2" -subscriptionId $subscriptionIdl2 -resourceExists $resourceExistsl2 -accountName $accountNamel2 -localIp $localIp -publicIp $publicIp -ipInRange $ipInRange -blobPeResolution $blobPeResolutionl2 -ecpIdentity $ecpIdentity -displayName $displayName -objectId $objectId -principalType $principalType
+
+
