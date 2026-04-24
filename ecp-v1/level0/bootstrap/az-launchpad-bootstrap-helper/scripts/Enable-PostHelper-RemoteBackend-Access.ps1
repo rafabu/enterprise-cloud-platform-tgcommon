@@ -26,7 +26,8 @@ function Set-StorageAccountAccess {
         [bool]$ecpIdentity,
         [string]$displayName,
         [string]$objectId,
-        [string]$principalType
+        [string]$principalType,
+        [string]$roleName
     )
 
     # if not running from within launchpad network, access to backend will be blocked by storage account firewall
@@ -229,9 +230,9 @@ $blobPeResolutionl2 = $tfOutput.backend_storage_accounts.value.l2.ecp_terraform_
 
 # ForEach-Object -Parallel 
 $levels = @(
-    @{ Level = "l0"; ResourceExists = $resourceExists; SubscriptionId = $subscriptionId; AccountName = $accountName; BlobPeResolution = $blobPeResolution }
-    @{ Level = "l1"; ResourceExists = $resourceExistsl1; SubscriptionId = $subscriptionIdl1; AccountName = $accountNamel1; BlobPeResolution = $blobPeResolutionl1 }
-    @{ Level = "l2"; ResourceExists = $resourceExistsl2; SubscriptionId = $subscriptionIdl2; AccountName = $accountNamel2; BlobPeResolution = $blobPeResolutionl2 }
+    @{ Level = "l0"; ResourceExists = $resourceExists; SubscriptionId = $subscriptionId; AccountName = $accountName; BlobPeResolution = $blobPeResolution; roleName = $roleName }
+    @{ Level = "l1"; ResourceExists = $resourceExistsl1; SubscriptionId = $subscriptionIdl1; AccountName = $accountNamel1; BlobPeResolution = $blobPeResolutionl1; roleName = $roleName }
+    @{ Level = "l2"; ResourceExists = $resourceExistsl2; SubscriptionId = $subscriptionIdl2; AccountName = $accountNamel2; BlobPeResolution = $blobPeResolutionl2; roleName = $roleName }
 )
 
 # Capture function body and shared vars for use inside parallel runspaces
