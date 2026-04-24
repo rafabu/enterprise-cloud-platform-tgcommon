@@ -151,12 +151,4 @@ inputs = {
       backend_type = "local"
     }
   })
-
-  get_repo_root               = get_repo_root()
-  get_path_from_repo_root     = get_path_from_repo_root()
-  get_path_to_repo_root       = get_path_to_repo_root()
-  get_terragrunt_dir          = get_terragrunt_dir()
-  get_working_dir             = get_working_dir()
-  get_parent_terragrunt_dir   = get_parent_terragrunt_dir()
-  get_original_terragrunt_dir = get_original_terragrunt_dir()
 }
