@@ -39,7 +39,7 @@ function Set-StorageAccountAccess {
             --name $accountName `
             -o json | ConvertFrom-Json
 
-        Write-Output "##### network access #####"
+        Write-Output "##### $ecpLevel - network access #####"
         if ($true -eq $resourceExists -and ("false" -eq $ipInRange -or $false -eq $blobPeResolution) -and $null -ne $publicIp) {
             Write-Output "INFO: $ecpLevel - Local IP is $localIp is not in launchpad range  OR"
             Write-Output " - private endpoint does not exist"
@@ -85,7 +85,7 @@ function Set-StorageAccountAccess {
         }
         Write-Output ""
 
-        Write-Output "##### Blob Access #####"
+        Write-Output "##### $ecpLevel - Blob Access #####"
         if ($false -eq $ecpIdentity) {
             Write-Output "INFO: identity $displayName isn't an ECP Identity; checking its '$roleName' assignment on $accountName."
             $assignment = az role assignment list `
