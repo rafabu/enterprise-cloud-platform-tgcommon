@@ -1,3 +1,7 @@
+param(
+    [string]$unitName
+)
+
 function Merge-Objects {
     param (
         [object]$Object1,
@@ -21,7 +25,7 @@ if ($env:TG_DOWNLOAD_DIR) {
 else {
     $tempPath = $systemTempPath
 }
-$out_path = [System.IO.Path]::Combine($tempPath, "${uuidv5("dns", basename(get_original_terragrunt_dir()))}")
+$out_path = [System.IO.Path]::Combine($tempPath, $unitName)
 
 Write-Output "DEBUG: out_path: $out_path"
 

@@ -77,6 +77,7 @@ terraform {
       "pwsh",
       "-File",
       "${get_parent_terragrunt_dir()}/scripts/Create-Terraform-Output-Folder.ps1",
+      "-unitName", "${uuidv5("dns", basename(get_original_terragrunt_dir()))}"
     ]
     run_on_error = false
   }
@@ -89,7 +90,8 @@ terraform {
     execute = [
       "pwsh",
       "-File",
-      "${get_parent_terragrunt_dir()}/scripts/Write-Terraform-Output-to-File.ps1"
+      "${get_parent_terragrunt_dir()}/scripts/Write-Terraform-Output-to-File.ps1",
+      "-unitName", "${uuidv5("dns", basename(get_original_terragrunt_dir()))}"
     ]
     run_on_error = false
   }
