@@ -34,12 +34,12 @@ locals {
   # configuration_path = format("%s/", get_repo_root(), dependency.l0-lp-az-lp-main.outputs.ecp_configuration_repo_deployment_root_path)
 
   ################# bootstrap-helper unit output #################
-  TG_DOWNLOAD_DIR = coalesce(
+  TG_DOWNLOAD_DIR = replace(coalesce(
     try(get_env("TG_DOWNLOAD_DIR"), null),
     try(get_env("TMPDIR"), null),
     try(trimspace(run_cmd("--terragrunt-quiet", "pwsh", "-NoLogo", "-NoProfile", "-NonInteractive", "-Command", "[System.IO.Path]::GetTempPath()")), null),
     "/tmp"
-  )
+  ), "\\", "/")
 
   # see if backend variables are set
   backend_config_present = alltrue([
