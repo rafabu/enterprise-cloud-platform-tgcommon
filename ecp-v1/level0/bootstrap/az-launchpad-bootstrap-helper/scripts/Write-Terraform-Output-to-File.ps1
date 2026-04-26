@@ -27,8 +27,6 @@ else {
 }
 $out_path = [System.IO.Path]::Combine($tempPath, $unitName)
 
-Write-Output "DEBUG: out_path: $out_path"
-
 # backend storage account details
 if ($env:TG_CTX_COMMAND -eq "plan") {
     # "plan" like command - need to parse the tfplan file and build an apply-like output
