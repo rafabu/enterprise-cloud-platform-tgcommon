@@ -10,8 +10,8 @@ locals {
 
   azure_tf_module_folder = "launchpad-bootstrap-helper"
 
-  library_path_shared = format("%s/lib/ecp-lib", get_repo_root())
-  library_path_unit   = "${get_terragrunt_dir()}/lib"
+  library_path_shared = format("%s/lib/ecp-lib", replace(get_repo_root(), "\\", "/"))
+  library_path_unit   = "${replace(get_terragrunt_dir(), "\\", "/")}/lib"
 
   ################# virtual network artefacts #################
   # exclude the ones named in the *.exclude.json
@@ -45,7 +45,7 @@ locals {
     try(trimspace(run_cmd("--terragrunt-quiet", "pwsh", "-NoLogo", "-NoProfile", "-NonInteractive", "-Command", "[System.IO.Path]::GetTempPath()")), null),
     "/tmp"
   )
-  bootstrap_helper_folder        = "${local.TG_DOWNLOAD_DIR}/${uuidv5("dns", basename(get_original_terragrunt_dir()))}"
+  bootstrap_helper_folder        = "${local.TG_DOWNLOAD_DIR}/${uuidv5("dns", basename(replace(get_original_terragrunt_dir(), "\\", "/")))}"
   bootstrap_helper_output        = try(jsondecode(file(local.bootstrap_helper_output_file)), {})
   bootstrap_backend_type         = try(local.bootstrap_helper_output.backend_storage_accounts["l0"].ecp_resource_exists == true && get_terraform_command() != "destroy" ? "azurerm" : "local", "local")
   bootstrap_backend_type_changed = try(local.bootstrap_helper_output.backend_storage_accounts["l0"].ecp_terraform_backend_changed_since_last_apply, false)
@@ -76,8 +76,8 @@ terraform {
     execute = [
       "pwsh",
       "-File",
-      "${get_parent_terragrunt_dir()}/scripts/Create-Terraform-Output-Folder.ps1",
-      "-unitName", "${uuidv5("dns", basename(get_original_terragrunt_dir()))}"
+      "${replace(get_parent_terragrunt_dir(), "\\", "/")}/scripts/Create-Terraform-Output-Folder.ps1",
+      "-unitName", "${uuidv5("dns", basename(replace(get_original_terragrunt_dir(), "\\", "/")))}"
     ]
     run_on_error = false
   }
@@ -90,8 +90,8 @@ terraform {
     execute = [
       "pwsh",
       "-File",
-      "${get_parent_terragrunt_dir()}/scripts/Write-Terraform-Output-to-File.ps1",
-      "-unitName", "${uuidv5("dns", basename(get_original_terragrunt_dir()))}"
+      "${replace(get_parent_terragrunt_dir(), "\\", "/")}/scripts/Write-Terraform-Output-to-File.ps1",
+      "-unitName", "${uuidv5("dns", basename(replace(get_original_terragrunt_dir(), "\\", "/")))}"
     ]
     run_on_error = false
   }
@@ -121,7 +121,7 @@ terraform {
       "pwsh",
       "-NoLogo", "-NoProfile", "-NonInteractive",
       "-File",
-      "${get_parent_terragrunt_dir()}/scripts/Enable-PostHelper-RemoteBackend-Access.ps1"
+      "${replace(get_parent_terragrunt_dir(), "\\", "/")}/scripts/Enable-PostHelper-RemoteBackend-Access.ps1"
     ]
 
     run_on_error = false
