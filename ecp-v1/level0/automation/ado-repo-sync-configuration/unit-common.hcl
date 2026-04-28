@@ -1,12 +1,12 @@
 dependencies {
   paths = [
-    format("%s/../../bootstrap/az-launchpad-bootstrap-helper", get_original_terragrunt_dir()),
-    format("%s/../../launchpad/ado-project", get_original_terragrunt_dir())
+    format("%s/../../bootstrap/az-launchpad-bootstrap-helper", replace(get_original_terragrunt_dir(), "\\", "/")),
+    format("%s/../../launchpad/ado-project", replace(get_original_terragrunt_dir(), "\\", "/"))
   ]
 }
 
 dependency "l0-lp-az-lp-main" {
-  config_path = format("%s/../../launchpad/az-launchpad-main", get_original_terragrunt_dir())
+  config_path = format("%s/../../launchpad/az-launchpad-main", replace(get_original_terragrunt_dir(), "\\", "/"))
   mock_outputs = {
     resource_group = {
       id       = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg"
@@ -28,10 +28,10 @@ locals {
 
   azure_tf_module_folder = "ado-repo-sync"
 
-  library_path_shared = format("%s/lib/ecp-lib", get_repo_root())
-  library_path_unit   = "${get_terragrunt_dir()}/lib"
+  library_path_shared = format("%s/lib/ecp-lib", replace(get_repo_root(), "\\", "/"))
+  library_path_unit   = "${replace(get_terragrunt_dir(), "\\", "/")}/lib"
 
-  # configuration_path = format("%s/", get_repo_root(), dependency.l0-lp-az-lp-main.outputs.ecp_configuration_repo_deployment_root_path)
+  # configuration_path = format("%s/", replace(get_repo_root(), "\\", "/"), dependency.l0-lp-az-lp-main.outputs.ecp_configuration_repo_deployment_root_path)
 
   ################# bootstrap-helper unit output #################
   TG_DOWNLOAD_DIR = replace(coalesce(
@@ -79,7 +79,7 @@ locals {
 
   ################# tags #################
   unit_common_azure_tags = {
-    # "_ecpTgUnitCommon" = format("%s/unit-common.hcl", get_parent_terragrunt_dir())
+    # "_ecpTgUnitCommon" = format("%s/unit-common.hcl", replace(get_parent_terragrunt_dir(), "\\", "/"))
   }
 }
 
@@ -173,7 +173,7 @@ inputs = {
   azure_tags = local.unit_common_azure_tags
 
   # get configuration folder and sync only the parts of the current environment.
-  local_git_submodule_path = get_repo_root()
+  local_git_submodule_path = replace(get_repo_root(), "\\", "/")
   filter_git_subfolders    = true
 
   # sparse = dependency.l0-lp-az-lp-main.outputs.ecp_configuration_repo_deployment_root_path

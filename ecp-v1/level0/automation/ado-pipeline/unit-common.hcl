@@ -1,13 +1,13 @@
 dependencies {
   paths = [
-    format("%s/../../bootstrap/az-launchpad-bootstrap-helper", get_original_terragrunt_dir()),
-    format("%s/../ado-repo-sync-automation", get_original_terragrunt_dir()),
+    format("%s/../../bootstrap/az-launchpad-bootstrap-helper", replace(get_original_terragrunt_dir(), "\\", "/")),
+    format("%s/../ado-repo-sync-automation", replace(get_original_terragrunt_dir(), "\\", "/")),
 
   ]
 }
 
 dependency "l0-lp-az-lp-main" {
-  config_path = format("%s/../../launchpad/az-launchpad-main", get_original_terragrunt_dir())
+  config_path = format("%s/../../launchpad/az-launchpad-main", replace(get_original_terragrunt_dir(), "\\", "/"))
   mock_outputs = {
     resource_group = {
       id       = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg"
@@ -24,7 +24,7 @@ dependency "l0-lp-az-lp-main" {
 }
 
 dependency "l0-lp-ado-mpool" {
-  config_path = format("%s/../../launchpad/ado-mpool", get_original_terragrunt_dir())
+  config_path = format("%s/../../launchpad/ado-mpool", replace(get_original_terragrunt_dir(), "\\", "/"))
   mock_outputs = {
     managed_devops_pool = {
       id                  = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.DevOpsInfrastructure/pools/mock-pool"
@@ -44,8 +44,8 @@ locals {
 
   azure_tf_module_folder = "ado-pipeline"
 
-  library_path_shared = format("%s/lib/ecp-lib", get_repo_root())
-  library_path_unit   = "${get_terragrunt_dir()}/lib"
+  library_path_shared = format("%s/lib/ecp-lib", replace(get_repo_root(), "\\", "/"))
+  library_path_unit   = "${replace(get_terragrunt_dir(), "\\", "/")}/lib"
 
   ################# ADO pipeline artefacts #################
   # exclude the ones named in the *.exclude.json
@@ -119,7 +119,7 @@ locals {
 
   ################# tags #################
   unit_common_azure_tags = {
-    # "_ecpTgUnitCommon" = format("%s/unit-common.hcl", get_parent_terragrunt_dir())
+    # "_ecpTgUnitCommon" = format("%s/unit-common.hcl", replace(get_parent_terragrunt_dir(), "\\", "/"))
   }
 }
 
