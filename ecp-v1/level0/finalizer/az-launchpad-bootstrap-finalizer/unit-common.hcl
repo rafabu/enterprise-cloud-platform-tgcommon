@@ -1,17 +1,17 @@
 dependencies {
   paths = [
-    format("%s/../../bootstrap/az-launchpad-bootstrap-helper", get_original_terragrunt_dir()),
-    format("%s/../../launchpad/az-launchpad-main", get_original_terragrunt_dir()),
-    format("%s/../../launchpad/az-launchpad-network", get_original_terragrunt_dir()),
-    format("%s/../../launchpad/az-launchpad-backend", get_original_terragrunt_dir()),
-    format("%s/../../launchpad/az-devcenter", get_original_terragrunt_dir()),
-    format("%s/../../launchpad/ado-project", get_original_terragrunt_dir()),
-    format("%s/../../automation/ado-pipeline", get_original_terragrunt_dir())
+    format("%s/../../bootstrap/az-launchpad-bootstrap-helper", replace(get_original_terragrunt_dir(), "\\", "/")),
+    format("%s/../../launchpad/az-launchpad-main", replace(get_original_terragrunt_dir(), "\\", "/")),
+    format("%s/../../launchpad/az-launchpad-network", replace(get_original_terragrunt_dir(), "\\", "/")),
+    format("%s/../../launchpad/az-launchpad-backend", replace(get_original_terragrunt_dir(), "\\", "/")),
+    format("%s/../../launchpad/az-devcenter", replace(get_original_terragrunt_dir(), "\\", "/")),
+    format("%s/../../launchpad/ado-project", replace(get_original_terragrunt_dir(), "\\", "/")),
+    format("%s/../../automation/ado-pipeline", replace(get_original_terragrunt_dir(), "\\", "/"))
   ]
 }
 
 dependency "l0-lp-ado-mpool" {
-  config_path = format("%s/../../launchpad/ado-mpool", get_original_terragrunt_dir())
+  config_path = format("%s/../../launchpad/ado-mpool", replace(get_original_terragrunt_dir(), "\\", "/"))
   mock_outputs = {
     resource_group = {
       id       = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg"
@@ -95,7 +95,7 @@ locals {
 
   ################# tags #################
   unit_common_azure_tags = {
-    # "_ecpTgUnitCommon" = format("%s/unit-common.hcl", get_parent_terragrunt_dir())
+    # "_ecpTgUnitCommon" = format("%s/unit-common.hcl", replace(get_parent_terragrunt_dir(), "\\", "/"))
   }
 }
 
