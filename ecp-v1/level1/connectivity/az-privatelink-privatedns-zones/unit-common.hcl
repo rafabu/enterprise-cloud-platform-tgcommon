@@ -1,16 +1,16 @@
 dependencies {
   paths = flatten(distinct(concat(
     get_env("ECP_TF_BACKEND_STORAGE_AZURE_L1", "") == "" ? [
-      format("%s/../../../level0/bootstrap/az-launchpad-bootstrap-helper", get_original_terragrunt_dir())
+      format("%s/../../../level0/bootstrap/az-launchpad-bootstrap-helper", replace(get_original_terragrunt_dir(), "\\", "/"))
     ] : [],
     [
-      format("%s/../../ecproot/az-platform-subscriptions", get_original_terragrunt_dir())
+      format("%s/../../ecproot/az-platform-subscriptions", replace(get_original_terragrunt_dir(), "\\", "/"))
     ]
   )))
 }
 
 dependency "l0-lp-az-lp-net" {
-  config_path = format("%s/../../../level0/launchpad/az-launchpad-network", get_original_terragrunt_dir())
+  config_path = format("%s/../../../level0/launchpad/az-launchpad-network", replace(get_original_terragrunt_dir(), "\\", "/"))
   mock_outputs = {
     virtual_networks = {
       l0-launchpad-main = {
@@ -41,7 +41,7 @@ dependency "l0-lp-az-lp-net" {
 
 
 dependency "az-ecp-parent" {
-  config_path = format("%s/../../ecproot/az-ecp-parent", get_original_terragrunt_dir())
+  config_path = format("%s/../../ecproot/az-ecp-parent", replace(get_original_terragrunt_dir(), "\\", "/"))
   mock_outputs = {
     parent_management_group_name = "mock-mg"
     parent_management_group_id   = "/providers/Microsoft.Management/managementGroups/mock-mg"
@@ -60,13 +60,6 @@ locals {
   ecp_resource_name_random_length = 0
 
   azure_tf_module_folder = "az-privatelink-privatedns-zones"
-
-  # alz library paths (learn what private DNS zones exist in ALZ's own policy initiative artefacts)
-  #     - Deploy-Private-DNS-Zones
-  # alz_library_path_shared = format("%s/lib/ecp-lib/platform/alz-artefacts/", get_repo_root())
-  # alz_library_path_unit   = "${get_terragrunt_dir()}/lib/"
-  # # folder where rendered template alz library files are places (temporarily)
-  # alz_library_path_shared_rendered  = "${trimsuffix(local.TG_DOWNLOAD_DIR, "/")}/${uuidv5("dns", "${local.alz_library_path_shared}")}/"
 
   ################# terragrunt specifics #################
   TG_DOWNLOAD_DIR = replace(coalesce(
@@ -111,7 +104,7 @@ locals {
 
   ################# tags #################
   unit_common_azure_tags = {
-    # "hidden-ecpTgUnitCommon" = format("%s/unit-common.hcl", get_parent_terragrunt_dir())
+    # "hidden-ecpTgUnitCommon" = format("%s/unit-common.hcl", replace(get_parent_terragrunt_dir(), "\\", "/"))
   }
 }
 

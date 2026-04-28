@@ -1,7 +1,7 @@
 dependencies {
   paths = flatten(distinct(concat(
     get_env("ECP_TF_BACKEND_STORAGE_AZURE_L2", "") == "" ? [
-      format("%s/../../../level0/bootstrap/az-launchpad-bootstrap-helper", get_original_terragrunt_dir())
+      format("%s/../../../level0/bootstrap/az-launchpad-bootstrap-helper", replace(get_original_terragrunt_dir(), "\\", "/"))
     ] : [],
     [
       # add additional dependencies here as required
@@ -10,7 +10,7 @@ dependencies {
 }
 
 dependency "l1-mgm-az-privatelink-privatedns" {
-  config_path = format("%s/../../../level1/connectivity/az-privatelink-privatedns-zones", get_original_terragrunt_dir())
+  config_path = format("%s/../../../level1/connectivity/az-privatelink-privatedns-zones", replace(get_original_terragrunt_dir(), "\\", "/"))
   mock_outputs = {
     private_link_private_dns_zones_resource_ids = [
       "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/privateDnsZones/privatelink.ecpiscool.mock"
@@ -30,8 +30,8 @@ locals {
 
   azure_tf_module_folder = "az-connectivity-management"
 
-  library_path_shared = format("%s/lib/ecp-lib", get_repo_root())
-  library_path_unit   = "${get_terragrunt_dir()}/lib"
+  library_path_shared = format("%s/lib/ecp-lib", replace(get_repo_root(), "\\", "/"))
+  library_path_unit   = "${replace(get_terragrunt_dir(), "\\", "/")}/lib"
 
   ################# virtual network artefacts #################
   # exclude the ones named in the *.exclude.json
@@ -138,7 +138,7 @@ locals {
 
   ################# tags #################
   unit_common_azure_tags = {
-    # "hidden-ecpTgUnitCommon" = format("%s/unit-common.hcl", get_parent_terragrunt_dir())
+    # "hidden-ecpTgUnitCommon" = format("%s/unit-common.hcl", replace(get_parent_terragrunt_dir(), "\\", "/"))
   }
 }
 

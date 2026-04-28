@@ -1,17 +1,17 @@
 dependencies {
   paths = flatten(distinct(concat(
     get_env("ECP_TF_BACKEND_STORAGE_AZURE_L2", "") == "" ? [
-      format("%s/../../../level0/bootstrap/az-launchpad-bootstrap-helper", get_original_terragrunt_dir())
+      format("%s/../../../level0/bootstrap/az-launchpad-bootstrap-helper", replace(get_original_terragrunt_dir(), "\\", "/"))
     ] : [],
     [
-      # format("%s/../../ecproot/az-platform-subscriptions", get_original_terragrunt_dir()),
-      # format("%s/../az-alz-shared-library-render", get_original_terragrunt_dir())
+      # format("%s/../../ecproot/az-platform-subscriptions", replace(get_original_terragrunt_dir(), "\\", "/")),
+      # format("%s/../az-alz-shared-library-render", replace(get_original_terragrunt_dir(), "\\", "/"))
     ]
   )))
 }
 
 dependency "l0-lp-az-lp-net" {
-  config_path = format("%s/../../../level0/launchpad/az-launchpad-network", get_original_terragrunt_dir())
+  config_path = format("%s/../../../level0/launchpad/az-launchpad-network", replace(get_original_terragrunt_dir(), "\\", "/"))
   mock_outputs = {
     virtual_networks = {
       l0-launchpad-main = {
@@ -41,7 +41,7 @@ dependency "l0-lp-az-lp-net" {
 }
 
 dependency "l2-con-az-con-mgmt" {
-  config_path = format("%s/../az-connectivity-management", get_original_terragrunt_dir())
+  config_path = format("%s/../az-connectivity-management", replace(get_original_terragrunt_dir(), "\\", "/"))
   mock_outputs = {
     virtual_networks = {
       main_l2-connectivity-management-vnet = {
@@ -83,8 +83,8 @@ locals {
 
   azure_tf_module_folder = "az-alz-connectivity-virtual-wan"
 
-  library_path_shared = format("%s/lib/ecp-lib", get_repo_root())
-  library_path_unit   = "${get_terragrunt_dir()}/lib"
+  library_path_shared = format("%s/lib/ecp-lib", replace(get_repo_root(), "\\", "/"))
+  library_path_unit   = "${replace(get_terragrunt_dir(), "\\", "/")}/lib"
 
   ################# virtual network artefacts #################
   # exclude the ones named in the *.exclude.json
@@ -338,7 +338,7 @@ locals {
 
   ################# tags #################
   unit_common_azure_tags = {
-    # "hidden-ecpTgUnitCommon" = format("%s/unit-common.hcl", get_parent_terragrunt_dir())
+    # "hidden-ecpTgUnitCommon" = format("%s/unit-common.hcl", replace(get_parent_terragrunt_dir(), "\\", "/"))
   }
 }
 

@@ -5,8 +5,8 @@ locals {
 
   azure_tf_module_folder = "az-alz-shared-library-render"
 
-  alz_library_path_shared = format("%s/lib/ecp-lib/platform/alz-artefacts/", get_repo_root())
-  alz_library_path_unit   = "${get_terragrunt_dir()}/lib/"
+  alz_library_path_shared = format("%s/lib/ecp-lib/platform/alz-artefacts/", replace(get_repo_root(), "\\", "/"))
+  alz_library_path_unit   = "${replace(get_terragrunt_dir(), "\\", "/")}/lib/"
   # folder where rendered template alz library files are places (temporarily)
   alz_library_path_shared_rendered = "${trimsuffix(local.TG_DOWNLOAD_DIR, "/")}/${uuidv5("dns", "${local.alz_library_path_shared}")}/"
 
@@ -53,7 +53,7 @@ locals {
 
   ################# tags #################
   unit_common_azure_tags = {
-    # "hidden-ecpTgUnitCommon" = format("%s/unit-common.hcl", get_parent_terragrunt_dir())
+    # "hidden-ecpTgUnitCommon" = format("%s/unit-common.hcl", replace(get_parent_terragrunt_dir(), "\\", "/"))
   }
 }
 
