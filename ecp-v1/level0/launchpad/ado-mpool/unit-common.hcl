@@ -1,11 +1,11 @@
 dependencies {
   paths = [
-    format("%s/../../bootstrap/az-launchpad-bootstrap-helper", get_original_terragrunt_dir())
+    format("%s/../../bootstrap/az-launchpad-bootstrap-helper", replace(get_original_terragrunt_dir(), "\\", "/"))
   ]
 }
 
 dependency "l0-lp-az-net" {
-  config_path = format("%s/../az-launchpad-network", get_original_terragrunt_dir())
+  config_path = format("%s/../az-launchpad-network", replace(get_original_terragrunt_dir(), "\\", "/"))
   mock_outputs = {
     resource_group = {
       id       = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg"
@@ -40,7 +40,7 @@ dependency "l0-lp-az-net" {
 }
 
 dependency "l0-lp-az-backend" {
-  config_path = format("%s/../az-launchpad-backend", get_original_terragrunt_dir())
+  config_path = format("%s/../az-launchpad-backend", replace(get_original_terragrunt_dir(), "\\", "/"))
   mock_outputs = {
     resource_group = {
       id       = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg"
@@ -100,7 +100,7 @@ dependency "l0-lp-az-backend" {
 }
 
 dependency "l0-lp-az-devcenter" {
-  config_path = format("%s/../az-devcenter", get_original_terragrunt_dir())
+  config_path = format("%s/../az-devcenter", replace(get_original_terragrunt_dir(), "\\", "/"))
   mock_outputs = {
     dev_center = {
       id                  = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.DevCenter/devcenters/mock-devcenter"
@@ -120,7 +120,7 @@ dependency "l0-lp-az-devcenter" {
 }
 
 dependency "l0-lp-az-ado-project" {
-  config_path                             = format("%s/../ado-project", get_original_terragrunt_dir())
+  config_path                             = format("%s/../ado-project", replace(get_original_terragrunt_dir(), "\\", "/"))
   mock_outputs                            = {}
   mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
   mock_outputs_merge_strategy_with_state  = "shallow"
@@ -132,8 +132,8 @@ locals {
 
   azure_tf_module_folder = "ado-mpool"
 
-  library_path_shared = format("%s/lib/ecp-lib", get_repo_root())
-  library_path_unit   = "${get_terragrunt_dir()}/lib"
+  library_path_shared = format("%s/lib/ecp-lib", replace(get_repo_root(), "\\", "/"))
+  library_path_unit   = "${replace(get_terragrunt_dir(), "\\", "/")}/lib"
 
   ################# virtual network subnet artefacts #################
   # exclude the ones named in the *.exclude.json
@@ -208,7 +208,7 @@ locals {
 
   ################# tags #################
   unit_common_azure_tags = {
-    # "_ecpTgUnitCommon" = format("%s/unit-common.hcl", get_parent_terragrunt_dir())
+    # "_ecpTgUnitCommon" = format("%s/unit-common.hcl", replace(get_parent_terragrunt_dir(), "\\", "/"))
   }
 }
 

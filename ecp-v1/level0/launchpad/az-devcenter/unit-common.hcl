@@ -1,11 +1,11 @@
 dependencies {
   paths = [
-    format("%s/../../bootstrap/az-launchpad-bootstrap-helper", get_original_terragrunt_dir())
+    format("%s/../../bootstrap/az-launchpad-bootstrap-helper", replace(get_original_terragrunt_dir(), "\\", "/"))
   ]
 }
 
 dependency "l0-lp-az-main" {
-  config_path = format("%s/../az-launchpad-main", get_original_terragrunt_dir())
+  config_path = format("%s/../az-launchpad-main", replace(get_original_terragrunt_dir(), "\\", "/"))
   mock_outputs = {
     resource_group = {
       id       = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg"
@@ -18,7 +18,7 @@ dependency "l0-lp-az-main" {
 }
 
 dependency "l0-lp-az-net" {
-  config_path = format("%s/../az-launchpad-network", get_original_terragrunt_dir())
+  config_path = format("%s/../az-launchpad-network", replace(get_original_terragrunt_dir(), "\\", "/"))
   mock_outputs = {
     resource_group = {
       id       = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg"
@@ -53,7 +53,7 @@ dependency "l0-lp-az-net" {
 }
 
 dependency "l0-lp-az-lp-backend" {
-  config_path = format("%s/../az-launchpad-backend", get_original_terragrunt_dir())
+  config_path = format("%s/../az-launchpad-backend", replace(get_original_terragrunt_dir(), "\\", "/"))
   mock_outputs = {
     resource_group = {
       id       = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg"
@@ -113,15 +113,14 @@ dependency "l0-lp-az-lp-backend" {
 }
 
 locals {
-  # root_common_vars = read_terragrunt_config(format("%s/lib/terragrunt-common/ecp-v1/root-common.hcl", get_repo_root()))
-
+ 
   ecp_deployment_unit             = "main"
   ecp_resource_name_random_length = 0
 
   azure_tf_module_folder = "devcenter"
 
-  library_path_shared = format("%s/lib/ecp-lib", get_repo_root())
-  library_path_unit   = "${get_terragrunt_dir()}/lib"
+  library_path_shared = format("%s/lib/ecp-lib", replace(get_repo_root(), "\\", "/"))
+  library_path_unit   = format("%s/lib", replace(get_terragrunt_dir(), "\\", "/"))
 
   ################# virtual network subnet artefacts #################
   # exclude the ones named in the *.exclude.json
@@ -194,7 +193,7 @@ locals {
 
   ################# tags #################
   unit_common_azure_tags = {
-    # "hidden-ecpTgUnitCommon" = format("%s/unit-common.hcl", get_parent_terragrunt_dir())
+    # "hidden-ecpTgUnitCommon" = format("%s/unit-common.hcl", replace(get_parent_terragrunt_dir(), "\\", "/"))
   }
 }
 
