@@ -103,19 +103,6 @@ function Remove-StorageAccountAccess {
     }
 }
 
-Write-Output "resourceExists: $resourceExistsString"
-Write-Output "resourceExistsl1: $resourceExistsStringl1"
-Write-Output "resourceExistsl2: $resourceExistsStringl2"
-Write-Output "ipInRange: $ipInRangeString"
-Write-Output "publicIp: $publicIp"
-Write-Output "subscriptionId: $subscriptionId"
-Write-Output "accountName: $accountName"
-Write-Output "accountNamel1: $accountNamel1"
-Write-Output "accountNamel2: $accountNamel2"
-Write-Output "objectId: $objectId"
-Write-Output "ecpIdentity: $ecpIdentityString"
-
-
 Write-Output "INFO: TG_CTX_COMMAND: $env:TG_CTX_COMMAND"
 # if not running from within launchpad network, access to backend will be blocked by storage account firewall
 #     always(!) need to remove access again --> run_on_error = true
