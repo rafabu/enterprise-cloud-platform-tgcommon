@@ -5,18 +5,18 @@ locals {
 
   azure_tf_module_folder = "az-alz-shared-library-render"
 
-  alz_library_path_shared = format("%s/lib/ecp-lib/platform/alz-artefacts/", get_repo_root())
-  alz_library_path_unit   = "${get_terragrunt_dir()}/lib/"
+  alz_library_path_shared = format("%s/lib/ecp-lib/platform/alz-artefacts/", replace(get_repo_root(), "\\", "/"))
+  alz_library_path_unit   = "${replace(get_terragrunt_dir(), "\\", "/")}/lib/"
   # folder where rendered template alz library files are places (temporarily)
   alz_library_path_shared_rendered = "${trimsuffix(local.TG_DOWNLOAD_DIR, "/")}/${uuidv5("dns", "${local.alz_library_path_shared}")}/"
 
   ################# terragrunt specifics #################
-  TG_DOWNLOAD_DIR = coalesce(
+  TG_DOWNLOAD_DIR = replace(coalesce(
     try(get_env("TG_DOWNLOAD_DIR"), null),
     try(get_env("TMPDIR"), null),
     try(trimspace(run_cmd("--terragrunt-quiet", "pwsh", "-NoLogo", "-NoProfile", "-NonInteractive", "-Command", "[System.IO.Path]::GetTempPath()")), null),
     "/tmp"
-  )
+  ), "\\", "/")
 
   # see if backend variables are set
   backend_config_present = alltrue([
@@ -53,7 +53,7 @@ locals {
 
   ################# tags #################
   unit_common_azure_tags = {
-    # "hidden-ecpTgUnitCommon" = format("%s/unit-common.hcl", get_parent_terragrunt_dir())
+    # "hidden-ecpTgUnitCommon" = format("%s/unit-common.hcl", replace(get_parent_terragrunt_dir(), "\\", "/"))
   }
 }
 

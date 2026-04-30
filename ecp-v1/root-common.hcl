@@ -2,11 +2,12 @@
 
 locals {
   # Read all the locals from the different levels to enable overridable locals e.g. for backend configuration
-  root_vars        = read_terragrunt_config(format("%s/../../../../root.hcl", get_terragrunt_dir()))
-  env_vars         = read_terragrunt_config(format("%s/../../../env.hcl", get_terragrunt_dir()))
-  level_vars       = read_terragrunt_config(format("%s/../../level.hcl", get_terragrunt_dir()))
-  area_vars        = read_terragrunt_config(format("%s/../area.hcl", get_terragrunt_dir()))
-  unit_common_vars = read_terragrunt_config(format("%s/lib/terragrunt-common/ecp-v1/%s/unit-common.hcl", get_repo_root(), regexall("^.*(?:\\\\|/)(.+?(?:\\\\|/).+?(?:\\\\|/).+?)$", get_terragrunt_dir())[0][0]))
+  root_vars        = read_terragrunt_config(format("%s/../../../../root.hcl", replace(get_terragrunt_dir(), "\\", "/")))
+  env_vars         = read_terragrunt_config(format("%s/../../../env.hcl", replace(get_terragrunt_dir(), "\\", "/")))
+  level_vars       = read_terragrunt_config(format("%s/../../level.hcl", replace(get_terragrunt_dir(), "\\", "/")))
+  area_vars        = read_terragrunt_config(format("%s/../area.hcl", replace(get_terragrunt_dir(), "\\", "/")))
+  unit_common_vars = read_terragrunt_config(format("%s/lib/terragrunt-common/ecp-v1/%s/unit-common.hcl", replace(get_repo_root(), "\\", "/"), regexall("^.*(?:/)(.+?(?:/).+?(?:/).+?)$", replace(get_terragrunt_dir(), "\\", "/"))[0][0]))
+ 
 
   merged_locals = merge(
     local.root_vars.locals,
@@ -81,8 +82,8 @@ locals {
   # refresh to newer ALZ / SLZ / AMBA
   #     IMPORTANT !!!!!
   #     --> also update "alz_library_metadata.json" to reference the same version of ALZ / SLZ
-  tf_provider_alz_alz_lib_version  = "2026.01.3"
-  tf_provider_alz_slz_lib_version  = "2026.02.2"
+  tf_provider_alz_alz_lib_version  = "2026.04.2"
+  tf_provider_alz_slz_lib_version  = "2026.04.2"
   tf_provider_alz_amba_lib_version = "2026.01.1"
 
   # Azure Verified Modules
@@ -90,7 +91,7 @@ locals {
 
   ############ Tags ############
   root_common_azure_tags = {
-    # "hidden-ecpTgUnitRootCommon" = format("%s/root-common.hcl", get_parent_terragrunt_dir())
+    # "hidden-ecpTgUnitRootCommon" = format("%s/root-common.hcl", replace(get_parent_terragrunt_dir(), "\\", "/"))
     createdBy = "ecp-terraform"
   }
 
@@ -143,7 +144,7 @@ generate "provider" {
   contents = <<EOF
 %{if contains(
   ["az-alz-base"],
-  basename(get_terragrunt_dir())
+  basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
 provider "alz" {
   tenant_id       = "${local.merged_locals.ecp_entra_tenant_id}"
@@ -156,7 +157,7 @@ provider "alz" {
     },
     # load additional ALZ artifacts via library
     {
-      custom_url = "file::${get_repo_root()}/lib/ecp-lib/platform/alz-artefacts/?archive=false"
+      custom_url = "file::${replace(get_repo_root(), "\\", "/")}/lib/ecp-lib/platform/alz-artefacts/?archive=false"
     },
     # template-rendered local path (variable interpreted by terraform, not terragrunt)
     {
@@ -167,8 +168,8 @@ provider "alz" {
 %{endif}
 
 %{if contains(
-  ["az-alz-base", "az-alz-connectivity-virtual-wan", "az-alz-management-resources", "az-connectivity-management", "az-privatelink-privatedns-zones", "ado-mpool", "az-ecp-parent", "az-launchpad-backend", "az-devcenter", "az-launchpad-network", "az-platform-subscriptions"],
-  basename(get_terragrunt_dir())
+  ["az-launchpad-bootstrap-helper", "az-alz-base", "az-alz-connectivity-virtual-wan", "az-alz-management-resources", "az-connectivity-management", "az-privatelink-privatedns-zones", "ado-mpool", "az-ecp-parent", "az-launchpad-backend", "az-devcenter", "az-launchpad-network", "az-platform-subscriptions"],
+  basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
 provider "azapi" {
   tenant_id       = "${local.merged_locals.ecp_entra_tenant_id}"
@@ -180,7 +181,7 @@ provider "azapi" {
 
 %{if contains(
   ["az-ecp-parent", "ado-mpool", "az-launchpad-bootstrap-helper", "entraid-policies"],
-  basename(get_terragrunt_dir())
+  basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
 provider "azuread" {
   tenant_id       = "${local.merged_locals.ecp_entra_tenant_id}"
@@ -191,7 +192,7 @@ provider "azurecaf" {}
 
 %{if contains(
   ["ado-mpool", "ado-project", "ado-repo-sync-automation", "ado-repo-sync-configuration", "ado-pipeline"],
-  basename(get_terragrunt_dir())
+  basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
 provider "azuredevops" {
   org_service_url = "https://dev.azure.com/$${var.ecp_azure_devops_organization_name}"
@@ -200,7 +201,7 @@ provider "azuredevops" {
 
 %{if contains(
   ["ado-mpool", "az-ecp-parent", "az-devcenter", "az-launchpad-bootstrap-finalizer", "az-launchpad-bootstrap-helper", "az-launchpad-main", "az-launchpad-backend", "az-launchpad-network"],
-  basename(get_terragrunt_dir())
+  basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
 provider "azurerm" {
   alias  = "launchpad"
@@ -217,7 +218,7 @@ provider "azurerm" {
 
 %{if contains(
   ["az-alz-connectivity-virtual-wan", "az-alz-management-resources", "az-connectivity-management"],
-  basename(get_terragrunt_dir())
+  basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
 provider "azurerm" {
   alias  = "connectivity"
@@ -234,7 +235,7 @@ provider "azurerm" {
 
 %{if contains(
   ["az-alz-management-resources", "az-connectivity-management"],
-  basename(get_terragrunt_dir())
+  basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
 provider "azurerm" {
   alias  = "management"
@@ -250,7 +251,7 @@ provider "azurerm" {
 
 %{if contains(
   ["az-alz-base"],
-  basename(get_terragrunt_dir())
+  basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
 provider "azurerm" {
   tenant_id       = "${local.merged_locals.ecp_entra_tenant_id}"
@@ -265,7 +266,7 @@ provider "azurerm" {
 
 %{if contains(
   ["az-alz-base", "az-alz-connectivity-virtual-wan", "az-privatelink-privatedns-zones"],
-  basename(get_terragrunt_dir())
+  basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
 provider "modtm" {
   enabled = false
@@ -274,7 +275,7 @@ provider "modtm" {
 
 %{if contains(
   ["entraid-policies"],
-  basename(get_terragrunt_dir())
+  basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
 provider "msgraph" {
   tenant_id = "${local.merged_locals.ecp_entra_tenant_id}"
@@ -283,7 +284,7 @@ provider "msgraph" {
 
 %{if contains(
   ["ado-mpool", "ado-project", "az-alz-connectivity-virtual-wan", "az-ecp-parent", "az-platform-subscriptions", "devcenter"],
-  basename(get_terragrunt_dir())
+  basename(replace(get_terragrunt_dir(), "\\", "/"))
 )}
 provider "time" {}
 %{endif}
@@ -300,7 +301,7 @@ terraform {
   required_providers {
 %{if contains(
   ["az-alz-base"],
-  basename(get_terragrunt_dir())
+  basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
     alz = {
       source  = "azure/alz"
@@ -309,7 +310,7 @@ terraform {
 %{endif}
 %{if contains(
   ["ado-mpool", "az-launchpad-bootstrap-finalizer", "az-launchpad-bootstrap-helper", "entraid-policies"],
-  basename(get_terragrunt_dir())
+  basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
     azuread = {
       source  = "hashicorp/azuread"
@@ -322,7 +323,7 @@ terraform {
     }
 %{if contains(
   ["ado-mpool", "az-alz-connectivity-virtual-wan", "az-alz-management-resources", "az-connectivity-management", "az-devcenter", "az-launchpad-bootstrap-helper", "az-launchpad-backend", "az-launchpad-network", "az-launchpad-main"],
-  basename(get_terragrunt_dir())
+  basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
     azurerm = {
       source  = "hashicorp/azurerm"
@@ -330,8 +331,8 @@ terraform {
     }
 %{endif}
 %{if contains(
-  ["az-alz-base", "az-alz-connectivity-virtual-wan", "az-alz-management-resources", "az-connectivity-management", "az-privatelink-privatedns-zones", "ado-mpool", "az-ecp-parent", "az-launchpad-backend", "az-devcenter", "az-launchpad-network", "az-platform-subscriptions"],
-  basename(get_terragrunt_dir())
+  ["az-launchpad-bootstrap-helper", "az-alz-base", "az-alz-connectivity-virtual-wan", "az-alz-management-resources", "az-connectivity-management", "az-privatelink-privatedns-zones", "ado-mpool", "az-ecp-parent", "az-launchpad-backend", "az-devcenter", "az-launchpad-network", "az-platform-subscriptions"],
+  basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
     azapi = {
       source  = "azure/azapi"
@@ -340,7 +341,7 @@ terraform {
 %{endif}
 %{if contains(
   ["ado-mpool", "ado-project", "ado-repo-sync-automation", "ado-repo-sync-configuration", "ado-pipeline"],
-  basename(get_terragrunt_dir())
+  basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
     azuredevops = {
       source  = "microsoft/azuredevops"
@@ -357,7 +358,7 @@ terraform {
     }
 %{if contains(
   ["entraid-policies"],
-  basename(get_terragrunt_dir())
+  basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
     msgraph = {
       source  = "Microsoft/msgraph"
@@ -366,7 +367,7 @@ terraform {
 %{endif}
 %{if contains(
   ["az-alz-shared-library-render", "az-ecp-parent", "az-launchpad-bootstrap-helper"],
-  basename(get_terragrunt_dir())
+  basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
     external = {
       source  = "hashicorp/external"
@@ -375,7 +376,7 @@ terraform {
 %{endif}
 %{if contains(
   ["az-launchpad-bootstrap-helper"],
-  basename(get_terragrunt_dir())
+  basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
     http = {
       source  = "hashicorp/http"
@@ -384,7 +385,7 @@ terraform {
 %{endif}
 %{if contains(
   ["az-alz-base", "az-alz-connectivity-virtual-wan", "az-privatelink-privatedns-zones"],
-  basename(get_terragrunt_dir())
+  basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
     modtm = {
       source  = "azure/modtm"
@@ -393,7 +394,7 @@ terraform {
 %{endif}
 %{if contains(
   ["az-alz-base", "az-alz-connectivity-virtual-wan", "az-connectivity-management", "az-devcenter", "az-ecp-parent", "ado-mpool", "ado-project"],
-  basename(get_terragrunt_dir())
+  basename(replace(get_terragrunt_dir(), "\\", "/"))
 )}
     time = {
       source  = "hashicorp/time"
@@ -413,7 +414,7 @@ generate "import" {
   contents = <<EOF
 %{if contains(
   ["az-alz-base"],
-  basename(get_terragrunt_dir())
+  basename(replace(get_terragrunt_dir(), "\\", "/"))
   ) && "${local.terraform_command}" != "destroy"}
 
 # re-use the pre-created ECP parent management group
@@ -427,7 +428,7 @@ import {
 
 %{if contains(
   ["az-alz-base"],
-  basename(get_terragrunt_dir())
+  basename(replace(get_terragrunt_dir(), "\\", "/"))
 ) && "${local.terraform_command}" == "destroy"}
 
 ###### terraform state remove 'module.alz.azapi_resource.management_groups_level_0'
@@ -478,7 +479,7 @@ inputs = {
   ecp_configuration_repo         = local.ecp_configuration_repo
   ecp_configuration_repo_version = local.ecp_configuration_repo_version
   # extract relative path from git repo root to root.hcl file (and remove leading slash if any)
-  ecp_configuration_repo_deployment_root_path = replace(replace(replace(dirname(abspath(format("%s/../../../../root.hcl", get_terragrunt_dir()))), "\\", "/"), get_repo_root(), ""), "/^//", "")
+  ecp_configuration_repo_deployment_root_path = replace(replace(replace(dirname(abspath(format("%s/../../../../root.hcl", replace(get_terragrunt_dir(), "\\", "/")))), "\\", "/"), replace(get_repo_root(), "\\", "/"), ""), "/^//", "")
 
 
   ##################################################################################

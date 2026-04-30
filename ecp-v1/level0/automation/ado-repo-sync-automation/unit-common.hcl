@@ -1,12 +1,12 @@
 dependencies {
   paths = [
-    format("%s/../../bootstrap/az-launchpad-bootstrap-helper", get_original_terragrunt_dir()),
-    format("%s/../../launchpad/ado-project", get_original_terragrunt_dir())
+    format("%s/../../bootstrap/az-launchpad-bootstrap-helper", replace(get_original_terragrunt_dir(), "\\", "/")),
+    format("%s/../../launchpad/ado-project", replace(get_original_terragrunt_dir(), "\\", "/"))
   ]
 }
 
 dependency "l0-lp-az-lp-main" {
-  config_path = format("%s/../../launchpad/az-launchpad-main", get_original_terragrunt_dir())
+  config_path = format("%s/../../launchpad/az-launchpad-main", replace(get_original_terragrunt_dir(), "\\", "/"))
   mock_outputs = {
     resource_group = {
       id       = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg"
@@ -28,18 +28,18 @@ locals {
 
   azure_tf_module_folder = "ado-repo-sync"
 
-  library_path_shared = format("%s/lib/ecp-lib", get_repo_root())
-  library_path_unit   = "${get_terragrunt_dir()}/lib"
+  library_path_shared = format("%s/lib/ecp-lib", replace(get_repo_root(), "\\", "/"))
+  library_path_unit   = "${replace(get_terragrunt_dir(), "\\", "/")}/lib"
 
-  automation_path = format("%s/lib/ecp-automation", get_repo_root())
+  automation_path = format("%s/lib/ecp-automation", replace(get_repo_root(), "\\", "/"))
 
   ################# bootstrap-helper unit output #################
-  TG_DOWNLOAD_DIR = coalesce(
+  TG_DOWNLOAD_DIR = replace(coalesce(
     try(get_env("TG_DOWNLOAD_DIR"), null),
     try(get_env("TMPDIR"), null),
     try(trimspace(run_cmd("--terragrunt-quiet", "pwsh", "-NoLogo", "-NoProfile", "-NonInteractive", "-Command", "[System.IO.Path]::GetTempPath()")), null),
     "/tmp"
-  )
+  ), "\\", "/")
 
   # see if backend variables are set
   backend_config_present = alltrue([
@@ -79,7 +79,7 @@ locals {
 
   ################# tags #################
   unit_common_azure_tags = {
-    # "_ecpTgUnitCommon" = format("%s/unit-common.hcl", get_parent_terragrunt_dir())
+    # "_ecpTgUnitCommon" = format("%s/unit-common.hcl", replace(get_parent_terragrunt_dir(), "\\", "/"))
   }
 }
 

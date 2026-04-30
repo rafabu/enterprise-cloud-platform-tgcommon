@@ -1,10 +1,10 @@
 dependencies {
   paths = flatten(distinct(concat(
     get_env("ECP_TF_BACKEND_STORAGE_AZURE_L1", "") == "" ? [
-      format("%s/../../../level0/bootstrap/az-launchpad-bootstrap-helper", get_original_terragrunt_dir())
+      format("%s/../../../level0/bootstrap/az-launchpad-bootstrap-helper", replace(get_original_terragrunt_dir(), "\\", "/"))
     ] : [],
     [
-      format("%s/../az-ecp-parent", get_original_terragrunt_dir())
+      format("%s/../az-ecp-parent", replace(get_original_terragrunt_dir(), "\\", "/"))
     ]
   )))
 }
@@ -17,12 +17,12 @@ locals {
   azure_tf_module_folder = "az-platform-subscriptions"
 
   ################# terragrunt specifics #################
-  TG_DOWNLOAD_DIR = coalesce(
+  TG_DOWNLOAD_DIR = replace(coalesce(
     try(get_env("TG_DOWNLOAD_DIR"), null),
     try(get_env("TMPDIR"), null),
     try(trimspace(run_cmd("--terragrunt-quiet", "pwsh", "-NoLogo", "-NoProfile", "-NonInteractive", "-Command", "[System.IO.Path]::GetTempPath()")), null),
     "/tmp"
-  )
+  ), "\\", "/")
 
   # see if backend variables are set
   backend_config_present = alltrue([
@@ -59,7 +59,7 @@ locals {
 
   ################# tags #################
   unit_common_azure_tags = {
-    # "hidden-ecpTgUnitCommon" = format("%s/unit-common.hcl", get_parent_terragrunt_dir())
+    # "hidden-ecpTgUnitCommon" = format("%s/unit-common.hcl", replace(get_parent_terragrunt_dir(), "\\", "/"))
   }
 }
 
