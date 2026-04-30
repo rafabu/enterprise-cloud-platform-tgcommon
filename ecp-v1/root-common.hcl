@@ -82,8 +82,8 @@ locals {
   # refresh to newer ALZ / SLZ / AMBA
   #     IMPORTANT !!!!!
   #     --> also update "alz_library_metadata.json" to reference the same version of ALZ / SLZ
-  tf_provider_alz_alz_lib_version  = "2026.01.3"
-  tf_provider_alz_slz_lib_version  = "2026.02.2"
+  tf_provider_alz_alz_lib_version  = "2026.04.2"
+  tf_provider_alz_slz_lib_version  = "2026.04.2"
   tf_provider_alz_amba_lib_version = "2026.01.1"
 
   # Azure Verified Modules
