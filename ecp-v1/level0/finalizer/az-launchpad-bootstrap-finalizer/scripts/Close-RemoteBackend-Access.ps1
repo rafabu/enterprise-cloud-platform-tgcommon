@@ -1,11 +1,11 @@
 param(
-    [bool]$resourceExists,
-    [bool]$ipInRange,
+    [string]$resourceExistsString,
+    [string]$ipInRangeString,
     [string]$publicIp,
     [string]$subscriptionId,
     [string]$accountName,
     [string]$objectId,
-    [bool]$ecpIdentity
+    [string]$ecpIdentityString
 )
 
 Write-Output "resourceExists: $resourceExists"
@@ -23,9 +23,9 @@ Write-Output "INFO: TG_CTX_COMMAND: $env:TG_CTX_COMMAND"
 # remove temporary fw and RBAC again
 Write-Output "INFO: TG_CTX_COMMAND: $env:TG_CTX_COMMAND"
 
-#   $resourceExists = if ("true" -eq $resourceExistsString) { $true } else { $false }
-#   $ipInRange = if ("true" -eq $ipInRangeString) { $true } else { $false }
-#   $ecpIdentity = if ("true" -eq $ecpIdentityString) { $true } else { $false }
+$resourceExists = if ("true" -eq $resourceExistsString) { $true } else { $false }
+$ipInRange = if ("true" -eq $ipInRangeString) { $true } else { $false }
+$ecpIdentity = if ("true" -eq $ecpIdentityString) { $true } else { $false }
 
 if ($true -eq $resourceExists) {
     Write-Output "INFO: Storage Account should exist; querying"
