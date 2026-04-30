@@ -1,17 +1,17 @@
 dependencies {
   paths = flatten(distinct(concat(
     get_env("ECP_TF_BACKEND_STORAGE_AZURE_L1", "") == "" ? [
-      format("%s/../../../level0/bootstrap/az-launchpad-bootstrap-helper", get_original_terragrunt_dir())
+      format("%s/../../../level0/bootstrap/az-launchpad-bootstrap-helper", replace(get_original_terragrunt_dir(), "\\", "/"))
     ] : [],
     [
-      format("%s/../../ecproot/az-ecp-parent", get_original_terragrunt_dir()),
-      format("%s/../../ecproot/az-platform-subscriptions", get_original_terragrunt_dir())
+      format("%s/../../ecproot/az-ecp-parent", replace(get_original_terragrunt_dir(), "\\", "/")),
+      format("%s/../../ecproot/az-platform-subscriptions", replace(get_original_terragrunt_dir(), "\\", "/"))
     ]
   )))
 }
 
 dependency "az-privatelink-privatedns-zones" {
-  config_path = format("%s/../../connectivity/az-privatelink-privatedns-zones", get_original_terragrunt_dir())
+  config_path = format("%s/../../connectivity/az-privatelink-privatedns-zones", replace(get_original_terragrunt_dir(), "\\", "/"))
   mock_outputs = {
     private_link_private_dns_zones_resource_ids = [
       "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/placeholder/providers/Microsoft.Network/privateDnsZones//providers/Microsoft.Network/privateDnsZones/privatelink.azurecr.io",
@@ -34,12 +34,12 @@ locals {
   azure_tf_module_folder = "az-alz-management-resources"
 
   ################# terragrunt specifics #################
-  TG_DOWNLOAD_DIR = coalesce(
+  TG_DOWNLOAD_DIR = replace(coalesce(
     try(get_env("TG_DOWNLOAD_DIR"), null),
     try(get_env("TMPDIR"), null),
     try(trimspace(run_cmd("--terragrunt-quiet", "pwsh", "-NoLogo", "-NoProfile", "-NonInteractive", "-Command", "[System.IO.Path]::GetTempPath()")), null),
     "/tmp"
-  )
+  ), "\\", "/")
 
   # see if backend variables are set
   backend_config_present = alltrue([
@@ -76,7 +76,7 @@ locals {
 
   ################# tags #################
   unit_common_azure_tags = {
-    # "hidden-ecpTgUnitCommon" = format("%s/unit-common.hcl", get_parent_terragrunt_dir())
+    # "hidden-ecpTgUnitCommon" = format("%s/unit-common.hcl", replace(get_parent_terragrunt_dir(), "\\", "/"))
   }
 }
 

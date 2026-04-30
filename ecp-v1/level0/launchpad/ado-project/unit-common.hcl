@@ -1,11 +1,11 @@
 dependencies {
   paths = [
-    format("%s/../../bootstrap/az-launchpad-bootstrap-helper", get_original_terragrunt_dir())
+    format("%s/../../bootstrap/az-launchpad-bootstrap-helper", replace(get_original_terragrunt_dir(), "\\", "/"))
   ]
 }
 
 dependency "l0-lp-az-lp-backend" {
-  config_path = format("%s/../az-launchpad-backend", get_original_terragrunt_dir())
+  config_path = format("%s/../az-launchpad-backend", replace(get_original_terragrunt_dir(), "\\", "/"))
   mock_outputs = {
     resource_group = {
       id       = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg"
@@ -65,7 +65,7 @@ dependency "l0-lp-az-lp-backend" {
 }
 
 dependency "l0-lp-az-lp-main" {
-  config_path = format("%s/../az-launchpad-main", get_original_terragrunt_dir())
+  config_path = format("%s/../az-launchpad-main", replace(get_original_terragrunt_dir(), "\\", "/"))
   mock_outputs = {
     resource_group = {
       id       = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg"
@@ -88,12 +88,12 @@ locals {
   azure_tf_module_folder = "ado-project"
 
   ################# bootstrap-helper unit output #################
-  TG_DOWNLOAD_DIR = coalesce(
+  TG_DOWNLOAD_DIR = replace(coalesce(
     try(get_env("TG_DOWNLOAD_DIR"), null),
     try(get_env("TMPDIR"), null),
     try(trimspace(run_cmd("--terragrunt-quiet", "pwsh", "-NoLogo", "-NoProfile", "-NonInteractive", "-Command", "[System.IO.Path]::GetTempPath()")), null),
     "/tmp"
-  )
+  ), "\\", "/")
 
   # see if backend variables are set
   backend_config_present = alltrue([
@@ -133,7 +133,7 @@ locals {
 
   ################# tags #################
   unit_common_azure_tags = {
-    # "_ecpTgUnitCommon" = format("%s/unit-common.hcl", get_parent_terragrunt_dir())
+    # "_ecpTgUnitCommon" = format("%s/unit-common.hcl", replace(get_parent_terragrunt_dir(), "\\", "/"))
   }
 }
 

@@ -1,17 +1,17 @@
 dependencies {
   paths = flatten(distinct(concat(
     get_env("ECP_TF_BACKEND_STORAGE_AZURE_L1", "") == "" ? [
-      format("%s/../../../level0/bootstrap/az-launchpad-bootstrap-helper", get_original_terragrunt_dir())
+      format("%s/../../../level0/bootstrap/az-launchpad-bootstrap-helper", replace(get_original_terragrunt_dir(), "\\", "/"))
     ] : [],
     [
-      format("%s/../../ecproot/az-platform-subscriptions", get_original_terragrunt_dir()),
-      format("%s/../az-alz-shared-library-render", get_original_terragrunt_dir())
+      format("%s/../../ecproot/az-platform-subscriptions", replace(get_original_terragrunt_dir(), "\\", "/")),
+      format("%s/../az-alz-shared-library-render", replace(get_original_terragrunt_dir(), "\\", "/"))
     ]
   )))
 }
 
 dependency "az-ecp-parent" {
-  config_path = format("%s/../../ecproot/az-ecp-parent", get_original_terragrunt_dir())
+  config_path = format("%s/../../ecproot/az-ecp-parent", replace(get_original_terragrunt_dir(), "\\", "/"))
   mock_outputs = {
     parent_management_group_name = "mock-mg"
     parent_management_group_id   = "/providers/Microsoft.Management/managementGroups/mock-mg"
@@ -25,7 +25,7 @@ dependency "az-ecp-parent" {
 }
 
 dependency "az-alz-management-resources" {
-  config_path = format("%s/../az-alz-management-resources", get_original_terragrunt_dir())
+  config_path = format("%s/../az-alz-management-resources", replace(get_original_terragrunt_dir(), "\\", "/"))
   mock_outputs = {
     automation_account_id                       = "00000000-0000-0000-0000-000000000000"
     resource_group_id                           = "00000000-0000-0000-0000-000000000000"
@@ -40,7 +40,7 @@ dependency "az-alz-management-resources" {
 }
 
 dependency "az-privatelink-privatedns-zones" {
-  config_path = format("%s/../../connectivity/az-privatelink-privatedns-zones", get_original_terragrunt_dir())
+  config_path = format("%s/../../connectivity/az-privatelink-privatedns-zones", replace(get_original_terragrunt_dir(), "\\", "/"))
   mock_outputs = {
     private_link_private_dns_zones_resource_ids = [
       "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/placeholder/providers/Microsoft.Network/privateDnsZones//providers/Microsoft.Network/privateDnsZones/privatelink.azurecr.io",
@@ -62,18 +62,18 @@ locals {
 
   azure_tf_module_folder = "az-alz-base"
 
-  alz_library_path_shared = format("%s/lib/ecp-lib/platform/alz-artefacts/", get_repo_root())
-  alz_library_path_unit   = "${get_terragrunt_dir()}/lib/"
+  alz_library_path_shared = format("%s/lib/ecp-lib/platform/alz-artefacts/", replace(get_repo_root(), "\\", "/"))
+  alz_library_path_unit   = "${replace(get_terragrunt_dir(), "\\", "/")}/lib/"
   # folder where rendered template alz library files are places (temporarily)
   alz_library_path_shared_rendered = "${trimsuffix(local.TG_DOWNLOAD_DIR, "/")}/${uuidv5("dns", "${local.alz_library_path_shared}")}/"
 
   ################# terragrunt specifics #################
-  TG_DOWNLOAD_DIR = coalesce(
+  TG_DOWNLOAD_DIR = replace(coalesce(
     try(get_env("TG_DOWNLOAD_DIR"), null),
     try(get_env("TMPDIR"), null),
     try(trimspace(run_cmd("--terragrunt-quiet", "pwsh", "-NoLogo", "-NoProfile", "-NonInteractive", "-Command", "[System.IO.Path]::GetTempPath()")), null),
     "/tmp"
-  )
+  ), "\\", "/")
 
   # see if backend variables are set
   backend_config_present = alltrue([
@@ -110,7 +110,7 @@ locals {
 
   ################# tags #################
   unit_common_azure_tags = {
-    # "hidden-ecpTgUnitCommon" = format("%s/unit-common.hcl", get_parent_terragrunt_dir())
+    # "hidden-ecpTgUnitCommon" = format("%s/unit-common.hcl", replace(get_parent_terragrunt_dir(), "\\", "/"))
   }
 }
 
