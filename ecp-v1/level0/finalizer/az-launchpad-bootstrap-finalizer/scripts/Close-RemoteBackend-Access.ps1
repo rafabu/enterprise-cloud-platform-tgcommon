@@ -8,13 +8,13 @@ param(
     [string]$ecpIdentityString
 )
 
-Write-Output "resourceExists: $resourceExists"
-Write-Output "ipInRange: $ipInRange"
+Write-Output "resourceExists: $resourceExistsString"
+Write-Output "ipInRange: $ipInRangeString"
 Write-Output "publicIp: $publicIp"
 Write-Output "subscriptionId: $subscriptionId"
 Write-Output "accountName: $accountName"
 Write-Output "objectId: $objectId"
-Write-Output "ecpIdentity: $ecpIdentity"
+Write-Output "ecpIdentity: $ecpIdentityString"
 
 
 Write-Output "INFO: TG_CTX_COMMAND: $env:TG_CTX_COMMAND"
