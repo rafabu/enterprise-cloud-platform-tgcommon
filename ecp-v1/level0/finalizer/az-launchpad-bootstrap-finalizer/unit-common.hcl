@@ -204,13 +204,19 @@ SCRIPT
       # "-Command",
       "-File",
       "${replace(get_parent_terragrunt_dir(), "\\", "/")}/scripts/Close-RemoteBackend-Access.ps1",
-      "-resourceExists", "${local.bootstrap_helper_output.backend_storage_accounts["l0"].ecp_resource_exists}",
-      "-ipInRange", "${local.bootstrap_helper_output.actor_network_information.is_local_ip_within_ecp_launchpad}",
+      "-resourceExistsString", "${local.bootstrap_helper_output.backend_storage_accounts["l0"].ecp_resource_exists}",
+      "-resourceExistsStringl1", "${local.bootstrap_helper_output.backend_storage_accounts["l1"].ecp_resource_exists}",
+      "-resourceExistsStringl2", "${local.bootstrap_helper_output.backend_storage_accounts["l2"].ecp_resource_exists}",
+      "-ipInRangeString", "${local.bootstrap_helper_output.actor_network_information.is_local_ip_within_ecp_launchpad}",
       "-publicIp", "${local.bootstrap_helper_output.actor_network_information.public_ip}",
       "-subscriptionId", "${local.bootstrap_helper_output.backend_storage_accounts["l0"].subscription_id}",
+      "-subscriptionIdl1", "${local.bootstrap_helper_output.backend_storage_accounts["l1"].subscription_id}",
+      "-subscriptionIdl2", "${local.bootstrap_helper_output.backend_storage_accounts["l2"].subscription_id}",
       "-accountName", "${local.bootstrap_helper_output.backend_storage_accounts["l0"].name}",
+      "-accountNamel1", "${local.bootstrap_helper_output.backend_storage_accounts["l1"].name}",
+      "-accountNamel2", "${local.bootstrap_helper_output.backend_storage_accounts["l2"].name}",
       "-objectId", "${local.bootstrap_helper_output.actor_identity.object_id}",
-      "-ecpIdentity", "${local.bootstrap_helper_output.actor_identity.is_ecp_launchpad_identity}"
+      "-ecpIdentityString", "${local.bootstrap_helper_output.actor_identity.is_ecp_launchpad_identity}"
     ]
     # run regardless of whether the terraform command failed
     run_on_error = true

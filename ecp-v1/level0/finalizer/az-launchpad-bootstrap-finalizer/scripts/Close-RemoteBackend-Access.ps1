@@ -1,18 +1,29 @@
 param(
-    [string]$resourceExistsString,
+    
     [string]$ipInRangeString,
     [string]$publicIp,
-    [string]$subscriptionId,
-    [string]$accountName,
     [string]$objectId,
-    [string]$ecpIdentityString
+    [string]$ecpIdentityString,
+    [string]$resourceExistsString,
+    [string]$resourceExistsStringl1,
+    [string]$resourceExistsStringl2,
+    [string]$subscriptionId,
+    [string]$subscriptionIdl1,
+    [string]$subscriptionIdl2,
+    [string]$accountName,
+    [string]$accountNamel1,
+    [string]$accountNamel2
 )
 
 Write-Output "resourceExists: $resourceExistsString"
+Write-Output "resourceExistsl1: $resourceExistsStringl1"
+Write-Output "resourceExistsl2: $resourceExistsStringl2"
 Write-Output "ipInRange: $ipInRangeString"
 Write-Output "publicIp: $publicIp"
 Write-Output "subscriptionId: $subscriptionId"
 Write-Output "accountName: $accountName"
+Write-Output "accountNamel1: $accountNamel1"
+Write-Output "accountNamel2: $accountNamel2"
 Write-Output "objectId: $objectId"
 Write-Output "ecpIdentity: $ecpIdentityString"
 
@@ -24,6 +35,8 @@ Write-Output "INFO: TG_CTX_COMMAND: $env:TG_CTX_COMMAND"
 Write-Output "INFO: TG_CTX_COMMAND: $env:TG_CTX_COMMAND"
 
 $resourceExists = if ("true" -eq $resourceExistsString) { $true } else { $false }
+$resourceExistsl1 = if ("true" -eq $resourceExistsStringl1) { $true } else { $false }
+$resourceExistsl2 = if ("true" -eq $resourceExistsStringl2) { $true } else { $false }
 $ipInRange = if ("true" -eq $ipInRangeString) { $true } else { $false }
 $ecpIdentity = if ("true" -eq $ecpIdentityString) { $true } else { $false }
 
