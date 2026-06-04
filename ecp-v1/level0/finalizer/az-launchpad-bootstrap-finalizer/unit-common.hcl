@@ -42,7 +42,9 @@ dependency "l0-lp-ado-mpool" {
       }
     }
   }
-  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
+  # DANGER ZONE WORKAROUND HERE
+  # add "apply" and "destroy" to mock but ONLY UNTIL AFTER https://github.com/gruntwork-io/terragrunt/issues/5993 gets fixed
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan", "apply", "destroy"]
   mock_outputs_merge_strategy_with_state  = "shallow"
 }
 
