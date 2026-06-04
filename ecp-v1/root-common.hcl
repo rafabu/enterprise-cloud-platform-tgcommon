@@ -64,30 +64,30 @@ locals {
   tfplan_path = get_env("TF_PLAN_PATH", "./")
 
   ############ Versions ############
-  tf_version                      = ">= 1.14"
+  tf_version                      = ">= 1.15"
   tf_provider_azuread_version     = "~> 3.8"
   tf_provider_azurecaf_version    = "~> 1.2"
-  tf_provider_azurerm_version     = "~> 4.68"
-  tf_provider_azapi_version       = "~> 2.8"
+  tf_provider_azurerm_version     = "~> 4.75"
+  tf_provider_azapi_version       = "~> 2.10"
   tf_provider_azuredevops_version = "~> 1.15"
-  tf_provider_external_version    = "~> 2.3"
-  tf_provider_http_version        = "~> 3.5"
-  tf_provider_local_version       = "~> 2.8"
-  tf_provider_random_version      = "~> 3.8"
+  tf_provider_external_version    = "~> 2.4"
+  tf_provider_http_version        = "~> 3.6"
+  tf_provider_local_version       = "~> 2.9"
+  tf_provider_random_version      = "~> 3.9"
   tf_provider_msgraph_version     = "~> 0.3"
-  tf_provider_time_version        = "~> 0.13"
+  tf_provider_time_version        = "~> 0.14"
   # ALZ
-  tf_provider_alz_version = "~> 0.20"
+  tf_provider_alz_version = "~> 0.21"
 
   # refresh to newer ALZ / SLZ / AMBA
   #     IMPORTANT !!!!!
   #     --> also update "alz_library_metadata.json" to reference the same version of ALZ / SLZ
-  tf_provider_alz_alz_lib_version  = "2026.01.3"
-  tf_provider_alz_slz_lib_version  = "2026.02.2"
+  tf_provider_alz_alz_lib_version  = "2026.04.2"
+  tf_provider_alz_slz_lib_version  = "2026.04.3"
   tf_provider_alz_amba_lib_version = "2026.01.1"
 
   # Azure Verified Modules
-  tf_provider_modtm_version = "~> 0.3"
+  tf_provider_modtm_version = "~> 0.4"
 
   ############ Tags ############
   root_common_azure_tags = {
