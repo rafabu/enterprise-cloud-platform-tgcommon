@@ -19,7 +19,9 @@ dependency "l1-mgm-az-privatelink-privatedns" {
       "ecp_is_cool_mock" = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/privateDnsZones/privatelink.ecpiscool.mock"
     }
   }
-  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
+  # DANGER ZONE WORKAROUND HERE
+  # add "apply" and "destroy" to mock but ONLY UNTIL AFTER https://github.com/gruntwork-io/terragrunt/issues/5993 gets fixed
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan", "apply", "destroy"]
   mock_outputs_merge_strategy_with_state  = "shallow"
 }
 
