@@ -1,7 +1,8 @@
 dependencies {
   paths = [
     format("%s/../../bootstrap/az-launchpad-bootstrap-helper", replace(get_original_terragrunt_dir(), "\\", "/")),
-    format("%s/../../launchpad/ado-project", replace(get_original_terragrunt_dir(), "\\", "/"))
+    format("%s/../../launchpad/ado-project", replace(get_original_terragrunt_dir(), "\\", "/")),
+    format("%s/../ado-repo-sync-configuration", replace(get_original_terragrunt_dir(), "\\", "/"))
   ]
 }
 
