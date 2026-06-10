@@ -59,7 +59,7 @@ locals {
   ecp_configuration_repo_version = "main"
 
   ecp_azure_modules_repo         = "github.com/rafabu/enterprise-cloud-platform-azure.git"
-  ecp_azure_modules_repo_version = "main"
+  ecp_azure_modules_repo_version = "v0.4.0-alpha"
 
   tfplan_path = get_env("TF_PLAN_PATH", "./")
 
@@ -107,7 +107,8 @@ locals {
 # remote_state {}
 
 terraform {
-  source = "git::${local.ecp_azure_modules_repo}/modules-tf//${local.unit_common_vars.locals.azure_tf_module_folder}" # ?ref=${include.root.locals.ecp_azure_modules_repo_version}"
+  # source = "git::${local.ecp_azure_modules_repo}/modules-tf//${local.unit_common_vars.locals.azure_tf_module_folder}" # ?ref=${include.root.locals.ecp_azure_modules_repo_version}"
+  source = "git::${local.ecp_azure_modules_repo}/modules-tf//${local.unit_common_vars.locals.azure_tf_module_folder}?ref=${local.ecp_azure_modules_repo_version}"
 
   # Force Terraform to keep trying to acquire a lock for
   # up to 20 minutes if someone else already has the lock
