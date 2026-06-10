@@ -7,7 +7,7 @@ locals {
   level_vars       = read_terragrunt_config(format("%s/../../level.hcl", replace(get_terragrunt_dir(), "\\", "/")))
   area_vars        = read_terragrunt_config(format("%s/../area.hcl", replace(get_terragrunt_dir(), "\\", "/")))
   unit_common_vars = read_terragrunt_config(format("%s/lib/terragrunt-common/ecp-v1/%s/unit-common.hcl", replace(get_repo_root(), "\\", "/"), regexall("^.*(?:/)(.+?(?:/).+?(?:/).+?)$", replace(get_terragrunt_dir(), "\\", "/"))[0][0]))
- 
+
 
   merged_locals = merge(
     local.root_vars.locals,
@@ -89,7 +89,11 @@ locals {
   # Azure Verified Modules
   tf_provider_modtm_version = "~> 0.4"
 
-  tf_module_avm-ptn-alz-management_version = "0.9.0"
+  tf_module_avm-ptn-alz_version                          = "0.21.0"
+  tf_module_avm-ptn-alz-connectivity-virtual-wan_version = "0.16.0"
+  tf_module_avm-ptn-alz-management_version                         = "0.9.0"
+  tf_module_avm-ptn-network-private-link-private-dns-zones_version = "0.23.2"
+  tf_module_avm-utl-regions_version_version = "0.12.0"
 
   ############ Tags ############
   root_common_azure_tags = {
@@ -494,5 +498,10 @@ inputs = {
     }
   }
 
-  avm-ptn-alz-management_version = local.tf_module_avm-ptn-alz-management_version
+  # terraform module versions
+  avm-ptn-alz_version                                    = local.tf_module_avm-ptn-alz_version
+  avm-ptn-alz-connectivity-virtual-wan_version           = local.tf_module_avm-ptn-alz-connectivity-virtual-wan_version
+  avm-ptn-alz-management_version                         = local.tf_module_avm-ptn-alz-management_version
+  avm-ptn-network-private-link-private-dns-zones_version = local.tf_module_avm-ptn-network-private-link-private-dns-zones_version
+  avm-utl-regions_version_version                        = local.tf_module_avm-utl-regions_version_version
 }
