@@ -89,6 +89,8 @@ locals {
   # Azure Verified Modules
   tf_provider_modtm_version = "~> 0.4"
 
+  tf_module_avm-ptn-alz-management_version = "0.8.0"
+
   ############ Tags ############
   root_common_azure_tags = {
     # "hidden-ecpTgUnitRootCommon" = format("%s/root-common.hcl", replace(get_parent_terragrunt_dir(), "\\", "/"))
@@ -491,4 +493,6 @@ inputs = {
       sku = "Basic"
     }
   }
+
+  avm-ptn-alz-management_version = local.tf_module_avm-ptn-alz-management_version
 }
