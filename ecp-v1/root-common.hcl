@@ -58,12 +58,14 @@ locals {
   ecp_configuration_repo         = "github.com/rafabu/enterprise-cloud-platform-conf.git"
   ecp_configuration_repo_version = "main"
 
-  ecp_azure_modules_repo         = "github.com/rafabu/enterprise-cloud-platform-azure.git"
-  ecp_azure_modules_repo_version = "v0.4.0-alpha" # main / dev
-  
+  ecp_azure_modules_repo = "github.com/rafabu/enterprise-cloud-platform-azure.git"
+
+
   tfplan_path = get_env("TF_PLAN_PATH", "./")
 
   ############ Versions ############
+  ecp_azure_modules_repo_version = "v0.4.0-alpha" # main / dev
+
   tf_version                      = ">= 1.15"
   tf_provider_azuread_version     = "~> 3.8"
   tf_provider_azurecaf_version    = "~> 1.2"
@@ -89,11 +91,11 @@ locals {
   # Azure Verified Modules
   tf_provider_modtm_version = "~> 0.4"
 
-  tf_module_avm-ptn-alz_version                          = "0.21.0"
-  tf_module_avm-ptn-alz-connectivity-virtual-wan_version = "0.16.0"
+  tf_module_avm-ptn-alz_version                                    = "0.21.0"
+  tf_module_avm-ptn-alz-connectivity-virtual-wan_version           = "0.16.0"
   tf_module_avm-ptn-alz-management_version                         = "0.9.0"
   tf_module_avm-ptn-network-private-link-private-dns-zones_version = "0.23.2"
-  tf_module_avm-utl-regions_version_version = "0.12.0"
+  tf_module_avm-utl-regions_version_version                        = "0.12.0"
 
   ############ Tags ############
   root_common_azure_tags = {
