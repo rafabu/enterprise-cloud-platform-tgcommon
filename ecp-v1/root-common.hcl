@@ -59,9 +59,8 @@ locals {
   ecp_configuration_repo_version = "main"
 
   ecp_azure_modules_repo         = "github.com/rafabu/enterprise-cloud-platform-azure.git"
-  # ecp_azure_modules_repo_version = "v0.4.0-alpha"
-  ecp_azure_modules_repo_version = "dev"
-
+  ecp_azure_modules_repo_version = "v0.4.0-alpha" # main / dev
+  
   tfplan_path = get_env("TF_PLAN_PATH", "./")
 
   ############ Versions ############
