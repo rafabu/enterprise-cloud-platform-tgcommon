@@ -95,7 +95,7 @@ locals {
   tf_module_avm-ptn-alz-connectivity-virtual-wan_version           = "0.16.0"
   tf_module_avm-ptn-alz-management_version                         = "0.9.0"
   tf_module_avm-ptn-network-private-link-private-dns-zones_version = "0.23.2"
-  tf_module_avm-utl-regions_version_version                        = "0.12.0"
+  tf_module_avm-utl-regions_version                                = "0.12.0"
 
   ############ Tags ############
   root_common_azure_tags = {
@@ -505,5 +505,5 @@ inputs = {
   avm-ptn-alz-connectivity-virtual-wan_version           = local.tf_module_avm-ptn-alz-connectivity-virtual-wan_version
   avm-ptn-alz-management_version                         = local.tf_module_avm-ptn-alz-management_version
   avm-ptn-network-private-link-private-dns-zones_version = local.tf_module_avm-ptn-network-private-link-private-dns-zones_version
-  avm-utl-regions_version_version                        = local.tf_module_avm-utl-regions_version_version
+  avm-utl-regions_version                                = local.tf_module_avm-utl-regions_version
 }
