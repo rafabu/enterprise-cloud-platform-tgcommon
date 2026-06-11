@@ -64,7 +64,7 @@ locals {
   tfplan_path = get_env("TF_PLAN_PATH", "./")
 
   ############ Versions ############
-  ecp_azure_modules_repo_version = "v0.4.0-alpha" # main / dev
+  ecp_azure_modules_repo_version = "v0.4.1-alpha" # main / dev
 
   tf_version                      = ">= 1.15"
   tf_provider_azuread_version     = "~> 3.8"
