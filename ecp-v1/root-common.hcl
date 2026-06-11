@@ -7,7 +7,7 @@ locals {
   level_vars       = read_terragrunt_config(format("%s/../../level.hcl", replace(get_terragrunt_dir(), "\\", "/")))
   area_vars        = read_terragrunt_config(format("%s/../area.hcl", replace(get_terragrunt_dir(), "\\", "/")))
   unit_common_vars = read_terragrunt_config(format("%s/lib/terragrunt-common/ecp-v1/%s/unit-common.hcl", replace(get_repo_root(), "\\", "/"), regexall("^.*(?:/)(.+?(?:/).+?(?:/).+?)$", replace(get_terragrunt_dir(), "\\", "/"))[0][0]))
- 
+
 
   merged_locals = merge(
     local.root_vars.locals,
@@ -58,12 +58,14 @@ locals {
   ecp_configuration_repo         = "github.com/rafabu/enterprise-cloud-platform-conf.git"
   ecp_configuration_repo_version = "main"
 
-  ecp_azure_modules_repo         = "github.com/rafabu/enterprise-cloud-platform-azure.git"
-  ecp_azure_modules_repo_version = "main"
+  ecp_azure_modules_repo = "github.com/rafabu/enterprise-cloud-platform-azure.git"
+
 
   tfplan_path = get_env("TF_PLAN_PATH", "./")
 
   ############ Versions ############
+  ecp_azure_modules_repo_version = "v0.4.1-alpha" # main / dev
+
   tf_version                      = ">= 1.15"
   tf_provider_azuread_version     = "~> 3.8"
   tf_provider_azurecaf_version    = "~> 1.2"
@@ -89,6 +91,12 @@ locals {
   # Azure Verified Modules
   tf_provider_modtm_version = "~> 0.4"
 
+  tf_module_avm-ptn-alz_version                                    = "0.21.0"
+  tf_module_avm-ptn-alz-connectivity-virtual-wan_version           = "0.16.0"
+  tf_module_avm-ptn-alz-management_version                         = "0.9.0"
+  tf_module_avm-ptn-network-private-link-private-dns-zones_version = "0.23.2"
+  tf_module_avm-utl-regions_version_version                        = "0.12.0"
+
   ############ Tags ############
   root_common_azure_tags = {
     # "hidden-ecpTgUnitRootCommon" = format("%s/root-common.hcl", replace(get_parent_terragrunt_dir(), "\\", "/"))
@@ -101,7 +109,7 @@ locals {
 # remote_state {}
 
 terraform {
-  source = "git::${local.ecp_azure_modules_repo}/modules-tf//${local.unit_common_vars.locals.azure_tf_module_folder}" # ?ref=${include.root.locals.ecp_azure_modules_repo_version}"
+  source = "git::${local.ecp_azure_modules_repo}?ref=${local.ecp_azure_modules_repo_version}/modules-tf//${local.unit_common_vars.locals.azure_tf_module_folder}"
 
   # Force Terraform to keep trying to acquire a lock for
   # up to 20 minutes if someone else already has the lock
@@ -491,4 +499,11 @@ inputs = {
       sku = "Basic"
     }
   }
+
+  # terraform module versions
+  avm-ptn-alz_version                                    = local.tf_module_avm-ptn-alz_version
+  avm-ptn-alz-connectivity-virtual-wan_version           = local.tf_module_avm-ptn-alz-connectivity-virtual-wan_version
+  avm-ptn-alz-management_version                         = local.tf_module_avm-ptn-alz-management_version
+  avm-ptn-network-private-link-private-dns-zones_version = local.tf_module_avm-ptn-network-private-link-private-dns-zones_version
+  avm-utl-regions_version_version                        = local.tf_module_avm-utl-regions_version_version
 }
