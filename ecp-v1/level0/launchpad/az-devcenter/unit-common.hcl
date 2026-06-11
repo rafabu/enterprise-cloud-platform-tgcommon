@@ -119,7 +119,7 @@ dependency "l0-lp-az-lp-backend" {
 }
 
 locals {
- 
+
   ecp_deployment_unit             = "main"
   ecp_resource_name_random_length = 0
 
