@@ -42,6 +42,22 @@ dependency "l0-lp-az-lp-net" {
   mock_outputs_merge_strategy_with_state  = "shallow"
 }
 
+dependency "l1-mgm-az-privatelink-privatedns" {
+  config_path = format("%s/../../../level1/connectivity/az-privatelink-privatedns-zones", replace(get_original_terragrunt_dir(), "\\", "/"))
+  mock_outputs = {
+    private_link_private_dns_zones_resource_ids = [
+      "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/privateDnsZones/privatelink.ecpiscool.mock"
+    ]
+    private_link_private_dns_zones = {
+      "ecp_is_cool_mock" = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/privateDnsZones/privatelink.ecpiscool.mock"
+    }
+  }
+  # DANGER ZONE WORKAROUND HERE
+  # add "apply" and "destroy" to mock but ONLY UNTIL AFTER https://github.com/gruntwork-io/terragrunt/issues/5993 gets fixed
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan", "apply", "destroy"]
+  mock_outputs_merge_strategy_with_state  = "shallow"
+}
+
 dependency "l2-con-az-con-mgmt" {
   config_path = format("%s/../az-connectivity-management", replace(get_original_terragrunt_dir(), "\\", "/"))
   mock_outputs = {
@@ -396,10 +412,6 @@ inputs = {
   # load merged vnet subnet artefact objects
   virtual_network_subnet_artefacts = local.virtualNetworkSubnet_definition_merged
 
-  # which artefacts are active in this unit
-
-
-  private_dns_zone_ids = dependency.l1-mgm-az-privatelink-privatedns.outputs.private_link_private_dns_zones_resource_ids
 
   # # # # load merged vpnGateway artefact objects
   # # # vpn_gateway_artefacts = local.vpnGateway_definition_merged
