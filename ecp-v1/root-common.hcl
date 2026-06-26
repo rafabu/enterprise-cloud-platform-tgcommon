@@ -93,6 +93,7 @@ locals {
 
   tf_module_avm-ptn-alz_version                                    = "0.21.0"
   tf_module_avm-ptn-alz-connectivity-virtual-wan_version           = "0.16.0"
+  tf_module_avm-ptn-alz-connectivity-hub-spoke_version             = "0.17.3"
   tf_module_avm-ptn-alz-management_version                         = "0.9.0"
   tf_module_avm-ptn-network-private-link-private-dns-zones_version = "0.23.2"
   tf_module_avm-utl-regions_version                                = "0.12.0"
@@ -176,7 +177,7 @@ provider "alz" {
 %{endif}
 
 %{if contains(
-  ["az-launchpad-bootstrap-helper", "az-alz-base", "az-alz-connectivity-virtual-wan", "az-alz-management-resources", "az-connectivity-management", "az-privatelink-privatedns-zones", "ado-mpool", "az-ecp-parent", "az-launchpad-backend", "az-devcenter", "az-launchpad-network", "az-platform-subscriptions"],
+  ["az-launchpad-bootstrap-helper", "az-alz-base", "az-alz-connectivity-virtual-wan",  "az-alz-connectivity-hub-spoke", "az-alz-management-resources", "az-connectivity-management", "az-privatelink-privatedns-zones", "ado-mpool", "az-ecp-parent", "az-launchpad-backend", "az-devcenter", "az-launchpad-network", "az-platform-subscriptions"],
   basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
 provider "azapi" {
@@ -225,7 +226,7 @@ provider "azurerm" {
 %{endif}
 
 %{if contains(
-  ["az-alz-connectivity-virtual-wan", "az-alz-management-resources", "az-connectivity-management"],
+  ["az-alz-connectivity-virtual-wan", "az-alz-connectivity-hub-spoke", "az-alz-management-resources", "az-connectivity-management"],
   basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
 provider "azurerm" {
@@ -273,7 +274,7 @@ provider "azurerm" {
 %{endif}
 
 %{if contains(
-  ["az-alz-base", "az-alz-connectivity-virtual-wan", "az-privatelink-privatedns-zones"],
+  ["az-alz-base", "az-alz-connectivity-virtual-wan", "az-alz-connectivity-hub-spoke", "az-privatelink-privatedns-zones"],
   basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
 provider "modtm" {
@@ -291,7 +292,7 @@ provider "msgraph" {
 %{endif}
 
 %{if contains(
-  ["ado-mpool", "ado-project", "az-alz-connectivity-virtual-wan", "az-ecp-parent", "az-platform-subscriptions", "devcenter"],
+  ["ado-mpool", "ado-project", "az-alz-connectivity-virtual-wan", "az-alz-connectivity-hub-spoke", "az-ecp-parent", "az-platform-subscriptions", "devcenter"],
   basename(replace(get_terragrunt_dir(), "\\", "/"))
 )}
 provider "time" {}
@@ -330,7 +331,7 @@ terraform {
       version = "${local.tf_provider_azurecaf_version}"
     }
 %{if contains(
-  ["ado-mpool", "az-alz-connectivity-virtual-wan", "az-alz-management-resources", "az-connectivity-management", "az-devcenter", "az-launchpad-bootstrap-helper", "az-launchpad-backend", "az-launchpad-network", "az-launchpad-main"],
+  ["ado-mpool", "az-alz-connectivity-virtual-wan", "az-alz-connectivity-hub-spoke", "az-alz-management-resources", "az-connectivity-management", "az-devcenter", "az-launchpad-bootstrap-helper", "az-launchpad-backend", "az-launchpad-network", "az-launchpad-main"],
   basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
     azurerm = {
@@ -339,7 +340,7 @@ terraform {
     }
 %{endif}
 %{if contains(
-  ["az-launchpad-bootstrap-helper", "az-alz-base", "az-alz-connectivity-virtual-wan", "az-alz-management-resources", "az-connectivity-management", "az-privatelink-privatedns-zones", "ado-mpool", "az-ecp-parent", "az-launchpad-backend", "az-devcenter", "az-launchpad-network", "az-platform-subscriptions"],
+  ["az-launchpad-bootstrap-helper", "az-alz-base", "az-alz-connectivity-virtual-wan", "az-alz-connectivity-hub-spoke", "az-alz-management-resources", "az-connectivity-management", "az-privatelink-privatedns-zones", "ado-mpool", "az-ecp-parent", "az-launchpad-backend", "az-devcenter", "az-launchpad-network", "az-platform-subscriptions"],
   basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
     azapi = {
@@ -392,7 +393,7 @@ terraform {
     }
 %{endif}
 %{if contains(
-  ["az-alz-base", "az-alz-connectivity-virtual-wan", "az-privatelink-privatedns-zones"],
+  ["az-alz-base", "az-alz-connectivity-virtual-wan", "az-alz-connectivity-hub-spoke", "az-privatelink-privatedns-zones"],
   basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
     modtm = {
@@ -401,7 +402,7 @@ terraform {
     }
 %{endif}
 %{if contains(
-  ["az-alz-base", "az-alz-connectivity-virtual-wan", "az-connectivity-management", "az-devcenter", "az-ecp-parent", "ado-mpool", "ado-project"],
+  ["az-alz-base", "az-alz-connectivity-virtual-wan", "az-alz-connectivity-hub-spoke", "az-connectivity-management", "az-devcenter", "az-ecp-parent", "ado-mpool", "ado-project"],
   basename(replace(get_terragrunt_dir(), "\\", "/"))
 )}
     time = {
@@ -503,6 +504,7 @@ inputs = {
   # terraform module versions
   avm-ptn-alz_version                                    = local.tf_module_avm-ptn-alz_version
   avm-ptn-alz-connectivity-virtual-wan_version           = local.tf_module_avm-ptn-alz-connectivity-virtual-wan_version
+  avm-ptn-alz-connectivity-hub-spoke_version             = local.tf_module_avm-ptn-alz-connectivity-hub-spoke_version
   avm-ptn-alz-management_version                         = local.tf_module_avm-ptn-alz-management_version
   avm-ptn-network-private-link-private-dns-zones_version = local.tf_module_avm-ptn-network-private-link-private-dns-zones_version
   avm-utl-regions_version                                = local.tf_module_avm-utl-regions_version
