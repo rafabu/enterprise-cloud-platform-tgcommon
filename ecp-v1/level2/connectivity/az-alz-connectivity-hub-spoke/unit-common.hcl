@@ -168,180 +168,110 @@ locals {
     local.virtualNetworkSubnet_definition_unit
   )
 
-  # # # ################# virtual WAN #################
-  # # # # exclude the ones named in the *.exclude.json
-  # # # library_virtualwan_path_shared    = "${local.library_path_shared}/platform/ecp-artefacts/ms-azure/network/virtualWans"
-  # # # library_virtualwan_path_unit      = "${local.library_path_unit}/virtualWans"
-  # # # library_virtualwan_filter         = "*.virtualWan.json"
-  # # # library_virtualwan_exclude_filter = "*.virtualWan.exclude.json"
+  ################# virtual vpn Gateway #################
+  # exclude the ones named in the *.exclude.json
+  library_vpngateway_path_shared    = "${local.library_path_shared}/platform/ecp-artefacts/ms-azure/network/vpnGateways"
+  library_vpngateway_path_unit      = "${local.library_path_unit}/vpnGateways"
+  library_vpngateway_filter         = "*.vpnGateway.json"
+  library_vpngateway_exclude_filter = "*.vpnGateway.exclude.json"
 
-  # # # # read JSON artefact files and bring them into a map of
-  # # # # - artefactName
-  # # # #    - filePath
-  # # # virtualWan_definition_shared = try({
-  # # #   for fileName in fileset(local.library_virtualwan_path_shared, local.library_virtualwan_filter) : jsondecode(file(format("%s/%s", local.library_virtualwan_path_shared, fileName))).artefactName => {
-  # # #     filePath = format("%s/%s", local.library_virtualwan_path_shared, fileName)
-  # # #     artefact = jsondecode(file(format("%s/%s", local.library_virtualwan_path_shared, fileName)))
-  # # #   }
-  # # # }, {})
-  # # # virtualWan_definition_unit = try({
-  # # #   for fileName in fileset(local.library_virtualwan_path_unit, local.library_virtualwan_filter) : jsondecode(file(format("%s/%s", local.library_virtualwan_path_unit, fileName))).artefactName => {
-  # # #     filePath = format("%s/%s", local.library_virtualwan_path_unit, fileName)
-  # # #     artefact = jsondecode(file(format("%s/%s", local.library_virtualwan_path_unit, fileName)))
-  # # #   }
-  # # # }, {})
-  # # # virtualWan_definition_exclude_unit = try({
-  # # #   for fileName in fileset(local.library_virtualwan_path_unit, local.library_virtualwan_exclude_filter) : jsondecode(file(format("%s/%s", local.library_virtualwan_path_unit, fileName))).artefactName => {
-  # # #     filePath = format("%s/%s", local.library_virtualwan_path_unit, fileName)
-  # # #   }
-  # # # }, {})
-  # # # virtualWan_definition_merged = merge(
-  # # #   {
-  # # #     for key, val in local.virtualWan_definition_shared : key => val
-  # # #     if(contains(keys(local.virtualWan_definition_exclude_unit), key) == false)
-  # # #   },
-  # # #   local.virtualWan_definition_unit
-  # # # )
+  # read JSON artefact files and bring them into a map of
+  # - artefactName
+  #    - filePath
+  vpnGateway_definition_shared = try({
+    for fileName in fileset(local.library_vpngateway_path_shared, local.library_vpngateway_filter) : jsondecode(file(format("%s/%s", local.library_vpngateway_path_shared, fileName))).artefactName => {
+      filePath = format("%s/%s", local.library_vpngateway_path_shared, fileName)
+      artefact = jsondecode(file(format("%s/%s", local.library_vpngateway_path_shared, fileName)))
+    }
+  }, {})
+  vpnGateway_definition_unit = try({
+    for fileName in fileset(local.library_vpngateway_path_unit, local.library_vpngateway_filter) : jsondecode(file(format("%s/%s", local.library_vpngateway_path_unit, fileName))).artefactName => {
+      filePath = format("%s/%s", local.library_vpngateway_path_unit, fileName)
+      artefact = jsondecode(file(format("%s/%s", local.library_vpngateway_path_unit, fileName)))
+    }
+  }, {})
+  vpnGateway_definition_exclude_unit = try({
+    for fileName in fileset(local.library_vpngateway_path_unit, local.library_vpngateway_exclude_filter) : jsondecode(file(format("%s/%s", local.library_vpngateway_path_unit, fileName))).artefactName => {
+      filePath = format("%s/%s", local.library_vpngateway_path_unit, fileName)
+    }
+  }, {})
+  vpnGateway_definition_merged = merge(
+    {
+      for key, val in local.vpnGateway_definition_shared : key => val
+      if(contains(keys(local.vpnGateway_definition_exclude_unit), key) == false)
+    },
+    local.vpnGateway_definition_unit
+  )
 
-  # # # ################# virtual WAN hub #################
-  # # # # exclude the ones named in the *.exclude.json
-  # # # library_virtualhub_path_shared    = "${local.library_path_shared}/platform/ecp-artefacts/ms-azure/network/virtualHubs"
-  # # # library_virtualhub_path_unit      = "${local.library_path_unit}/virtualHubs"
-  # # # library_virtualhub_filter         = "*.virtualHub.json"
-  # # # library_virtualhub_exclude_filter = "*.virtualHub.exclude.json"
+  ################# virtual vpn Remote Sites #################
+  # exclude the ones named in the *.exclude.json
+  library_vpnsite_path_shared    = "${local.library_path_shared}/platform/ecp-artefacts/ms-azure/network/vpnSites"
+  library_vpnsite_path_unit      = "${local.library_path_unit}/vpnSites"
+  library_vpnsite_filter         = "*.vpnSite.json"
+  library_vpnsite_exclude_filter = "*.vpnSite.exclude.json"
 
-  # # # # read JSON artefact files and bring them into a map of
-  # # # # - artefactName
-  # # # #    - filePath
-  # # # virtualHub_definition_shared = try({
-  # # #   for fileName in fileset(local.library_virtualhub_path_shared, local.library_virtualhub_filter) : jsondecode(file(format("%s/%s", local.library_virtualhub_path_shared, fileName))).artefactName => {
-  # # #     filePath = format("%s/%s", local.library_virtualhub_path_shared, fileName)
-  # # #     artefact = jsondecode(file(format("%s/%s", local.library_virtualhub_path_shared, fileName)))
-  # # #   }
-  # # # }, {})
-  # # # virtualHub_definition_unit = try({
-  # # #   for fileName in fileset(local.library_virtualhub_path_unit, local.library_virtualhub_filter) : jsondecode(file(format("%s/%s", local.library_virtualhub_path_unit, fileName))).artefactName => {
-  # # #     filePath = format("%s/%s", local.library_virtualhub_path_unit, fileName)
-  # # #     artefact = jsondecode(file(format("%s/%s", local.library_virtualhub_path_unit, fileName)))
-  # # #   }
-  # # # }, {})
-  # # # virtualHub_definition_exclude_unit = try({
-  # # #   for fileName in fileset(local.library_virtualhub_path_unit, local.library_virtualhub_exclude_filter) : jsondecode(file(format("%s/%s", local.library_virtualhub_path_unit, fileName))).artefactName => {
-  # # #     filePath = format("%s/%s", local.library_virtualhub_path_unit, fileName)
-  # # #   }
-  # # # }, {})
-  # # # virtualHub_definition_merged = merge(
-  # # #   {
-  # # #     for key, val in local.virtualHub_definition_shared : key => val
-  # # #     if(contains(keys(local.virtualHub_definition_exclude_unit), key) == false)
-  # # #   },
-  # # #   local.virtualHub_definition_unit
-  # # # )
+  # read JSON artefact files and bring them into a map of
+  # - artefactName
+  #    - filePath
+  vpnSite_definition_shared = try({
+    for fileName in fileset(local.library_vpnsite_path_shared, local.library_vpnsite_filter) : jsondecode(file(format("%s/%s", local.library_vpnsite_path_shared, fileName))).artefactName => {
+      filePath = format("%s/%s", local.library_vpnsite_path_shared, fileName)
+      artefact = jsondecode(file(format("%s/%s", local.library_vpnsite_path_shared, fileName)))
+    }
+  }, {})
+  vpnSite_definition_unit = try({
+    for fileName in fileset(local.library_vpnsite_path_unit, local.library_vpnsite_filter) : jsondecode(file(format("%s/%s", local.library_vpnsite_path_unit, fileName))).artefactName => {
+      filePath = format("%s/%s", local.library_vpnsite_path_unit, fileName)
+      artefact = jsondecode(file(format("%s/%s", local.library_vpnsite_path_unit, fileName)))
+    }
+  }, {})
+  vpnSite_definition_exclude_unit = try({
+    for fileName in fileset(local.library_vpnsite_path_unit, local.library_vpnsite_exclude_filter) : jsondecode(file(format("%s/%s", local.library_vpnsite_path_unit, fileName))).artefactName => {
+      filePath = format("%s/%s", local.library_vpnsite_path_unit, fileName)
+    }
+  }, {})
+  vpnSite_definition_merged = merge(
+    {
+      for key, val in local.vpnSite_definition_shared : key => val
+      if(contains(keys(local.vpnSite_definition_exclude_unit), key) == false)
+    },
+    local.vpnSite_definition_unit
+  )
 
-  # # # ################# virtual vpn Gateway #################
-  # # # # exclude the ones named in the *.exclude.json
-  # # # library_vpngateway_path_shared    = "${local.library_path_shared}/platform/ecp-artefacts/ms-azure/network/vpnGateways"
-  # # # library_vpngateway_path_unit      = "${local.library_path_unit}/vpnGateways"
-  # # # library_vpngateway_filter         = "*.vpnGateway.json"
-  # # # library_vpngateway_exclude_filter = "*.vpnGateway.exclude.json"
+  ################# vpn connections #################
+  # exclude the ones named in the *.exclude.json
+  library_vpnconnection_path_shared    = "${local.library_path_shared}/platform/ecp-artefacts/ms-azure/network/vpnConnections"
+  library_vpnconnection_path_unit      = "${local.library_path_unit}/vpnConnections"
+  library_vpnconnection_filter         = "*.vpnConnection.json"
+  library_vpnconnection_exclude_filter = "*.vpnConnection.exclude.json"
 
-  # # # # read JSON artefact files and bring them into a map of
-  # # # # - artefactName
-  # # # #    - filePath
-  # # # vpnGateway_definition_shared = try({
-  # # #   for fileName in fileset(local.library_vpngateway_path_shared, local.library_vpngateway_filter) : jsondecode(file(format("%s/%s", local.library_vpngateway_path_shared, fileName))).artefactName => {
-  # # #     filePath = format("%s/%s", local.library_vpngateway_path_shared, fileName)
-  # # #     artefact = jsondecode(file(format("%s/%s", local.library_vpngateway_path_shared, fileName)))
-  # # #   }
-  # # # }, {})
-  # # # vpnGateway_definition_unit = try({
-  # # #   for fileName in fileset(local.library_vpngateway_path_unit, local.library_vpngateway_filter) : jsondecode(file(format("%s/%s", local.library_vpngateway_path_unit, fileName))).artefactName => {
-  # # #     filePath = format("%s/%s", local.library_vpngateway_path_unit, fileName)
-  # # #     artefact = jsondecode(file(format("%s/%s", local.library_vpngateway_path_unit, fileName)))
-  # # #   }
-  # # # }, {})
-  # # # vpnGateway_definition_exclude_unit = try({
-  # # #   for fileName in fileset(local.library_vpngateway_path_unit, local.library_vpngateway_exclude_filter) : jsondecode(file(format("%s/%s", local.library_vpngateway_path_unit, fileName))).artefactName => {
-  # # #     filePath = format("%s/%s", local.library_vpngateway_path_unit, fileName)
-  # # #   }
-  # # # }, {})
-  # # # vpnGateway_definition_merged = merge(
-  # # #   {
-  # # #     for key, val in local.vpnGateway_definition_shared : key => val
-  # # #     if(contains(keys(local.vpnGateway_definition_exclude_unit), key) == false)
-  # # #   },
-  # # #   local.vpnGateway_definition_unit
-  # # # )
-
-  # # # ################# virtual vpn Remote Sites #################
-  # # # # exclude the ones named in the *.exclude.json
-  # # # library_vpnsite_path_shared    = "${local.library_path_shared}/platform/ecp-artefacts/ms-azure/network/vpnSites"
-  # # # library_vpnsite_path_unit      = "${local.library_path_unit}/vpnSites"
-  # # # library_vpnsite_filter         = "*.vpnSite.json"
-  # # # library_vpnsite_exclude_filter = "*.vpnSite.exclude.json"
-
-  # # # # read JSON artefact files and bring them into a map of
-  # # # # - artefactName
-  # # # #    - filePath
-  # # # vpnSite_definition_shared = try({
-  # # #   for fileName in fileset(local.library_vpnsite_path_shared, local.library_vpnsite_filter) : jsondecode(file(format("%s/%s", local.library_vpnsite_path_shared, fileName))).artefactName => {
-  # # #     filePath = format("%s/%s", local.library_vpnsite_path_shared, fileName)
-  # # #     artefact = jsondecode(file(format("%s/%s", local.library_vpnsite_path_shared, fileName)))
-  # # #   }
-  # # # }, {})
-  # # # vpnSite_definition_unit = try({
-  # # #   for fileName in fileset(local.library_vpnsite_path_unit, local.library_vpnsite_filter) : jsondecode(file(format("%s/%s", local.library_vpnsite_path_unit, fileName))).artefactName => {
-  # # #     filePath = format("%s/%s", local.library_vpnsite_path_unit, fileName)
-  # # #     artefact = jsondecode(file(format("%s/%s", local.library_vpnsite_path_unit, fileName)))
-  # # #   }
-  # # # }, {})
-  # # # vpnSite_definition_exclude_unit = try({
-  # # #   for fileName in fileset(local.library_vpnsite_path_unit, local.library_vpnsite_exclude_filter) : jsondecode(file(format("%s/%s", local.library_vpnsite_path_unit, fileName))).artefactName => {
-  # # #     filePath = format("%s/%s", local.library_vpnsite_path_unit, fileName)
-  # # #   }
-  # # # }, {})
-  # # # vpnSite_definition_merged = merge(
-  # # #   {
-  # # #     for key, val in local.vpnSite_definition_shared : key => val
-  # # #     if(contains(keys(local.vpnSite_definition_exclude_unit), key) == false)
-  # # #   },
-  # # #   local.vpnSite_definition_unit
-  # # # )
-
-  # # # ################# vpn connections #################
-  # # # # exclude the ones named in the *.exclude.json
-  # # # library_vpnconnection_path_shared    = "${local.library_path_shared}/platform/ecp-artefacts/ms-azure/network/vpnConnections"
-  # # # library_vpnconnection_path_unit      = "${local.library_path_unit}/vpnConnections"
-  # # # library_vpnconnection_filter         = "*.vpnConnection.json"
-  # # # library_vpnconnection_exclude_filter = "*.vpnConnection.exclude.json"
-
-  # # # # read JSON artefact files and bring them into a map of
-  # # # # - artefactName
-  # # # #    - filePath
-  # # # vpnConnection_definition_shared = try({
-  # # #   for fileName in fileset(local.library_vpnconnection_path_shared, local.library_vpnconnection_filter) : jsondecode(file(format("%s/%s", local.library_vpnconnection_path_shared, fileName))).artefactName => {
-  # # #     filePath = format("%s/%s", local.library_vpnconnection_path_shared, fileName)
-  # # #     artefact = jsondecode(file(format("%s/%s", local.library_vpnconnection_path_shared, fileName)))
-  # # #   }
-  # # # }, {})
-  # # # vpnConnection_definition_unit = try({
-  # # #   for fileName in fileset(local.library_vpnconnection_path_unit, local.library_vpnconnection_filter) : jsondecode(file(format("%s/%s", local.library_vpnconnection_path_unit, fileName))).artefactName => {
-  # # #     filePath = format("%s/%s", local.library_vpnconnection_path_unit, fileName)
-  # # #     artefact = jsondecode(file(format("%s/%s", local.library_vpnconnection_path_unit, fileName)))
-  # # #   }
-  # # # }, {})
-  # # # vpnConnection_definition_exclude_unit = try({
-  # # #   for fileName in fileset(local.library_vpnconnection_path_unit, local.library_vpnconnection_exclude_filter) : jsondecode(file(format("%s/%s", local.library_vpnconnection_path_unit, fileName))).artefactName => {
-  # # #     filePath = format("%s/%s", local.library_vpnconnection_path_unit, fileName)
-  # # #   }
-  # # # }, {})
-  # # # vpnConnection_definition_merged = merge(
-  # # #   {
-  # # #     for key, val in local.vpnConnection_definition_shared : key => val
-  # # #     if(contains(keys(local.vpnConnection_definition_exclude_unit), key) == false)
-  # # #   },
-  # # #   local.vpnConnection_definition_unit
-  # # # )
+  # read JSON artefact files and bring them into a map of
+  # - artefactName
+  #    - filePath
+  vpnConnection_definition_shared = try({
+    for fileName in fileset(local.library_vpnconnection_path_shared, local.library_vpnconnection_filter) : jsondecode(file(format("%s/%s", local.library_vpnconnection_path_shared, fileName))).artefactName => {
+      filePath = format("%s/%s", local.library_vpnconnection_path_shared, fileName)
+      artefact = jsondecode(file(format("%s/%s", local.library_vpnconnection_path_shared, fileName)))
+    }
+  }, {})
+  vpnConnection_definition_unit = try({
+    for fileName in fileset(local.library_vpnconnection_path_unit, local.library_vpnconnection_filter) : jsondecode(file(format("%s/%s", local.library_vpnconnection_path_unit, fileName))).artefactName => {
+      filePath = format("%s/%s", local.library_vpnconnection_path_unit, fileName)
+      artefact = jsondecode(file(format("%s/%s", local.library_vpnconnection_path_unit, fileName)))
+    }
+  }, {})
+  vpnConnection_definition_exclude_unit = try({
+    for fileName in fileset(local.library_vpnconnection_path_unit, local.library_vpnconnection_exclude_filter) : jsondecode(file(format("%s/%s", local.library_vpnconnection_path_unit, fileName))).artefactName => {
+      filePath = format("%s/%s", local.library_vpnconnection_path_unit, fileName)
+    }
+  }, {})
+  vpnConnection_definition_merged = merge(
+    {
+      for key, val in local.vpnConnection_definition_shared : key => val
+      if(contains(keys(local.vpnConnection_definition_exclude_unit), key) == false)
+    },
+    local.vpnConnection_definition_unit
+  )
 
 
   ################# terragrunt specifics #################
@@ -413,17 +343,17 @@ inputs = {
   virtual_network_subnet_artefacts = local.virtualNetworkSubnet_definition_merged
 
 
-  # # # # load merged vpnGateway artefact objects
-  # # # vpn_gateway_artefacts = local.vpnGateway_definition_merged
+  # load merged vpnGateway artefact objects
+  vpn_gateway_artefacts = local.vpnGateway_definition_merged
 
-  # # # # load merged expressRoute gateway artefact objects
-  # # # # express_route_gateway_artefacts = local.erGateway_definition_merged
+  # load merged expressRoute gateway artefact objects
+  # express_route_gateway_artefacts = local.erGateway_definition_merged
 
-  # # # # load merged vpnSite artefact objects
-  # # # vpn_site_artefacts = local.vpnSite_definition_merged
+  # load merged vpnSite artefact objects
+  vpn_site_artefacts = local.vpnSite_definition_merged
 
-  # # # # load merged vpnConnection artefact objects
-  # # # vpn_connection_artefacts = local.vpnConnection_definition_merged
+  # load merged vpnConnection artefact objects
+  vpn_connection_artefacts = local.vpnConnection_definition_merged
 
   # which artefacts are active in this unit
   ecp_archetype_definitions = {
