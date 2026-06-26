@@ -64,9 +64,8 @@ locals {
   tfplan_path = get_env("TF_PLAN_PATH", "./")
 
   ############ Versions ############
-  # ecp_azure_modules_repo_version = "v0.4.1-alpha" # main / dev
-  ecp_azure_modules_repo_version = "feature/ai-hub-onboarding" # main / dev
-
+  ecp_azure_modules_repo_version = "v0.4.1-alpha" # main / dev
+  
   tf_version                      = ">= 1.15"
   tf_provider_azuread_version     = "~> 3.8"
   tf_provider_azurecaf_version    = "~> 1.2"
@@ -111,7 +110,7 @@ locals {
 # remote_state {}
 
 terraform {
-  source = "git::${local.ecp_azure_modules_repo}?ref=${replace(local.ecp_azure_modules_repo_version, "/", "%2F")}/modules-tf//${local.unit_common_vars.locals.azure_tf_module_folder}"
+  source = "git::${local.ecp_azure_modules_repo}?ref=${local.ecp_azure_modules_repo_version}/modules-tf//${local.unit_common_vars.locals.azure_tf_module_folder}"
 
   # Force Terraform to keep trying to acquire a lock for
   # up to 20 minutes if someone else already has the lock
