@@ -384,10 +384,9 @@ inputs = {
 
   # which artefacts are active in this unit
   ecp_archetype_definitions = {
-    name            = "ecpa-hubspoke"
-    virtual_network = "l2-connectivity-management-vnet"
+    virtual_network = "l2-connectivity-vnet-hub"
     virtual_network_subnet = [
-      "l2-connectivity-management-subnet-default"
+     
     ]
     # # # vpn_gateway    = []
     # # # vpn_site       = []
