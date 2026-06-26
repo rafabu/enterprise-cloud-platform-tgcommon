@@ -90,7 +90,38 @@ locals {
   library_path_shared = format("%s/lib/ecp-lib", replace(get_repo_root(), "\\", "/"))
   library_path_unit   = "${replace(get_terragrunt_dir(), "\\", "/")}/lib"
 
-  ################# virtual network subnet artefacts #################
+  ################# virtual network artefacts #################
+  # exclude the ones named in the *.exclude.json
+  library_virtualNetworks_path_shared    = "${local.library_path_shared}/platform/ecp-artefacts/ms-azure/network/virtualNetworks"
+  library_virtualNetworks_path_unit      = "${local.library_path_unit}/virtualNetworks"
+  library_virtualNetworks_filter         = "*.virtualNetwork.json"
+  library_virtualNetworks_exclude_filter = "*.virtualNetwork.exclude.json"
+
+  # load JSON artefact files and bring them into hcl map of objects as input to the terraform module
+  virtualNetwork_definition_shared = try({
+    for fileName in fileset(local.library_virtualNetworks_path_shared, local.library_virtualNetworks_filter) : jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_shared, fileName))).artefactName => {
+      filePath = format("%s/%s", local.library_virtualNetworks_path_shared, fileName)
+      artefact = jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_shared, fileName)))
+    }
+  }, {})
+  virtualNetwork_definition_unit = try({
+    for fileName in fileset(local.library_virtualNetworks_path_unit, local.library_virtualNetworks_filter) : jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_unit, fileName))).artefactName => {
+      filePath = format("%s/%s", local.library_virtualNetworks_path_unit, fileName)
+      artefact = jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_unit, fileName)))
+    }
+  }, {})
+  virtualNetwork_definition_exclude_unit = try({
+    for fileName in fileset(local.library_virtualNetworks_path_unit, local.library_virtualNetworks_exclude_filter) : jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_unit, fileName))).artefactName => jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_unit, fileName)))
+  }, {})
+  virtualNetwork_definition_merged = merge(
+    {
+      for key, val in local.virtualNetwork_definition_shared : key => val
+      if(contains(keys(local.virtualNetwork_definition_exclude_unit), key) == false)
+    },
+    local.virtualNetwork_definition_unit
+  )
+
+    ################# virtual network subnet artefacts #################
   # exclude the ones named in the *.exclude.json
   library_virtualNetworkSubnets_path_shared    = "${local.library_path_shared}/platform/ecp-artefacts/ms-azure/network/virtualNetworkSubnets"
   library_virtualNetworkSubnets_path_unit      = "${local.library_path_unit}/virtualNetworkSubnets"
