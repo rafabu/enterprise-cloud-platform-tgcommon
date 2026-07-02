@@ -137,7 +137,7 @@ locals {
     local.virtualNetwork_definition_unit
   )
 
-    ################# virtual network subnet artefacts #################
+  ################# virtual network subnet artefacts #################
   # exclude the ones named in the *.exclude.json
   library_virtualNetworkSubnets_path_shared    = "${local.library_path_shared}/platform/ecp-artefacts/ms-azure/network/virtualNetworkSubnets"
   library_virtualNetworkSubnets_path_unit      = "${local.library_path_unit}/virtualNetworkSubnets"
@@ -334,7 +334,7 @@ remote_state {
 inputs = {
   azure_tags = local.unit_common_azure_tags
 
-    ecp_hub_locations = {}
+  ecp_hub_locations = {}
 
   # load merged vnet artefact objects
   virtual_network_artefacts = local.virtualNetwork_definition_merged
@@ -359,7 +359,7 @@ inputs = {
   ecp_archetype_definitions = {
     virtual_network = "l2-connectivity-vnet-hub"
     virtual_network_subnet = [
-     
+
     ]
     # # # vpn_gateway    = []
     # # # vpn_site       = []
@@ -370,6 +370,6 @@ inputs = {
 
   # key vault for PSK secrets
   key_vault_id = dependency.l2-con-az-con-mgmt.outputs.key_vault.id
-  
+
   private_dns_zone_ids = dependency.l1-mgm-az-privatelink-privatedns.outputs.private_link_private_dns_zones_resource_ids
 }

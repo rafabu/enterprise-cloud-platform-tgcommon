@@ -64,8 +64,8 @@ locals {
   tfplan_path = get_env("TF_PLAN_PATH", "./")
 
   ############ Versions ############
-  ecp_azure_modules_repo_version = "ai"# "v0.4.1-alpha" # main / dev
-  
+  ecp_azure_modules_repo_version = "ai" # "v0.4.1-alpha" # main / dev
+
   tf_version                      = ">= 1.15"
   tf_provider_azuread_version     = "~> 3.8"
   tf_provider_azurecaf_version    = "~> 1.2"
@@ -96,7 +96,9 @@ locals {
   tf_module_avm-ptn-alz-connectivity-hub-and-spoke-vnet_version    = "0.17.3"
   tf_module_avm-ptn-alz-management_version                         = "0.9.0"
   tf_module_avm-ptn-network-private-link-private-dns-zones_version = "0.23.2"
+  tf_module_avm-ptn-alz-sub-vending_version                        = "0.2.1"
   tf_module_avm-utl-regions_version                                = "0.12.0"
+  
 
   ############ Tags ############
   root_common_azure_tags = {
@@ -177,7 +179,7 @@ provider "alz" {
 %{endif}
 
 %{if contains(
-  ["az-launchpad-bootstrap-helper", "az-alz-base", "az-alz-connectivity-virtual-wan",  "az-alz-connectivity-hub-spoke", "az-alz-management-resources", "az-connectivity-management", "az-privatelink-privatedns-zones", "ado-mpool", "az-ecp-parent", "az-launchpad-backend", "az-devcenter", "az-launchpad-network", "az-platform-subscriptions"],
+  ["az-launchpad-bootstrap-helper", "az-alz-base", "az-alz-connectivity-virtual-wan", "az-alz-connectivity-hub-spoke", "az-alz-management-resources", "az-connectivity-management", "az-privatelink-privatedns-zones", "ado-mpool", "az-ecp-parent", "az-launchpad-backend", "az-devcenter", "az-launchpad-network", "az-platform-subscriptions"],
   basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
 provider "azapi" {
@@ -506,6 +508,7 @@ inputs = {
   avm-ptn-alz-connectivity-virtual-wan_version           = local.tf_module_avm-ptn-alz-connectivity-virtual-wan_version
   avm-ptn-alz-connectivity-hub-and-spoke-vnet_version    = local.tf_module_avm-ptn-alz-connectivity-hub-and-spoke-vnet_version
   avm-ptn-alz-management_version                         = local.tf_module_avm-ptn-alz-management_version
+  avm-ptn-alz-sub-vending_version                        = local.tf_module_avm-ptn-alz-sub-vending_version
   avm-ptn-network-private-link-private-dns-zones_version = local.tf_module_avm-ptn-network-private-link-private-dns-zones_version
   avm-utl-regions_version                                = local.tf_module_avm-utl-regions_version
 }
