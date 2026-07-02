@@ -6,7 +6,19 @@ locals {
   env_vars         = read_terragrunt_config(format("%s/../../../env.hcl", replace(get_terragrunt_dir(), "\\", "/")))
   level_vars       = read_terragrunt_config(format("%s/../../level.hcl", replace(get_terragrunt_dir(), "\\", "/")))
   area_vars        = read_terragrunt_config(format("%s/../area.hcl", replace(get_terragrunt_dir(), "\\", "/")))
-  ######unit_common_vars = read_terragrunt_config(format("%s/lib/terragrunt-common/ecp-v1/%s/unit-common.hcl", replace(get_repo_root(), "\\", "/"), regexall("^.*(?:/)(.+?(?:/).+?(?:/).+?)$", replace(get_terragrunt_dir(), "\\", "/"))[0][0]))
+  unit_common_path = format(
+   "%s/lib/terragrunt-common/ecp-v1/%s/unit-common.hcl",
+   replace(get_repo_root(), "\\", "/"),
+   can(regex("(?:^|/)level3/vending/[^/]+$", replace(get_terragrunt_dir(), "\\", "/")))
+   # vending: collapse to the shared unit -> "<level3>/vending/az-alz-vending-subscription"
+   ? format(
+     "%s/az-alz-vending-subscription",
+     regexall("^.*(?:/)(.+?(?:/).+?)(?:/).+?$", replace(get_terragrunt_dir(), "\\", "/"))[0][0]
+   )
+   # default: last three folders -> "<level>/<area>/<unit>"
+   : regexall("^.*(?:/)(.+?(?:/).+?(?:/).+?)$", replace(get_terragrunt_dir(), "\\", "/"))[0][0]
+  )
+  unit_common_vars = read_terragrunt_config(local.unit_common_path)
 
 
   merged_locals = merge(
@@ -14,7 +26,7 @@ locals {
     local.env_vars.locals,
     local.level_vars.locals,
     local.area_vars.locals,
-    ###### local.unit_common_vars.locals
+    local.unit_common_vars.locals
   )
 
   terraform_command = get_terraform_command()
@@ -112,7 +124,7 @@ locals {
 # remote_state {}
 
 terraform {
-  ###### source = "git::${local.ecp_azure_modules_repo}?ref=${local.ecp_azure_modules_repo_version}/modules-tf//${local.unit_common_vars.locals.azure_tf_module_folder}"
+  source = "git::${local.ecp_azure_modules_repo}?ref=${local.ecp_azure_modules_repo_version}/modules-tf//${local.unit_common_vars.locals.azure_tf_module_folder}"
 
   # Force Terraform to keep trying to acquire a lock for
   # up to 20 minutes if someone else already has the lock
