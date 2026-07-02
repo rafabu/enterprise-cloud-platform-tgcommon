@@ -313,10 +313,7 @@ provider "time" {}
 %{endif}
 
 # subscription vending
-%{if contains(
-  ["/level3/vending/"],
-  replace(get_terragrunt_dir(), "\\", "/")
-  )}
+%{if strcontains(replace(get_terragrunt_dir(), "\\", "/"), "/level3/vending/")}
 provider "azapi" {
   tenant_id       = "${local.merged_locals.ecp_entra_tenant_id}"
   subscription_id = "${local.ecp_launchpad_subscription_id}"
@@ -438,10 +435,7 @@ terraform {
     }
 %{endif}
   # subscription vending
-%{if contains(
-    ["/level3/vending/"],
-    replace(get_terragrunt_dir(), "\\", "/")
-    )}
+%{if strcontains(replace(get_terragrunt_dir(), "\\", "/"), "/level3/vending/")}
     azapi = {
       source  = "azure/azapi"
       version = "${local.tf_provider_azapi_version}"
