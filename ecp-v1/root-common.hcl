@@ -311,6 +311,19 @@ provider "msgraph" {
 )}
 provider "time" {}
 %{endif}
+
+# subscription vending
+%{if contains(
+  ["/level3/vending/"],
+  (replace(get_terragrunt_dir(), "\\", "/")
+  )}
+provider "azapi" {
+  tenant_id       = "${local.merged_locals.ecp_entra_tenant_id}"
+  subscription_id = "${local.ecp_launchpad_subscription_id}"
+
+  environment         = "public"
+}
+%{endif}
 EOF
 }
 
