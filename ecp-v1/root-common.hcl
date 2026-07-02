@@ -315,7 +315,7 @@ provider "time" {}
 # subscription vending
 %{if contains(
   ["/level3/vending/"],
-  (replace(get_terragrunt_dir(), "\\", "/")
+  replace(get_terragrunt_dir(), "\\", "/")
   )}
 provider "azapi" {
   tenant_id       = "${local.merged_locals.ecp_entra_tenant_id}"
