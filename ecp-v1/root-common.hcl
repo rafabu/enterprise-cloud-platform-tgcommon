@@ -320,6 +320,14 @@ provider "azapi" {
 
   environment         = "public"
 }
+provider "azurerm" {
+  tenant_id       = "${local.merged_locals.ecp_entra_tenant_id}"
+  subscription_id = "${local.ecp_launchpad_subscription_id}"
+
+  environment         = "public"
+  storage_use_azuread = true
+
+  features {}
 %{endif}
 EOF
 }
@@ -439,6 +447,10 @@ terraform {
     azapi = {
       source  = "azure/azapi"
       version = "${local.tf_provider_azapi_version}"
+    }
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "${local.tf_provider_azurerm_version}"
     }
 %{endif}
   }
