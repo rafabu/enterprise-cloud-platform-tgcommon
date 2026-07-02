@@ -437,6 +437,16 @@ terraform {
       version = "${local.tf_provider_time_version}"
     }
 %{endif}
+  # subscription vending
+%{if contains(
+    ["/level3/vending/"],
+    replace(get_terragrunt_dir(), "\\", "/")
+    )}
+    azapi = {
+      source  = "azure/azapi"
+      version = "${local.tf_provider_azapi_version}"
+    }
+%{endif}
   }
 }
 EOF
