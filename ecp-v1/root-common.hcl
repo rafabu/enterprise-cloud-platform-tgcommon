@@ -320,8 +320,12 @@ provider "azapi" {
 
   environment         = "public"
 }
+provider "azuread" {
+  tenant_id       = "${local.merged_locals.ecp_entra_tenant_id}"
+}
 provider "azurerm" {
   tenant_id       = "${local.merged_locals.ecp_entra_tenant_id}"
+  # uses launchpad's subscription - modules create their own, instanced provider for the landing zone
   subscription_id = "${local.ecp_launchpad_subscription_id}"
 
   environment         = "public"
@@ -448,6 +452,10 @@ terraform {
     azapi = {
       source  = "azure/azapi"
       version = "${local.tf_provider_azapi_version}"
+    }
+    azuread = {
+      source  = "hashicorp/azuread"
+      version = "${local.tf_provider_azuread_version}"
     }
     azurerm = {
       source  = "hashicorp/azurerm"
