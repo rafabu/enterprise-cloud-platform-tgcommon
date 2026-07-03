@@ -79,7 +79,7 @@ locals {
   ecp_azure_modules_repo_version = "ai" # "v0.4.1-alpha" # main / dev
 
   tf_version                      = ">= 1.15"
-  tf_provider_azuread_version     = "~> 3.8"
+  tf_provider_azuread_version     = "~> 3.9"
   tf_provider_azurecaf_version    = "~> 1.2"
   tf_provider_azurerm_version     = "~> 4.75"
   tf_provider_azapi_version       = "~> 2.10"
