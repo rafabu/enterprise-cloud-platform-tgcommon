@@ -323,6 +323,9 @@ provider "azapi" {
 provider "azuread" {
   tenant_id       = "${local.merged_locals.ecp_entra_tenant_id}"
 }
+provider "azuredevops" {
+  org_service_url = "https://dev.azure.com/$${var.ecp_azure_devops_organization_name}"
+}
 provider "azurerm" {
   tenant_id       = "${local.merged_locals.ecp_entra_tenant_id}"
   # uses launchpad's subscription - modules create their own, instanced provider for the landing zone
@@ -456,6 +459,10 @@ terraform {
     azuread = {
       source  = "hashicorp/azuread"
       version = "${local.tf_provider_azuread_version}"
+    }
+    azuredevops = {
+      source  = "microsoft/azuredevops"
+      version = "${local.tf_provider_azuredevops_version}"
     }
     azurerm = {
       source  = "hashicorp/azurerm"
