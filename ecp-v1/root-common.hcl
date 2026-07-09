@@ -523,7 +523,7 @@ inputs = {
   azure_resource_name_elements = {
     prefixes      = [local.ecp_environment_name]
     name          = local.merged_locals.ecp_deployment_area
-    suffixes      = [try(local.merged_locals.ecp_deployment_unit, null)]
+    suffixes      = try([local.merged_locals.ecp_deployment_unit], [])
     random_length = try(local.merged_locals.ecp_resource_name_random_length, 0)
   }
   azure_tags = local.root_common_azure_tags
