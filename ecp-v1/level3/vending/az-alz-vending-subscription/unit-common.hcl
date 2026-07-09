@@ -107,10 +107,10 @@ locals {
 
   # see if backend variables are set
   backend_config_present = alltrue([
-    get_env("ECP_TG_BACKEND_LEVEL2_SUBSCRIPTION_ID", "") != "",
-    get_env("ECP_TG_BACKEND_LEVEL2_RESOURCE_GROUP_NAME", "") != "",
-    get_env("ECP_TG_BACKEND_LEVEL2_NAME", "") != "",
-    get_env("ECP_TG_BACKEND_LEVEL2_CONTAINER", "") != ""
+    get_env("ECP_TG_BACKEND_LEVEL3_SUBSCRIPTION_ID", "") != "",
+    get_env("ECP_TG_BACKEND_LEVEL3_RESOURCE_GROUP_NAME", "") != "",
+    get_env("ECP_TG_BACKEND_LEVEL3_NAME", "") != "",
+    get_env("ECP_TG_BACKEND_LEVEL3_CONTAINER", "") != ""
   ])
 
   ################# bootstrap-helper unit output (fallback) #################
@@ -123,17 +123,17 @@ locals {
   bootstrap_backend_type_changed = false
 
   backend_config = local.backend_config_present ? {
-    subscription_id      = get_env("ECP_TG_BACKEND_LEVEL2_SUBSCRIPTION_ID")
-    resource_group_name  = get_env("ECP_TG_BACKEND_LEVEL2_RESOURCE_GROUP_NAME")
-    storage_account_name = get_env("ECP_TG_BACKEND_LEVEL2_NAME")
-    container_name       = get_env("ECP_TG_BACKEND_LEVEL2_CONTAINER")
+    subscription_id      = get_env("ECP_TG_BACKEND_LEVEL3_SUBSCRIPTION_ID")
+    resource_group_name  = get_env("ECP_TG_BACKEND_LEVEL3_RESOURCE_GROUP_NAME")
+    storage_account_name = get_env("ECP_TG_BACKEND_LEVEL3_NAME")
+    container_name       = get_env("ECP_TG_BACKEND_LEVEL3_CONTAINER")
     use_azuread_auth     = true
     key                  = "${basename(path_relative_to_include())}.tfstate"
     } : {
-    subscription_id      = local.bootstrap_helper_output.backend_storage_accounts["l2"].subscription_id
-    resource_group_name  = local.bootstrap_helper_output.backend_storage_accounts["l2"].resource_group_name
-    storage_account_name = local.bootstrap_helper_output.backend_storage_accounts["l2"].name
-    container_name       = local.bootstrap_helper_output.backend_storage_accounts["l2"].tf_backend_container
+    subscription_id      = local.bootstrap_helper_output.backend_storage_accounts["l3"].subscription_id
+    resource_group_name  = local.bootstrap_helper_output.backend_storage_accounts["l3"].resource_group_name
+    storage_account_name = local.bootstrap_helper_output.backend_storage_accounts["l3"].name
+    container_name       = local.bootstrap_helper_output.backend_storage_accounts["l3"].tf_backend_container
     use_azuread_auth     = true
     key                  = "${basename(path_relative_to_include())}.tfstate"
   }
@@ -157,22 +157,22 @@ remote_state {
 inputs = {
   azure_tags = local.unit_common_azure_tags
 
-  ecp_hub_locations = {}
+  # ecp_hub_locations = {}
 
-  # load merged vnet artefact objects
-  virtual_network_artefacts = local.virtualNetwork_definition_merged
+  # # load merged vnet artefact objects
+  # virtual_network_artefacts = local.virtualNetwork_definition_merged
 
-  # load merged vnet subnet artefact objects
-  virtual_network_subnet_artefacts = local.virtualNetworkSubnet_definition_merged
+  # # load merged vnet subnet artefact objects
+  # virtual_network_subnet_artefacts = local.virtualNetworkSubnet_definition_merged
 
   # which artefacts are active in this unit
-  ecp_archetype_definitions = {
-    name            = "ecpa-con"
-    virtual_network = "l2-connectivity-management-vnet"
-    virtual_network_subnet = [
-      "l2-connectivity-management-subnet-default"
-    ]
-  }
+  # ecp_archetype_definitions = {
+  #   name            = "ecpa-con"
+  #   virtual_network = "l2-connectivity-management-vnet"
+  #   virtual_network_subnet = [
+  #     "l2-connectivity-management-subnet-default"
+  #   ]
+  # }
 
   # private_dns_zone_ids = dependency.l1-mgm-az-privatelink-privatedns.outputs.private_link_private_dns_zones_resource_ids
 }
