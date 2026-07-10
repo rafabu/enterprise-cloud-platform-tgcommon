@@ -222,11 +222,18 @@ $subscriptionIdl2 = $tfOutput.backend_storage_accounts.value.l2.subscription_id
 $accountNamel2 = $tfOutput.backend_storage_accounts.value.l2.name
 $blobPeResolutionl2 = $tfOutput.backend_storage_accounts.value.l2.ecp_terraform_backend_private_endpoint_resolution_valid
 
+#l3
+$resourceExistsl3 = if ($tfOutput.backend_storage_accounts.value.l3.ecp_resource_exists -eq "true") { $true } else { $false }
+$subscriptionIdl3 = $tfOutput.backend_storage_accounts.value.l3.subscription_id
+$accountNamel3 = $tfOutput.backend_storage_accounts.value.l3.name
+$blobPeResolutionl3 = $tfOutput.backend_storage_accounts.value.l3.ecp_terraform_backend_private_endpoint_resolution_valid
+
 # ForEach-Object -Parallel 
 $levels = @(
     @{ Level = "l0"; ResourceExists = $resourceExists; SubscriptionId = $subscriptionId; AccountName = $accountName; BlobPeResolution = $blobPeResolution; }
     @{ Level = "l1"; ResourceExists = $resourceExistsl1; SubscriptionId = $subscriptionIdl1; AccountName = $accountNamel1; BlobPeResolution = $blobPeResolutionl1; }
     @{ Level = "l2"; ResourceExists = $resourceExistsl2; SubscriptionId = $subscriptionIdl2; AccountName = $accountNamel2; BlobPeResolution = $blobPeResolutionl2; }
+    @{ Level = "l3"; ResourceExists = $resourceExistsl3; SubscriptionId = $subscriptionIdl3; AccountName = $accountNamel3; BlobPeResolution = $blobPeResolutionl3; }
 )
 
 # Capture function body and shared vars for use inside parallel runspaces

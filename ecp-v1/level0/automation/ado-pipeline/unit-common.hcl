@@ -220,6 +220,7 @@ inputs = {
 
   # define which artefacts from the libraries we need to create
   ado_yaml_pipeline_artefact_names = [
+    "ECP-Deploy-Landing-Zone",
     "ECP-Deploy-Platform-Infrastructure",
     "ECP-Deploy-Platform-Infrastructure-SingleStack",
     # debug
