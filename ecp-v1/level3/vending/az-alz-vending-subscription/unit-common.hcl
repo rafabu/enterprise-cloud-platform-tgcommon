@@ -26,7 +26,7 @@ dependencies {
 # }
 
 dependency "l2-con-az-con-bastion" {
-  config_path = format("%s/../../../level1/connectivity/az-connectivity-bastion", replace(get_original_terragrunt_dir(), "\\", "/"))
+  config_path = format("%s/../../../level2/connectivity/az-connectivity-bastion", replace(get_original_terragrunt_dir(), "\\", "/"))
   mock_outputs = {
     virtual_networks = {
       main = {
