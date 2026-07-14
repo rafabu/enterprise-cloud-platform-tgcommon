@@ -110,8 +110,12 @@ locals {
   tf_module_avm-ptn-network-private-link-private-dns-zones_version = "0.23.2"
   tf_module_avm-ptn-alz-sub-vending_version                        = "0.2.1"
   tf_module_avm-res-network-natgateway_version                     = "0.3.2"
+  tf_module_avm-res-network-bastionhost_version                    = "0.9.0"
+  # tf_module_avm-res-network-virtualnetwork_version               = "0.19.0"
+  # tf_module_avm-res-network-publicipaddress_version                = "0.2.1"
   tf_module_avm-res-storage-storageaccount_version                 = "0.7.3"
   tf_module_avm-utl-regions_version                                = "0.12.0"
+  
   
 
   ############ Tags ############
@@ -193,7 +197,7 @@ provider "alz" {
 %{endif}
 
 %{if contains(
-  ["az-launchpad-bootstrap-helper", "az-alz-base", "az-alz-connectivity-virtual-wan", "az-alz-connectivity-hub-spoke", "az-alz-management-resources", "az-connectivity-management", "az-privatelink-privatedns-zones", "ado-mpool", "az-ecp-parent", "az-launchpad-backend", "az-devcenter", "az-launchpad-network", "az-platform-subscriptions"],
+  ["az-launchpad-bootstrap-helper", "az-alz-base", "az-alz-connectivity-virtual-wan", "az-alz-connectivity-hub-spoke", "az-alz-management-resources", "az-connectivity-bastion", "az-connectivity-management", "az-privatelink-privatedns-zones", "ado-mpool", "az-ecp-parent", "az-launchpad-backend", "az-devcenter", "az-launchpad-network", "az-platform-subscriptions"],
   basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
 provider "azapi" {
@@ -382,7 +386,7 @@ terraform {
     }
 %{endif}
 %{if contains(
-  ["az-launchpad-bootstrap-helper", "az-alz-base", "az-alz-connectivity-virtual-wan", "az-alz-connectivity-hub-spoke", "az-alz-management-resources", "az-connectivity-management", "az-privatelink-privatedns-zones", "ado-mpool", "az-ecp-parent", "az-launchpad-backend", "az-devcenter", "az-launchpad-network", "az-platform-subscriptions"],
+  ["az-launchpad-bootstrap-helper", "az-alz-base", "az-alz-connectivity-virtual-wan", "az-alz-connectivity-hub-spoke", "az-alz-management-resources", "az-connectivity-bastion", "az-connectivity-management", "az-privatelink-privatedns-zones", "ado-mpool", "az-ecp-parent", "az-launchpad-backend", "az-devcenter", "az-launchpad-network", "az-platform-subscriptions"],
   basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
     azapi = {
@@ -571,5 +575,6 @@ inputs = {
   avm-ptn-network-private-link-private-dns-zones_version = local.tf_module_avm-ptn-network-private-link-private-dns-zones_version
   avm-utl-regions_version                                = local.tf_module_avm-utl-regions_version
   avm-res-storage-storageaccount_version                 = local.tf_module_avm-res-storage-storageaccount_version
+  avm-res-network-bastionhost_version                    = local.tf_module_avm-res-network-bastionhost_version
   avm-res-network-natgateway_version                     = local.tf_module_avm-res-network-natgateway_version
 }
