@@ -25,6 +25,47 @@ dependencies {
 #   mock_outputs_merge_strategy_with_state  = "shallow"
 # }
 
+dependency "l2-con-az-con-bastion" {
+  config_path = format("%s/../../../level1/connectivity/az-connectivity-bastion", replace(get_original_terragrunt_dir(), "\\", "/"))
+  mock_outputs = {
+    virtual_networks = {
+      main = {
+        id                  = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualNetworks/mock-vnet"
+        name                = "mock-vnet"
+        resource_group_name = "mock-rg"
+        location            = "westeurope"
+        address_space = [
+          "192.0.2.0/24"
+        ]
+      }
+    }
+    virtual_network_subnets = {
+      main = {
+        id                   = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualNetworks/mock-vnet/subnets/mock"
+        name                 = "mock"
+        resource_group_name  = "mock-rg"
+        virtual_network_name = "mock-vnet"
+        address_prefixes = [
+          "192.0.2.0/24"
+        ]
+      }
+    }
+    bastion_hosts = {
+      main = {
+        id                  = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/bastionHosts/mock-bastion"
+        name                = "mock-bastion"
+        resource_group_name = "mock-rg"
+        location            = "westeurope"
+      }
+    }
+    bastion_host_reader_permission_group_object_id = "00000000-0000-0000-0000-000000000000"
+  }
+  # DANGER ZONE WORKAROUND HERE
+  # add "apply" and "destroy" to mock but ONLY UNTIL AFTER https://github.com/gruntwork-io/terragrunt/issues/5993 gets fixed
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan", "apply", "destroy"]
+  mock_outputs_merge_strategy_with_state  = "shallow"
+}
+
 locals {
   #ecp_deployment_area             = "" # vending uses its own naming convention
   # ecp_deployment_unit             = "" # vending uses its own naming convention
@@ -157,6 +198,8 @@ remote_state {
 inputs = {
   azure_tags = local.unit_common_azure_tags
 
+
+
   # ecp_hub_locations = {}
 
   # # load merged vnet artefact objects
@@ -175,4 +218,14 @@ inputs = {
   # }
 
   # private_dns_zone_ids = dependency.l1-mgm-az-privatelink-privatedns.outputs.private_link_private_dns_zones_resource_ids
+
+  additional_entra_id_group_members = {
+    bastion = {
+      group_object_id = dependency.l2-con-az-con-bastion.outputs.bastion_host_reader_permission_group_object_id
+      role_group_keys = [
+        "lz-owner",
+        "lz-user"
+      ]
+    }
+  }
 }
