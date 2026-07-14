@@ -209,7 +209,7 @@ provider "azapi" {
 %{endif}
 
 %{if contains(
-  ["az-ecp-parent", "ado-mpool", "az-launchpad-bootstrap-helper", "entraid-policies"],
+  ["az-ecp-parent", "ado-mpool", "az-launchpad-bootstrap-helper", "az-connectivity-bastion", "entraid-policies"],
   basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
 provider "azuread" {
@@ -364,7 +364,7 @@ terraform {
     }
 %{endif}
 %{if contains(
-  ["ado-mpool", "az-launchpad-bootstrap-finalizer", "az-launchpad-bootstrap-helper", "entraid-policies"],
+  ["ado-mpool", "az-launchpad-bootstrap-finalizer", "az-launchpad-bootstrap-helper", "az-connectivity-bastion", "entraid-policies"],
   basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
     azuread = {
