@@ -66,6 +66,32 @@ dependency "l2-con-az-con-bastion" {
   mock_outputs_merge_strategy_with_state  = "shallow"
 }
 
+dependency "l2-con-az-con-vwan" {
+  config_path = format("%s/../../../level2/connectivity/az-alz-connectivity-virtual-wan", replace(get_original_terragrunt_dir(), "\\", "/"))
+  mock_outputs = {
+    azure_virtual_wan_name = "mock-vwan"
+    azure_virtual_wan_resource_id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualWans/mock-vwan"
+    azure_virtual_wan_hub_resource_ids = {
+      main = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualHubs/mock-vhub"
+    }
+    azure_virtual_wan_hub_resource_names = {
+      main = "mock-vhub"
+    }
+    azure_virtual_wan_hub_resource_details = {
+      main = {
+        id                  = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualHubs/mock-vhub"
+        name                = "mock-vhub"
+        location            = "westeurope"
+        address_prefix = "192.0.2.0/24"
+      }
+    }
+  }
+  # DANGER ZONE WORKAROUND HERE
+  # add "apply" and "destroy" to mock but ONLY UNTIL AFTER https://github.com/gruntwork-io/terragrunt/issues/5993 gets fixed
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan", "apply", "destroy"]
+  mock_outputs_merge_strategy_with_state  = "shallow"
+}
+
 locals {
   #ecp_deployment_area             = "" # vending uses its own naming convention
   # ecp_deployment_unit             = "" # vending uses its own naming convention
@@ -216,6 +242,11 @@ inputs = {
   #     "l2-connectivity-management-subnet-default"
   #   ]
   # }
+
+  vwan_hub_resource_id = dependency.l2-con-az-con-vwan.outputs.azure_virtual_wan_hub_resource_ids["main"].id
+
+  bastion_vnet_id = dependency.l2-con-az-con-bastion.outputs.virtual_networks["main"].id
+  bastion_resource_id = dependency.l2-con-az-con-bastion.outputs.bastion_hosts["main"].id
 
   # private_dns_zone_ids = dependency.l1-mgm-az-privatelink-privatedns.outputs.private_link_private_dns_zones_resource_ids
 
