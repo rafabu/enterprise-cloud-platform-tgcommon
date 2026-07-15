@@ -243,7 +243,8 @@ inputs = {
   #   ]
   # }
 
-  vwan_hub_resource_id = dependency.l2-con-az-con-vwan.outputs.azure_virtual_wan_hub_resource_ids["ecpa_switzerlandnorth_10.254.0.0/23"]
+  vwan_hub_resources_by_location = dependency.l2-con-az-con-vwan.outputs.azure_virtual_wan_hub_resource_details_by_location
+  vwan_resource_id = dependency.l2-con-az-con-vwan.outputs.azure_virtual_wan_resource_id
 
   bastion_vnet_id = dependency.l2-con-az-con-bastion.outputs.virtual_networks["main"].id
   bastion_resource_id = dependency.l2-con-az-con-bastion.outputs.bastion_hosts["main"].id
