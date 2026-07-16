@@ -1,29 +1,13 @@
-# dependencies {
-#   paths = flatten(distinct(concat(
-#     get_env("ECP_TF_BACKEND_STORAGE_AZURE_L2", "") == "" ? [
-#       format("%s/../../../level0/bootstrap/az-launchpad-bootstrap-helper", replace(get_original_terragrunt_dir(), "\\", "/"))
-#     ] : [],
-#     [
-#       # add additional dependencies here as required
-#     ]
-#   )))
-# }
-
-# dependency "l1-mgm-az-privatelink-privatedns" {
-#   config_path = format("%s/../../../level1/connectivity/az-privatelink-privatedns-zones", replace(get_original_terragrunt_dir(), "\\", "/"))
-#   mock_outputs = {
-#     private_link_private_dns_zones_resource_ids = [
-#       "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/privateDnsZones/privatelink.ecpiscool.mock"
-#     ]
-#     private_link_private_dns_zones = {
-#       "ecp_is_cool_mock" = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/privateDnsZones/privatelink.ecpiscool.mock"
-#     }
-#   }
-#   # DANGER ZONE WORKAROUND HERE
-#   # add "apply" and "destroy" to mock but ONLY UNTIL AFTER https://github.com/gruntwork-io/terragrunt/issues/5993 gets fixed
-#   mock_outputs_allowed_terraform_commands = ["init", "validate", "plan", "apply", "destroy"]
-#   mock_outputs_merge_strategy_with_state  = "shallow"
-# }
+dependencies {
+  paths = flatten(distinct(concat(
+    get_env("ECP_TF_BACKEND_STORAGE_AZURE_L0", "") == "" || get_env("ECP_TF_BACKEND_STORAGE_AZURE_L1", "") == "" || get_env("ECP_TF_BACKEND_STORAGE_AZURE_L2", "") == "" ? [
+      format("%s/../../../level0/bootstrap/az-launchpad-bootstrap-helper", replace(get_original_terragrunt_dir(), "\\", "/"))
+    ] : [],
+    [
+      # add additional dependencies here as required
+    ]
+  )))
+}
 
 locals {
   ecp_deployment_area             = "ecpa"
