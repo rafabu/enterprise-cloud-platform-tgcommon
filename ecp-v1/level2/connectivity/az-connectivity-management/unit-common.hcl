@@ -174,5 +174,8 @@ inputs = {
     ]
   }
 
+  enabled_resources = {
+    key_vault = true
+  }
   private_dns_zone_ids = dependency.l1-mgm-az-privatelink-privatedns.outputs.private_link_private_dns_zones_resource_ids
 }
