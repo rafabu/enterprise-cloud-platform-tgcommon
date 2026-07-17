@@ -40,6 +40,22 @@ dependency "l0-lp-az-lp-net" {
   mock_outputs_merge_strategy_with_state  = "shallow"
 }
 
+dependency "l1-mgm-az-privatelink-privatedns" {
+  config_path = format("%s/../../../level1/connectivity/az-privatelink-privatedns-zones", replace(get_original_terragrunt_dir(), "\\", "/"))
+  mock_outputs = {
+    private_link_private_dns_zones_resource_ids = [
+      "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/privateDnsZones/privatelink.ecpiscool.mock"
+    ]
+    private_link_private_dns_zones = {
+      "ecp_is_cool_mock" = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/privateDnsZones/privatelink.ecpiscool.mock"
+    }
+  }
+  # DANGER ZONE WORKAROUND HERE
+  # add "apply" and "destroy" to mock but ONLY UNTIL AFTER https://github.com/gruntwork-io/terragrunt/issues/5993 gets fixed
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan", "apply", "destroy"]
+  mock_outputs_merge_strategy_with_state  = "shallow"
+}
+
 dependency "l2-con-az-con-mgmt" {
   config_path = format("%s/../az-connectivity-management", replace(get_original_terragrunt_dir(), "\\", "/"))
   mock_outputs = {
@@ -78,52 +94,12 @@ dependency "l2-con-az-con-mgmt" {
   mock_outputs_merge_strategy_with_state  = "shallow"
 }
 
-dependency "l2-con-az-con-bastion" {
-  config_path = format("%s/../az-connectivity-bastion", replace(get_original_terragrunt_dir(), "\\", "/"))
-  mock_outputs = {
-    virtual_networks = {
-      main = {
-        id                  = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualNetworks/mock-vnet"
-        name                = "mock-vnet"
-        resource_group_name = "mock-rg"
-        location            = "westeurope"
-        address_space = [
-          "192.0.2.0/24"
-        ]
-      }
-    }
-    virtual_network_subnets = {
-      main = {
-        id                   = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualNetworks/mock-vnet/subnets/mock"
-        name                 = "mock"
-        resource_group_name  = "mock-rg"
-        virtual_network_name = "mock-vnet"
-        address_prefixes = [
-          "192.0.2.0/24"
-        ]
-      }
-    }
-    bastion_hosts = {
-      main = {
-        id                  = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/bastionHosts/mock-bastion"
-        name                = "mock-bastion"
-        resource_group_name = "mock-rg"
-        location            = "westeurope"
-      }
-    }
-  }
-  # DANGER ZONE WORKAROUND HERE
-  # add "apply" and "destroy" to mock but ONLY UNTIL AFTER https://github.com/gruntwork-io/terragrunt/issues/5993 gets fixed
-  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan", "apply", "destroy"]
-  mock_outputs_merge_strategy_with_state  = "shallow"
-}
-
 locals {
   ecp_deployment_area             = "ecpa"
   ecp_deployment_unit             = "con"
   ecp_resource_name_random_length = 0
 
-  azure_tf_module_folder = "az-alz-connectivity-virtual-wan"
+  azure_tf_module_folder = "az-alz-connectivity-hub-spoke"
 
   library_path_shared = format("%s/lib/ecp-lib", replace(get_repo_root(), "\\", "/"))
   library_path_unit   = "${replace(get_terragrunt_dir(), "\\", "/")}/lib"
@@ -137,14 +113,12 @@ locals {
 
   # load JSON artefact files and bring them into hcl map of objects as input to the terraform module
   virtualNetwork_definition_shared = try({
-    # for fileName in fileset(local.library_virtualNetworks_path_shared, local.library_virtualNetworks_filter) : jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_shared, fileName))).artefactName => jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_shared, fileName)))
     for fileName in fileset(local.library_virtualNetworks_path_shared, local.library_virtualNetworks_filter) : jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_shared, fileName))).artefactName => {
       filePath = format("%s/%s", local.library_virtualNetworks_path_shared, fileName)
       artefact = jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_shared, fileName)))
     }
   }, {})
   virtualNetwork_definition_unit = try({
-    # for fileName in fileset(local.library_virtualNetworks_path_unit, local.library_virtualNetworks_filter) : jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_unit, fileName))).artefactName => jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_unit, fileName)))
     for fileName in fileset(local.library_virtualNetworks_path_unit, local.library_virtualNetworks_filter) : jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_unit, fileName))).artefactName => {
       filePath = format("%s/%s", local.library_virtualNetworks_path_unit, fileName)
       artefact = jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_unit, fileName)))
@@ -161,74 +135,35 @@ locals {
     local.virtualNetwork_definition_unit
   )
 
-  ################# virtual WAN #################
+  ################# virtual network subnet artefacts #################
   # exclude the ones named in the *.exclude.json
-  library_virtualwan_path_shared    = "${local.library_path_shared}/platform/ecp-artefacts/ms-azure/network/virtualWans"
-  library_virtualwan_path_unit      = "${local.library_path_unit}/virtualWans"
-  library_virtualwan_filter         = "*.virtualWan.json"
-  library_virtualwan_exclude_filter = "*.virtualWan.exclude.json"
+  library_virtualNetworkSubnets_path_shared    = "${local.library_path_shared}/platform/ecp-artefacts/ms-azure/network/virtualNetworkSubnets"
+  library_virtualNetworkSubnets_path_unit      = "${local.library_path_unit}/virtualNetworkSubnets"
+  library_virtualNetworkSubnets_filter         = "*.virtualNetworkSubnet.json"
+  library_virtualNetworkSubnets_exclude_filter = "*.virtualNetworkSubnet.exclude.json"
 
-  # read JSON artefact files and bring them into a map of
-  # - artefactName
-  #    - filePath
-  virtualWan_definition_shared = try({
-    for fileName in fileset(local.library_virtualwan_path_shared, local.library_virtualwan_filter) : jsondecode(file(format("%s/%s", local.library_virtualwan_path_shared, fileName))).artefactName => {
-      filePath = format("%s/%s", local.library_virtualwan_path_shared, fileName)
-      artefact = jsondecode(file(format("%s/%s", local.library_virtualwan_path_shared, fileName)))
+  # load JSON artefact files and bring them into hcl map of objects as input to the terraform module
+  virtualNetworkSubnet_definition_shared = try({
+    for fileName in fileset(local.library_virtualNetworkSubnets_path_shared, local.library_virtualNetworkSubnets_filter) : jsondecode(file(format("%s/%s", local.library_virtualNetworkSubnets_path_shared, fileName))).artefactName => {
+      filePath = format("%s/%s", local.library_virtualNetworkSubnets_path_shared, fileName)
+      artefact = jsondecode(file(format("%s/%s", local.library_virtualNetworkSubnets_path_shared, fileName)))
     }
   }, {})
-  virtualWan_definition_unit = try({
-    for fileName in fileset(local.library_virtualwan_path_unit, local.library_virtualwan_filter) : jsondecode(file(format("%s/%s", local.library_virtualwan_path_unit, fileName))).artefactName => {
-      filePath = format("%s/%s", local.library_virtualwan_path_unit, fileName)
-      artefact = jsondecode(file(format("%s/%s", local.library_virtualwan_path_unit, fileName)))
+  virtualNetworkSubnet_definition_unit = try({
+    for fileName in fileset(local.library_virtualNetworkSubnets_path_unit, local.library_virtualNetworkSubnets_filter) : jsondecode(file(format("%s/%s", local.library_virtualNetworkSubnets_path_unit, fileName))).artefactName => {
+      filePath = format("%s/%s", local.library_virtualNetworkSubnets_path_unit, fileName)
+      artefact = jsondecode(file(format("%s/%s", local.library_virtualNetworkSubnets_path_unit, fileName)))
     }
   }, {})
-  virtualWan_definition_exclude_unit = try({
-    for fileName in fileset(local.library_virtualwan_path_unit, local.library_virtualwan_exclude_filter) : jsondecode(file(format("%s/%s", local.library_virtualwan_path_unit, fileName))).artefactName => {
-      filePath = format("%s/%s", local.library_virtualwan_path_unit, fileName)
-    }
+  virtualNetworkSubnet_definition_exclude_unit = try({
+    for fileName in fileset(local.library_virtualNetworkSubnets_path_unit, local.library_virtualNetworkSubnets_exclude_filter) : jsondecode(file(format("%s/%s", local.library_virtualNetworkSubnets_path_unit, fileName))).artefactName => jsondecode(file(format("%s/%s", local.library_virtualNetworkSubnets_path_unit, fileName)))
   }, {})
-  virtualWan_definition_merged = merge(
+  virtualNetworkSubnet_definition_merged = merge(
     {
-      for key, val in local.virtualWan_definition_shared : key => val
-      if(contains(keys(local.virtualWan_definition_exclude_unit), key) == false)
+      for key, val in local.virtualNetworkSubnet_definition_shared : key => val
+      if(contains(keys(local.virtualNetworkSubnet_definition_exclude_unit), key) == false)
     },
-    local.virtualWan_definition_unit
-  )
-
-  ################# virtual WAN hub #################
-  # exclude the ones named in the *.exclude.json
-  library_virtualhub_path_shared    = "${local.library_path_shared}/platform/ecp-artefacts/ms-azure/network/virtualHubs"
-  library_virtualhub_path_unit      = "${local.library_path_unit}/virtualHubs"
-  library_virtualhub_filter         = "*.virtualHub.json"
-  library_virtualhub_exclude_filter = "*.virtualHub.exclude.json"
-
-  # read JSON artefact files and bring them into a map of
-  # - artefactName
-  #    - filePath
-  virtualHub_definition_shared = try({
-    for fileName in fileset(local.library_virtualhub_path_shared, local.library_virtualhub_filter) : jsondecode(file(format("%s/%s", local.library_virtualhub_path_shared, fileName))).artefactName => {
-      filePath = format("%s/%s", local.library_virtualhub_path_shared, fileName)
-      artefact = jsondecode(file(format("%s/%s", local.library_virtualhub_path_shared, fileName)))
-    }
-  }, {})
-  virtualHub_definition_unit = try({
-    for fileName in fileset(local.library_virtualhub_path_unit, local.library_virtualhub_filter) : jsondecode(file(format("%s/%s", local.library_virtualhub_path_unit, fileName))).artefactName => {
-      filePath = format("%s/%s", local.library_virtualhub_path_unit, fileName)
-      artefact = jsondecode(file(format("%s/%s", local.library_virtualhub_path_unit, fileName)))
-    }
-  }, {})
-  virtualHub_definition_exclude_unit = try({
-    for fileName in fileset(local.library_virtualhub_path_unit, local.library_virtualhub_exclude_filter) : jsondecode(file(format("%s/%s", local.library_virtualhub_path_unit, fileName))).artefactName => {
-      filePath = format("%s/%s", local.library_virtualhub_path_unit, fileName)
-    }
-  }, {})
-  virtualHub_definition_merged = merge(
-    {
-      for key, val in local.virtualHub_definition_shared : key => val
-      if(contains(keys(local.virtualHub_definition_exclude_unit), key) == false)
-    },
-    local.virtualHub_definition_unit
+    local.virtualNetworkSubnet_definition_unit
   )
 
   ################# virtual vpn Gateway #################
@@ -402,11 +337,9 @@ inputs = {
   # load merged vnet artefact objects
   virtual_network_artefacts = local.virtualNetwork_definition_merged
 
-  # load merged virtual wan artefact objects
-  virtual_wan_artefacts = local.virtualWan_definition_merged
+  # load merged vnet subnet artefact objects
+  virtual_network_subnet_artefacts = local.virtualNetworkSubnet_definition_merged
 
-  # load merged virtual hub artefact objects
-  virtual_hub_artefacts = local.virtualHub_definition_merged
 
   # load merged vpnGateway artefact objects
   vpn_gateway_artefacts = local.vpnGateway_definition_merged
@@ -422,57 +355,19 @@ inputs = {
 
   # which artefacts are active in this unit
   ecp_archetype_definitions = {
-    name = "ecpa-vwan"
-    virtual_wan = [
-      "l2-connectivity-vwan-basic-sku"
-    ]
-    virtual_hub = [
-      "l2-connectivity-default-vwan-hub"
-    ]
-    vpn_gateway    = []
-    vpn_site       = []
-    vpn_connection = []
-    er_gateway     = []
-    er_connection  = []
-  }
+    virtual_network = "l2-connectivity-vnet-hub"
+    virtual_network_subnet = [
 
-  # direct inputs to AVM ALZ vWAN module (merged with artefacts)
-  virtual_wan_hubs = {
-    # required pre-defined vnet links to upstream vnets
-    #     - launchpad
-    #     - connectivity management
-    "l2-connectivity-default-vwan-hub" = {
-      virtual_network_connections = {
-        ecpa-launchpad = {
-          remote_virtual_network_id = dependency.l0-lp-az-lp-net.outputs.virtual_networks["l0-launchpad-main"].id
-          # internet_security_enabled (route via Azure firewall) has been superseded by routing_intent
-          internet_security_enabled = false
-          # only connect at main location
-          connect_to_main_location = true
-        }
-        ecpa-connectivity = {
-          remote_virtual_network_id = dependency.l2-con-az-con-mgmt.outputs.virtual_networks["main_l2-connectivity-management-vnet"].id
-          # internet_security_enabled (route via Azure firewall) has been superseded by routing_intent
-          internet_security_enabled = false
-          # only connect at main location
-          connect_to_main_location = true
-        }
-        ecpa-connectivity-bastion = {
-          remote_virtual_network_id = dependency.l2-con-az-con-bastion.outputs.virtual_networks["main"].id
-          # internet_security_enabled (route via Azure firewall) has been superseded by routing_intent
-          internet_security_enabled = false
-          # only connect at main location
-          connect_to_main_location = true
-        }
-      }
-
-      virtual_network_gateways = {}
-      vpn_sites                = {}
-      vpn_site_connections     = {}
-    }
+    ]
+    # # # vpn_gateway    = []
+    # # # vpn_site       = []
+    # # # vpn_connection = []
+    # # # er_gateway     = []
+    # # # er_connection  = []
   }
 
   # key vault for PSK secrets
   key_vault_id = dependency.l2-con-az-con-mgmt.outputs.key_vault.id
 
+  private_dns_zone_ids = dependency.l1-mgm-az-privatelink-privatedns.outputs.private_link_private_dns_zones_resource_ids
 }

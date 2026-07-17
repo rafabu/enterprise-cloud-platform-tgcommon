@@ -9,28 +9,12 @@ dependencies {
   )))
 }
 
-dependency "l1-mgm-az-privatelink-privatedns" {
-  config_path = format("%s/../../../level1/connectivity/az-privatelink-privatedns-zones", replace(get_original_terragrunt_dir(), "\\", "/"))
-  mock_outputs = {
-    private_link_private_dns_zones_resource_ids = [
-      "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/privateDnsZones/privatelink.ecpiscool.mock"
-    ]
-    private_link_private_dns_zones = {
-      "ecp_is_cool_mock" = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/privateDnsZones/privatelink.ecpiscool.mock"
-    }
-  }
-  # DANGER ZONE WORKAROUND HERE
-  # add "apply" and "destroy" to mock but ONLY UNTIL AFTER https://github.com/gruntwork-io/terragrunt/issues/5993 gets fixed
-  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan", "apply", "destroy"]
-  mock_outputs_merge_strategy_with_state  = "shallow"
-}
-
 locals {
   ecp_deployment_area             = "ecpa"
   ecp_deployment_unit             = "con"
   ecp_resource_name_random_length = 0
 
-  azure_tf_module_folder = "az-connectivity-management"
+  azure_tf_module_folder = "az-connectivity-bastion"
 
   library_path_shared = format("%s/lib/ecp-lib", replace(get_repo_root(), "\\", "/"))
   library_path_unit   = "${replace(get_terragrunt_dir(), "\\", "/")}/lib"
@@ -168,14 +152,11 @@ inputs = {
   # which artefacts are active in this unit
   ecp_archetype_definitions = {
     name            = "ecpa-con"
-    virtual_network = "l2-connectivity-management-vnet"
+    virtual_network = "l2-connectivity-bastion-vnet"
     virtual_network_subnet = [
-      "l2-connectivity-management-subnet-default"
+      "l2-connectivity-bastion-subnet-azurebastionsubnet"
     ]
   }
 
-  enabled_resources = {
-    key_vault = true
-  }
-  private_dns_zone_ids = dependency.l1-mgm-az-privatelink-privatedns.outputs.private_link_private_dns_zones_resource_ids
+  # private_dns_zone_ids = dependency.l1-mgm-az-privatelink-privatedns.outputs.private_link_private_dns_zones_resource_ids
 }

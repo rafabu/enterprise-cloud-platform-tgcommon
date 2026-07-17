@@ -6,7 +6,19 @@ locals {
   env_vars         = read_terragrunt_config(format("%s/../../../env.hcl", replace(get_terragrunt_dir(), "\\", "/")))
   level_vars       = read_terragrunt_config(format("%s/../../level.hcl", replace(get_terragrunt_dir(), "\\", "/")))
   area_vars        = read_terragrunt_config(format("%s/../area.hcl", replace(get_terragrunt_dir(), "\\", "/")))
-  unit_common_vars = read_terragrunt_config(format("%s/lib/terragrunt-common/ecp-v1/%s/unit-common.hcl", replace(get_repo_root(), "\\", "/"), regexall("^.*(?:/)(.+?(?:/).+?(?:/).+?)$", replace(get_terragrunt_dir(), "\\", "/"))[0][0]))
+  unit_common_path = format(
+   "%s/lib/terragrunt-common/ecp-v1/%s/unit-common.hcl",
+   replace(get_repo_root(), "\\", "/"),
+   can(regex("(?:^|/)level3/vending/[^/]+$", replace(get_terragrunt_dir(), "\\", "/")))
+   # vending: collapse to the shared unit -> "<level3>/vending/az-alz-vending-subscription"
+   ? format(
+     "%s/az-alz-vending-subscription",
+     regexall("^.*(?:/)(.+?(?:/).+?)(?:/).+?$", replace(get_terragrunt_dir(), "\\", "/"))[0][0]
+   )
+   # default: last three folders -> "<level>/<area>/<unit>"
+   : regexall("^.*(?:/)(.+?(?:/).+?(?:/).+?)$", replace(get_terragrunt_dir(), "\\", "/"))[0][0]
+  )
+  unit_common_vars = read_terragrunt_config(local.unit_common_path)
 
 
   merged_locals = merge(
@@ -64,13 +76,13 @@ locals {
   tfplan_path = get_env("TF_PLAN_PATH", "./")
 
   ############ Versions ############
-  ecp_azure_modules_repo_version = "v0.4.1-alpha" # main / dev
+  ecp_azure_modules_repo_version = "v0.5.0-alpha" # "v0.4.1-alpha" # main / dev
 
   tf_version                      = ">= 1.15"
-  tf_provider_azuread_version     = "~> 3.8"
+  tf_provider_azuread_version     = "~> 3.9"
   tf_provider_azurecaf_version    = "~> 1.2"
-  tf_provider_azurerm_version     = "~> 4.75"
-  tf_provider_azapi_version       = "~> 2.10"
+  tf_provider_azurerm_version     = "~> 4.81"
+  tf_provider_azapi_version       = "~> 2.11"
   tf_provider_azuredevops_version = "~> 1.15"
   tf_provider_external_version    = "~> 2.4"
   tf_provider_http_version        = "~> 3.6"
@@ -92,10 +104,19 @@ locals {
   tf_provider_modtm_version = "~> 0.4"
 
   tf_module_avm-ptn-alz_version                                    = "0.21.0"
-  tf_module_avm-ptn-alz-connectivity-virtual-wan_version           = "0.16.0"
+  tf_module_avm-ptn-alz-connectivity-virtual-wan_version           = "0.16.1"
+  tf_module_avm-ptn-alz-connectivity-hub-and-spoke-vnet_version    = "0.17.3"
   tf_module_avm-ptn-alz-management_version                         = "0.9.0"
   tf_module_avm-ptn-network-private-link-private-dns-zones_version = "0.23.2"
+  tf_module_avm-ptn-alz-sub-vending_version                        = "0.2.1"
+  tf_module_avm-res-network-natgateway_version                     = "0.3.2"
+  tf_module_avm-res-network-bastionhost_version                    = "0.9.0"
+  # tf_module_avm-res-network-virtualnetwork_version               = "0.19.0"
+  # tf_module_avm-res-network-publicipaddress_version                = "0.2.1"
+  tf_module_avm-res-storage-storageaccount_version                 = "0.7.3"
   tf_module_avm-utl-regions_version                                = "0.12.0"
+  
+  
 
   ############ Tags ############
   root_common_azure_tags = {
@@ -176,7 +197,7 @@ provider "alz" {
 %{endif}
 
 %{if contains(
-  ["az-launchpad-bootstrap-helper", "az-alz-base", "az-alz-connectivity-virtual-wan", "az-alz-management-resources", "az-connectivity-management", "az-privatelink-privatedns-zones", "ado-mpool", "az-ecp-parent", "az-launchpad-backend", "az-devcenter", "az-launchpad-network", "az-platform-subscriptions"],
+  ["az-launchpad-bootstrap-helper", "az-alz-base", "az-alz-connectivity-virtual-wan", "az-alz-connectivity-hub-spoke", "az-alz-management-resources", "az-connectivity-bastion", "az-connectivity-management", "az-privatelink-privatedns-zones", "ado-mpool", "az-ecp-parent", "az-launchpad-backend", "az-devcenter", "az-launchpad-network", "az-platform-subscriptions"],
   basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
 provider "azapi" {
@@ -188,7 +209,7 @@ provider "azapi" {
 %{endif}
 
 %{if contains(
-  ["az-ecp-parent", "ado-mpool", "az-launchpad-bootstrap-helper", "entraid-policies"],
+  ["az-ecp-parent", "ado-mpool", "az-launchpad-bootstrap-helper", "az-connectivity-bastion", "entraid-policies"],
   basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
 provider "azuread" {
@@ -225,7 +246,7 @@ provider "azurerm" {
 %{endif}
 
 %{if contains(
-  ["az-alz-connectivity-virtual-wan", "az-alz-management-resources", "az-connectivity-management"],
+  ["az-alz-connectivity-virtual-wan", "az-alz-connectivity-hub-spoke", "az-alz-management-resources", "az-connectivity-management"],
   basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
 provider "azurerm" {
@@ -273,7 +294,7 @@ provider "azurerm" {
 %{endif}
 
 %{if contains(
-  ["az-alz-base", "az-alz-connectivity-virtual-wan", "az-privatelink-privatedns-zones"],
+  ["az-alz-base", "az-alz-connectivity-virtual-wan", "az-alz-connectivity-hub-spoke", "az-privatelink-privatedns-zones"],
   basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
 provider "modtm" {
@@ -291,10 +312,36 @@ provider "msgraph" {
 %{endif}
 
 %{if contains(
-  ["ado-mpool", "ado-project", "az-alz-connectivity-virtual-wan", "az-ecp-parent", "az-platform-subscriptions", "devcenter"],
+  ["ado-mpool", "ado-project", "az-alz-connectivity-virtual-wan", "az-alz-connectivity-hub-spoke", "az-ecp-parent", "az-platform-subscriptions", "devcenter"],
   basename(replace(get_terragrunt_dir(), "\\", "/"))
 )}
 provider "time" {}
+%{endif}
+
+# subscription vending
+%{if strcontains(replace(get_terragrunt_dir(), "\\", "/"), "/level3/vending/")}
+provider "azapi" {
+  tenant_id       = "${local.merged_locals.ecp_entra_tenant_id}"
+  subscription_id = "${local.ecp_launchpad_subscription_id}"
+
+  environment         = "public"
+}
+provider "azuread" {
+  tenant_id       = "${local.merged_locals.ecp_entra_tenant_id}"
+}
+provider "azuredevops" {
+  org_service_url = "https://dev.azure.com/$${var.ecp_azure_devops_organization_name}"
+}
+provider "azurerm" {
+  tenant_id       = "${local.merged_locals.ecp_entra_tenant_id}"
+  # uses launchpad's subscription - modules create their own, instanced provider for the landing zone
+  subscription_id = "${local.ecp_launchpad_subscription_id}"
+
+  environment         = "public"
+  storage_use_azuread = true
+
+  features {}
+}
 %{endif}
 EOF
 }
@@ -317,7 +364,7 @@ terraform {
     }
 %{endif}
 %{if contains(
-  ["ado-mpool", "az-launchpad-bootstrap-finalizer", "az-launchpad-bootstrap-helper", "entraid-policies"],
+  ["ado-mpool", "az-launchpad-bootstrap-finalizer", "az-launchpad-bootstrap-helper", "az-connectivity-bastion", "entraid-policies"],
   basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
     azuread = {
@@ -330,7 +377,7 @@ terraform {
       version = "${local.tf_provider_azurecaf_version}"
     }
 %{if contains(
-  ["ado-mpool", "az-alz-connectivity-virtual-wan", "az-alz-management-resources", "az-connectivity-management", "az-devcenter", "az-launchpad-bootstrap-helper", "az-launchpad-backend", "az-launchpad-network", "az-launchpad-main"],
+  ["ado-mpool", "az-alz-connectivity-virtual-wan", "az-alz-connectivity-hub-spoke", "az-alz-management-resources", "az-connectivity-management", "az-devcenter", "az-launchpad-bootstrap-helper", "az-launchpad-backend", "az-launchpad-network", "az-launchpad-main"],
   basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
     azurerm = {
@@ -339,7 +386,7 @@ terraform {
     }
 %{endif}
 %{if contains(
-  ["az-launchpad-bootstrap-helper", "az-alz-base", "az-alz-connectivity-virtual-wan", "az-alz-management-resources", "az-connectivity-management", "az-privatelink-privatedns-zones", "ado-mpool", "az-ecp-parent", "az-launchpad-backend", "az-devcenter", "az-launchpad-network", "az-platform-subscriptions"],
+  ["az-launchpad-bootstrap-helper", "az-alz-base", "az-alz-connectivity-virtual-wan", "az-alz-connectivity-hub-spoke", "az-alz-management-resources", "az-connectivity-bastion", "az-connectivity-management", "az-privatelink-privatedns-zones", "ado-mpool", "az-ecp-parent", "az-launchpad-backend", "az-devcenter", "az-launchpad-network", "az-platform-subscriptions"],
   basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
     azapi = {
@@ -392,7 +439,7 @@ terraform {
     }
 %{endif}
 %{if contains(
-  ["az-alz-base", "az-alz-connectivity-virtual-wan", "az-privatelink-privatedns-zones"],
+  ["az-alz-base", "az-alz-connectivity-virtual-wan", "az-alz-connectivity-hub-spoke", "az-privatelink-privatedns-zones"],
   basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
     modtm = {
@@ -401,12 +448,31 @@ terraform {
     }
 %{endif}
 %{if contains(
-  ["az-alz-base", "az-alz-connectivity-virtual-wan", "az-connectivity-management", "az-devcenter", "az-ecp-parent", "ado-mpool", "ado-project"],
+  ["az-alz-base", "az-alz-connectivity-virtual-wan", "az-alz-connectivity-hub-spoke", "az-connectivity-management", "az-devcenter", "az-ecp-parent", "ado-mpool", "ado-project"],
   basename(replace(get_terragrunt_dir(), "\\", "/"))
 )}
     time = {
       source  = "hashicorp/time"
       version = "${local.tf_provider_time_version}"
+    }
+%{endif}
+  # subscription vending
+%{if strcontains(replace(get_terragrunt_dir(), "\\", "/"), "/level3/vending/")}
+    azapi = {
+      source  = "azure/azapi"
+      version = "${local.tf_provider_azapi_version}"
+    }
+    azuread = {
+      source  = "hashicorp/azuread"
+      version = "${local.tf_provider_azuread_version}"
+    }
+    azuredevops = {
+      source  = "microsoft/azuredevops"
+      version = "${local.tf_provider_azuredevops_version}"
+    }
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "${local.tf_provider_azurerm_version}"
     }
 %{endif}
   }
@@ -461,7 +527,7 @@ inputs = {
   azure_resource_name_elements = {
     prefixes      = [local.ecp_environment_name]
     name          = local.merged_locals.ecp_deployment_area
-    suffixes      = [try(local.merged_locals.ecp_deployment_unit, "main")]
+    suffixes      = try([local.merged_locals.ecp_deployment_unit], [])
     random_length = try(local.merged_locals.ecp_resource_name_random_length, 0)
   }
   azure_tags = local.root_common_azure_tags
@@ -503,7 +569,12 @@ inputs = {
   # terraform module versions
   avm-ptn-alz_version                                    = local.tf_module_avm-ptn-alz_version
   avm-ptn-alz-connectivity-virtual-wan_version           = local.tf_module_avm-ptn-alz-connectivity-virtual-wan_version
+  avm-ptn-alz-connectivity-hub-and-spoke-vnet_version    = local.tf_module_avm-ptn-alz-connectivity-hub-and-spoke-vnet_version
   avm-ptn-alz-management_version                         = local.tf_module_avm-ptn-alz-management_version
+  avm-ptn-alz-sub-vending_version                        = local.tf_module_avm-ptn-alz-sub-vending_version
   avm-ptn-network-private-link-private-dns-zones_version = local.tf_module_avm-ptn-network-private-link-private-dns-zones_version
   avm-utl-regions_version                                = local.tf_module_avm-utl-regions_version
+  avm-res-storage-storageaccount_version                 = local.tf_module_avm-res-storage-storageaccount_version
+  avm-res-network-bastionhost_version                    = local.tf_module_avm-res-network-bastionhost_version
+  avm-res-network-natgateway_version                     = local.tf_module_avm-res-network-natgateway_version
 }

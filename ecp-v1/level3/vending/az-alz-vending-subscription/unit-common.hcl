@@ -1,6 +1,6 @@
 dependencies {
   paths = flatten(distinct(concat(
-    get_env("ECP_TF_BACKEND_STORAGE_AZURE_L0", "") == "" || get_env("ECP_TF_BACKEND_STORAGE_AZURE_L1", "") == "" || get_env("ECP_TF_BACKEND_STORAGE_AZURE_L2", "") == "" ? [
+    get_env("ECP_TF_BACKEND_STORAGE_AZURE_L0", "") == "" || get_env("ECP_TF_BACKEND_STORAGE_AZURE_L1", "") == "" || get_env("ECP_TF_BACKEND_STORAGE_AZURE_L2", "") == "" || get_env("ECP_TF_BACKEND_STORAGE_AZURE_L3", "") == "" ? [
       format("%s/../../../level0/bootstrap/az-launchpad-bootstrap-helper", replace(get_original_terragrunt_dir(), "\\", "/"))
     ] : [],
     [
@@ -9,9 +9,10 @@ dependencies {
   )))
 }
 
-dependency "l1-mgm-az-privatelink-privatedns" {
+dependency "l1-con-az-privatedns" {
   config_path = format("%s/../../../level1/connectivity/az-privatelink-privatedns-zones", replace(get_original_terragrunt_dir(), "\\", "/"))
   mock_outputs = {
+    private_link_resource_group_id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg"
     private_link_private_dns_zones_resource_ids = [
       "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/privateDnsZones/privatelink.ecpiscool.mock"
     ]
@@ -25,12 +26,79 @@ dependency "l1-mgm-az-privatelink-privatedns" {
   mock_outputs_merge_strategy_with_state  = "shallow"
 }
 
-locals {
-  ecp_deployment_area             = "ecpa"
-  ecp_deployment_unit             = "con"
-  ecp_resource_name_random_length = 0
+dependency "l2-con-az-con-bastion" {
+  config_path = format("%s/../../../level2/connectivity/az-connectivity-bastion", replace(get_original_terragrunt_dir(), "\\", "/"))
+  mock_outputs = {
+    virtual_networks = {
+      main = {
+        id                  = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualNetworks/mock-vnet"
+        name                = "mock-vnet"
+        resource_group_name = "mock-rg"
+        location            = "westeurope"
+        address_space = [
+          "192.0.2.0/24"
+        ]
+      }
+    }
+    virtual_network_subnets = {
+      main = {
+        id                   = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualNetworks/mock-vnet/subnets/mock"
+        name                 = "mock"
+        resource_group_name  = "mock-rg"
+        virtual_network_name = "mock-vnet"
+        address_prefixes = [
+          "192.0.2.0/24"
+        ]
+      }
+    }
+    bastion_hosts = {
+      main = {
+        id                  = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/bastionHosts/mock-bastion"
+        name                = "mock-bastion"
+        resource_group_name = "mock-rg"
+        location            = "westeurope"
+      }
+    }
+    bastion_host_reader_permission_group_object_id = "00000000-0000-0000-0000-000000000000"
+  }
+  # DANGER ZONE WORKAROUND HERE
+  # add "apply" and "destroy" to mock but ONLY UNTIL AFTER https://github.com/gruntwork-io/terragrunt/issues/5993 gets fixed
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan", "apply", "destroy"]
+  mock_outputs_merge_strategy_with_state  = "shallow"
+}
 
-  azure_tf_module_folder = "az-connectivity-management"
+dependency "l2-con-az-con-vwan" {
+  config_path = format("%s/../../../level2/connectivity/az-alz-connectivity-virtual-wan", replace(get_original_terragrunt_dir(), "\\", "/"))
+  mock_outputs = {
+    azure_virtual_wan_name = "mock-vwan"
+    azure_virtual_wan_resource_id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualWans/mock-vwan"
+    azure_virtual_wan_hub_resource_ids = {
+      main = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualHubs/mock-vhub"
+    }
+    azure_virtual_wan_hub_resource_names = {
+      main = "mock-vhub"
+    }
+    azure_virtual_wan_hub_resource_details = {
+      main = {
+        id                  = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualHubs/mock-vhub"
+        name                = "mock-vhub"
+        location            = "westeurope"
+        address_prefix = "192.0.2.0/24"
+      }
+    }
+  }
+  # DANGER ZONE WORKAROUND HERE
+  # add "apply" and "destroy" to mock but ONLY UNTIL AFTER https://github.com/gruntwork-io/terragrunt/issues/5993 gets fixed
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan", "apply", "destroy"]
+  mock_outputs_merge_strategy_with_state  = "shallow"
+}
+
+locals {
+  #ecp_deployment_area             = "" # vending uses its own naming convention
+  # ecp_deployment_unit             = "" # vending uses its own naming convention
+  # ecp_resource_name_random_length = 0
+
+  azure_tf_module_folder = "az-alz-vending-subscription"
 
   library_path_shared = format("%s/lib/ecp-lib", replace(get_repo_root(), "\\", "/"))
   library_path_unit   = "${replace(get_terragrunt_dir(), "\\", "/")}/lib"
@@ -107,10 +175,10 @@ locals {
 
   # see if backend variables are set
   backend_config_present = alltrue([
-    get_env("ECP_TG_BACKEND_LEVEL2_SUBSCRIPTION_ID", "") != "",
-    get_env("ECP_TG_BACKEND_LEVEL2_RESOURCE_GROUP_NAME", "") != "",
-    get_env("ECP_TG_BACKEND_LEVEL2_NAME", "") != "",
-    get_env("ECP_TG_BACKEND_LEVEL2_CONTAINER", "") != ""
+    get_env("ECP_TG_BACKEND_LEVEL3_SUBSCRIPTION_ID", "") != "",
+    get_env("ECP_TG_BACKEND_LEVEL3_RESOURCE_GROUP_NAME", "") != "",
+    get_env("ECP_TG_BACKEND_LEVEL3_NAME", "") != "",
+    get_env("ECP_TG_BACKEND_LEVEL3_CONTAINER", "") != ""
   ])
 
   ################# bootstrap-helper unit output (fallback) #################
@@ -123,17 +191,17 @@ locals {
   bootstrap_backend_type_changed = false
 
   backend_config = local.backend_config_present ? {
-    subscription_id      = get_env("ECP_TG_BACKEND_LEVEL2_SUBSCRIPTION_ID")
-    resource_group_name  = get_env("ECP_TG_BACKEND_LEVEL2_RESOURCE_GROUP_NAME")
-    storage_account_name = get_env("ECP_TG_BACKEND_LEVEL2_NAME")
-    container_name       = get_env("ECP_TG_BACKEND_LEVEL2_CONTAINER")
+    subscription_id      = get_env("ECP_TG_BACKEND_LEVEL3_SUBSCRIPTION_ID")
+    resource_group_name  = get_env("ECP_TG_BACKEND_LEVEL3_RESOURCE_GROUP_NAME")
+    storage_account_name = get_env("ECP_TG_BACKEND_LEVEL3_NAME")
+    container_name       = get_env("ECP_TG_BACKEND_LEVEL3_CONTAINER")
     use_azuread_auth     = true
     key                  = "${basename(path_relative_to_include())}.tfstate"
     } : {
-    subscription_id      = local.bootstrap_helper_output.backend_storage_accounts["l2"].subscription_id
-    resource_group_name  = local.bootstrap_helper_output.backend_storage_accounts["l2"].resource_group_name
-    storage_account_name = local.bootstrap_helper_output.backend_storage_accounts["l2"].name
-    container_name       = local.bootstrap_helper_output.backend_storage_accounts["l2"].tf_backend_container
+    subscription_id      = local.bootstrap_helper_output.backend_storage_accounts["l3"].subscription_id
+    resource_group_name  = local.bootstrap_helper_output.backend_storage_accounts["l3"].resource_group_name
+    storage_account_name = local.bootstrap_helper_output.backend_storage_accounts["l3"].name
+    container_name       = local.bootstrap_helper_output.backend_storage_accounts["l3"].tf_backend_container
     use_azuread_auth     = true
     key                  = "${basename(path_relative_to_include())}.tfstate"
   }
@@ -157,25 +225,41 @@ remote_state {
 inputs = {
   azure_tags = local.unit_common_azure_tags
 
-  ecp_hub_locations = {}
 
-  # load merged vnet artefact objects
-  virtual_network_artefacts = local.virtualNetwork_definition_merged
 
-  # load merged vnet subnet artefact objects
-  virtual_network_subnet_artefacts = local.virtualNetworkSubnet_definition_merged
+  # ecp_hub_locations = {}
+
+  # # load merged vnet artefact objects
+  # virtual_network_artefacts = local.virtualNetwork_definition_merged
+
+  # # load merged vnet subnet artefact objects
+  # virtual_network_subnet_artefacts = local.virtualNetworkSubnet_definition_merged
 
   # which artefacts are active in this unit
-  ecp_archetype_definitions = {
-    name            = "ecpa-con"
-    virtual_network = "l2-connectivity-management-vnet"
-    virtual_network_subnet = [
-      "l2-connectivity-management-subnet-default"
-    ]
-  }
+  # ecp_archetype_definitions = {
+  #   name            = "ecpa-con"
+  #   virtual_network = "l2-connectivity-management-vnet"
+  #   virtual_network_subnet = [
+  #     "l2-connectivity-management-subnet-default"
+  #   ]
+  # }
 
-  enabled_resources = {
-    key_vault = true
+  vwan_hub_resources_by_location = dependency.l2-con-az-con-vwan.outputs.azure_virtual_wan_hub_resource_details_by_location
+  vwan_resource_id = dependency.l2-con-az-con-vwan.outputs.azure_virtual_wan_resource_id
+
+  bastion_vnet_id = dependency.l2-con-az-con-bastion.outputs.virtual_networks["main"].id
+  bastion_resource_id = dependency.l2-con-az-con-bastion.outputs.bastion_hosts["main"].id
+
+  private_dns_zone_resource_group_id = dependency.l1-con-az-privatedns.outputs.private_link_resource_group_id
+  private_dns_zone_resource_ids = dependency.l1-con-az-privatedns.outputs.private_link_private_dns_zones_resource_ids
+
+  additional_entra_id_group_members = {
+    bastion = {
+      group_object_id = dependency.l2-con-az-con-bastion.outputs.bastion_host_reader_permission_group_object_id
+      role_group_keys = [
+        "lz-owner",
+        "lz-user"
+      ]
+    }
   }
-  private_dns_zone_ids = dependency.l1-mgm-az-privatelink-privatedns.outputs.private_link_private_dns_zones_resource_ids
 }

@@ -151,6 +151,9 @@ inputs = {
     },
     "l2" = {
       backend_type = "local"
+    },
+    "l3" = {
+      backend_type = "local"
     }
   })
 }
