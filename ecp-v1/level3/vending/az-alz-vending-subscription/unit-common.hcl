@@ -249,7 +249,7 @@ inputs = {
   bastion_vnet_id = dependency.l2-con-az-con-bastion.outputs.virtual_networks["main"].id
   bastion_resource_id = dependency.l2-con-az-con-bastion.outputs.bastion_hosts["main"].id
 
-  # private_dns_zone_ids = dependency.l1-mgm-az-privatelink-privatedns.outputs.private_link_private_dns_zones_resource_ids
+  private_dns_zone_ids = dependency.l1-mgm-az-privatelink-privatedns.outputs.private_link_private_dns_zones_resource_ids
 
   additional_entra_id_group_members = {
     bastion = {
