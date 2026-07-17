@@ -9,7 +9,7 @@ dependencies {
   )))
 }
 
-dependency "l1-con-az-privatelink-privatedns" {
+dependency "l1-con-az-privatedns" {
   config_path = format("%s/../../../level1/connectivity/az-privatelink-privatedns-zones", replace(get_original_terragrunt_dir(), "\\", "/"))
   mock_outputs = {
     private_link_resource_group_id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg"
@@ -250,7 +250,8 @@ inputs = {
   bastion_vnet_id = dependency.l2-con-az-con-bastion.outputs.virtual_networks["main"].id
   bastion_resource_id = dependency.l2-con-az-con-bastion.outputs.bastion_hosts["main"].id
 
-  private_dns_zone_resource_group_id = dependency.l1-con-az-privatelink-privatedns.outputs.private_link_resource_group_id
+  private_dns_zone_resource_group_id = dependency.l1-con-az-privatedns.outputs.private_link_resource_group_id
+  private_dns_zone_resource_ids = dependency.l1-con-az-privatedns.outputs.private_link_private_dns_zones_resource_ids
 
   additional_entra_id_group_members = {
     bastion = {
