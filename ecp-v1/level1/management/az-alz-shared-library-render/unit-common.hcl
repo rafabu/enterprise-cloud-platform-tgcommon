@@ -1,3 +1,13 @@
+dependencies {
+  paths = flatten(distinct(concat(
+    get_env("ECP_TF_BACKEND_STORAGE_AZURE_L0", "") == "" || get_env("ECP_TF_BACKEND_STORAGE_AZURE_L1", "") == "" ? [
+      format("%s/../../../level0/bootstrap/az-launchpad-bootstrap-helper", replace(get_original_terragrunt_dir(), "\\", "/"))
+    ] : [],
+    [
+    ]
+  )))
+}
+
 locals {
   ecp_deployment_area             = "ecpa"
   ecp_deployment_unit             = "mgmt"

@@ -76,13 +76,13 @@ locals {
   tfplan_path = get_env("TF_PLAN_PATH", "./")
 
   ############ Versions ############
-  ecp_azure_modules_repo_version = "dev" # "v0.4.1-alpha" # main / dev
+  ecp_azure_modules_repo_version = "v0.5.0-alpha" # "v0.4.1-alpha" # main / dev
 
   tf_version                      = ">= 1.15"
   tf_provider_azuread_version     = "~> 3.9"
   tf_provider_azurecaf_version    = "~> 1.2"
-  tf_provider_azurerm_version     = "~> 4.75"
-  tf_provider_azapi_version       = "~> 2.10"
+  tf_provider_azurerm_version     = "~> 4.81"
+  tf_provider_azapi_version       = "~> 2.11"
   tf_provider_azuredevops_version = "~> 1.15"
   tf_provider_external_version    = "~> 2.4"
   tf_provider_http_version        = "~> 3.6"
@@ -104,14 +104,18 @@ locals {
   tf_provider_modtm_version = "~> 0.4"
 
   tf_module_avm-ptn-alz_version                                    = "0.21.0"
-  tf_module_avm-ptn-alz-connectivity-virtual-wan_version           = "0.16.0"
+  tf_module_avm-ptn-alz-connectivity-virtual-wan_version           = "0.16.1"
   tf_module_avm-ptn-alz-connectivity-hub-and-spoke-vnet_version    = "0.17.3"
   tf_module_avm-ptn-alz-management_version                         = "0.9.0"
   tf_module_avm-ptn-network-private-link-private-dns-zones_version = "0.23.2"
   tf_module_avm-ptn-alz-sub-vending_version                        = "0.2.1"
   tf_module_avm-res-network-natgateway_version                     = "0.3.2"
+  tf_module_avm-res-network-bastionhost_version                    = "0.9.0"
+  # tf_module_avm-res-network-virtualnetwork_version               = "0.19.0"
+  # tf_module_avm-res-network-publicipaddress_version                = "0.2.1"
   tf_module_avm-res-storage-storageaccount_version                 = "0.7.3"
   tf_module_avm-utl-regions_version                                = "0.12.0"
+  
   
 
   ############ Tags ############
@@ -193,7 +197,7 @@ provider "alz" {
 %{endif}
 
 %{if contains(
-  ["az-launchpad-bootstrap-helper", "az-alz-base", "az-alz-connectivity-virtual-wan", "az-alz-connectivity-hub-spoke", "az-alz-management-resources", "az-connectivity-management", "az-privatelink-privatedns-zones", "ado-mpool", "az-ecp-parent", "az-launchpad-backend", "az-devcenter", "az-launchpad-network", "az-platform-subscriptions"],
+  ["az-launchpad-bootstrap-helper", "az-alz-base", "az-alz-connectivity-virtual-wan", "az-alz-connectivity-hub-spoke", "az-alz-management-resources", "az-connectivity-bastion", "az-connectivity-management", "az-privatelink-privatedns-zones", "ado-mpool", "az-ecp-parent", "az-launchpad-backend", "az-devcenter", "az-launchpad-network", "az-platform-subscriptions"],
   basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
 provider "azapi" {
@@ -205,7 +209,7 @@ provider "azapi" {
 %{endif}
 
 %{if contains(
-  ["az-ecp-parent", "ado-mpool", "az-launchpad-bootstrap-helper", "entraid-policies"],
+  ["az-ecp-parent", "ado-mpool", "az-launchpad-bootstrap-helper", "az-connectivity-bastion", "entraid-policies"],
   basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
 provider "azuread" {
@@ -360,7 +364,7 @@ terraform {
     }
 %{endif}
 %{if contains(
-  ["ado-mpool", "az-launchpad-bootstrap-finalizer", "az-launchpad-bootstrap-helper", "entraid-policies"],
+  ["ado-mpool", "az-launchpad-bootstrap-finalizer", "az-launchpad-bootstrap-helper", "az-connectivity-bastion", "entraid-policies"],
   basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
     azuread = {
@@ -382,7 +386,7 @@ terraform {
     }
 %{endif}
 %{if contains(
-  ["az-launchpad-bootstrap-helper", "az-alz-base", "az-alz-connectivity-virtual-wan", "az-alz-connectivity-hub-spoke", "az-alz-management-resources", "az-connectivity-management", "az-privatelink-privatedns-zones", "ado-mpool", "az-ecp-parent", "az-launchpad-backend", "az-devcenter", "az-launchpad-network", "az-platform-subscriptions"],
+  ["az-launchpad-bootstrap-helper", "az-alz-base", "az-alz-connectivity-virtual-wan", "az-alz-connectivity-hub-spoke", "az-alz-management-resources", "az-connectivity-bastion", "az-connectivity-management", "az-privatelink-privatedns-zones", "ado-mpool", "az-ecp-parent", "az-launchpad-backend", "az-devcenter", "az-launchpad-network", "az-platform-subscriptions"],
   basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
     azapi = {
@@ -571,5 +575,6 @@ inputs = {
   avm-ptn-network-private-link-private-dns-zones_version = local.tf_module_avm-ptn-network-private-link-private-dns-zones_version
   avm-utl-regions_version                                = local.tf_module_avm-utl-regions_version
   avm-res-storage-storageaccount_version                 = local.tf_module_avm-res-storage-storageaccount_version
+  avm-res-network-bastionhost_version                    = local.tf_module_avm-res-network-bastionhost_version
   avm-res-network-natgateway_version                     = local.tf_module_avm-res-network-natgateway_version
 }
