@@ -82,13 +82,13 @@ locals {
   tf_provider_azuread_version     = "~> 3.9"
   tf_provider_azurecaf_version    = "~> 1.2"
   tf_provider_azurerm_version     = "~> 4.81"
-  tf_provider_azapi_version       = "~> 2.11"
-  tf_provider_azuredevops_version = "~> 1.15"
+  tf_provider_azapi_version       = "~> 2.12"
+  tf_provider_azuredevops_version = "~> 1.16"
   tf_provider_external_version    = "~> 2.4"
   tf_provider_http_version        = "~> 3.6"
   tf_provider_local_version       = "~> 2.9"
   tf_provider_random_version      = "~> 3.9"
-  tf_provider_msgraph_version     = "~> 0.3"
+  tf_provider_msgraph_version     = "~> 0.4"
   tf_provider_time_version        = "~> 0.14"
   # ALZ
   tf_provider_alz_version = "~> 0.21"
@@ -229,7 +229,7 @@ provider "azuredevops" {
 %{endif}
 
 %{if contains(
-  ["ado-mpool", "az-ecp-parent", "az-devcenter", "az-launchpad-bootstrap-finalizer", "az-launchpad-bootstrap-helper", "az-launchpad-main", "az-launchpad-backend", "az-launchpad-network"],
+  ["ado-mpool", "az-ecp-parent", "az-devcenter", "az-launchpad-bootstrap-finalizer", "az-launchpad-main", "az-launchpad-backend", "az-launchpad-network"],
   basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
 provider "azurerm" {
@@ -377,7 +377,7 @@ terraform {
       version = "${local.tf_provider_azurecaf_version}"
     }
 %{if contains(
-  ["ado-mpool", "az-alz-connectivity-virtual-wan", "az-alz-connectivity-hub-spoke", "az-alz-management-resources", "az-connectivity-management", "az-devcenter", "az-launchpad-bootstrap-helper", "az-launchpad-backend", "az-launchpad-network", "az-launchpad-main"],
+  ["ado-mpool", "az-alz-connectivity-virtual-wan", "az-alz-connectivity-hub-spoke", "az-alz-management-resources", "az-connectivity-management", "az-devcenter", "az-launchpad-backend", "az-launchpad-network", "az-launchpad-main"],
   basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
     azurerm = {
