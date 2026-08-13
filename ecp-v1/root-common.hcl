@@ -82,6 +82,7 @@ locals {
   tf_provider_azuread_version     = "~> 3.9"
   tf_provider_azurecaf_version    = "~> 1.2"
   tf_provider_azurerm_version     = "~> 4.81"
+  tf_provider_azurerm_version_l0  = "~> 5.0"
   tf_provider_azapi_version       = "~> 2.12"
   tf_provider_azuredevops_version = "~> 1.16"
   tf_provider_external_version    = "~> 2.4"
@@ -197,7 +198,7 @@ provider "alz" {
 %{endif}
 
 %{if contains(
-  ["az-launchpad-bootstrap-helper", "az-alz-base", "az-alz-connectivity-virtual-wan", "az-alz-connectivity-hub-spoke", "az-alz-management-resources", "az-connectivity-bastion", "az-connectivity-management", "az-privatelink-privatedns-zones", "ado-mpool", "az-ecp-parent", "az-launchpad-backend", "az-devcenter", "az-launchpad-network", "az-platform-subscriptions"],
+  ["az-launchpad-bootstrap-helper", "az-launchpad-main", "az-alz-base", "az-alz-connectivity-virtual-wan", "az-alz-connectivity-hub-spoke", "az-alz-management-resources", "az-connectivity-bastion", "az-connectivity-management", "az-privatelink-privatedns-zones", "ado-mpool", "az-ecp-parent", "az-launchpad-backend", "az-devcenter", "az-launchpad-network", "az-platform-subscriptions"],
   basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
 provider "azapi" {
@@ -229,7 +230,7 @@ provider "azuredevops" {
 %{endif}
 
 %{if contains(
-  ["ado-mpool", "az-ecp-parent", "az-devcenter", "az-launchpad-bootstrap-finalizer", "az-launchpad-main", "az-launchpad-backend", "az-launchpad-network"],
+  ["ado-mpool", "az-ecp-parent", "az-devcenter", "az-launchpad-bootstrap-finalizer", "az-launchpad-backend", "az-launchpad-network"],
   basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
 provider "azurerm" {
@@ -240,6 +241,32 @@ provider "azurerm" {
 
   environment         = "public"
   storage_use_azuread = true
+
+  features {}
+}
+%{endif}
+
+%{if contains(
+  ["az-launchpad-main"],
+  basename(replace(get_terragrunt_dir(), "\\", "/"))
+  )}
+# azurerm 5.x specific (handles subscription-specific resource provider registration)
+provider "azurerm" {
+  alias  = "launchpad"
+
+  tenant_id       = "${local.merged_locals.ecp_entra_tenant_id}"
+  subscription_id = "${local.ecp_launchpad_subscription_id}"
+
+  environment         = "public"
+  storage_use_azuread = true
+
+  resource_provider_registrations = "core"
+  # add all required providers for the launchpad subscription to hosts its resources
+  resource_providers_to_register = [
+    "Microsoft.DevCenter",
+    "Microsoft.DevOpsInfrastructure",
+    "Microsoft.Quota"
+  ]
 
   features {}
 }
@@ -377,12 +404,21 @@ terraform {
       version = "${local.tf_provider_azurecaf_version}"
     }
 %{if contains(
-  ["ado-mpool", "az-alz-connectivity-virtual-wan", "az-alz-connectivity-hub-spoke", "az-alz-management-resources", "az-connectivity-management", "az-devcenter", "az-launchpad-backend", "az-launchpad-network", "az-launchpad-main"],
+  ["ado-mpool", "az-alz-connectivity-virtual-wan", "az-alz-connectivity-hub-spoke", "az-alz-management-resources", "az-connectivity-management", "az-devcenter", "az-launchpad-backend", "az-launchpad-network"],
   basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
     azurerm = {
       source  = "hashicorp/azurerm"
       version = "${local.tf_provider_azurerm_version}"
+    }
+%{endif}
+%{if contains(
+  ["az-launchpad-main"],
+  basename(replace(get_terragrunt_dir(), "\\", "/"))
+  )}
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "${local.tf_provider_azurerm_version_l0}"
     }
 %{endif}
 %{if contains(
