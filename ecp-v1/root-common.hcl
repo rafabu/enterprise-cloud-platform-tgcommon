@@ -81,8 +81,8 @@ locals {
   tf_version                      = ">= 1.15"
   tf_provider_azuread_version     = "~> 3.9"
   tf_provider_azurecaf_version    = "~> 1.2"
-  tf_provider_azurerm_version     = "~> 4.81"
-  tf_provider_azurerm_version_l0  = "~> 5.1"
+  tf_provider_azurerm_version_4   = "~> 4.81"
+  tf_provider_azurerm_version_5   = "~> 5.1"
   tf_provider_azapi_version       = "~> 2.12"
   tf_provider_azuredevops_version = "~> 1.16"
   tf_provider_external_version    = "~> 2.4"
@@ -306,21 +306,6 @@ provider "azurerm" {
 %{endif}
 
 %{if contains(
-  ["az-alz-base"],
-  basename(replace(get_terragrunt_dir(), "\\", "/"))
-  )}
-provider "azurerm" {
-  tenant_id       = "${local.merged_locals.ecp_entra_tenant_id}"
-  subscription_id = "${local.ecp_management_subscription_id}"
-
-  environment         = "public"
-  storage_use_azuread = true
-
-  features {}
-}
-%{endif}
-
-%{if contains(
   ["az-alz-base", "az-alz-connectivity-virtual-wan", "az-alz-connectivity-hub-spoke", "az-privatelink-privatedns-zones"],
   basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
@@ -403,22 +388,24 @@ terraform {
       source  = "aztfmod/azurecaf"
       version = "${local.tf_provider_azurecaf_version}"
     }
+# units still needing azurerm 4.x for some resources (mostly AVM modules)
 %{if contains(
-  ["az-alz-connectivity-virtual-wan", "az-alz-connectivity-hub-spoke", "az-alz-management-resources", "az-connectivity-management"],
+  ["az-alz-management-resources", "az-alz-connectivity-virtual-wan", "az-alz-connectivity-hub-spoke", "az-connectivity-management"],
   basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "${local.tf_provider_azurerm_version}"
+      version = "${local.tf_provider_azurerm_version_4}"
     }
 %{endif}
+# units fully azurerm 5.x compatible
 %{if contains(
   ["az-launchpad-bootstrap-finalizer", "az-launchpad-main", "az-launchpad-network", "az-launchpad-backend", "az-devcenter", "ado-mpool", "az-ecp-parent"],
   basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "${local.tf_provider_azurerm_version_l0}"
+      version = "${local.tf_provider_azurerm_version_5}"
     }
 %{endif}
 %{if contains(
@@ -508,7 +495,7 @@ terraform {
     }
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "${local.tf_provider_azurerm_version}"
+      version = "${local.tf_provider_azurerm_version_5}"
     }
 %{endif}
   }
