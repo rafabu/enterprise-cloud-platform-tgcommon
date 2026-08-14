@@ -413,7 +413,7 @@ terraform {
     }
 %{endif}
 %{if contains(
-  ["az-launchpad-main", "az-launchpad-network", "az-launchpad-backend", "az-devcenter", "ado-mpool"],
+  ["az-launchpad-bootstrap-finalizer", "az-launchpad-main", "az-launchpad-network", "az-launchpad-backend", "az-devcenter", "ado-mpool"],
   basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
     azurerm = {
