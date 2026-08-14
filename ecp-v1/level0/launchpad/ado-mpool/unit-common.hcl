@@ -363,7 +363,7 @@ inputs = {
       {
         aliases               = ["ubuntu-24.04", "ubuntu-24.04-g2", "ubuntu-latest", "ubuntu-24.04-g2/latest"]
         buffer                = "*"
-        well_known_image_name = "ubuntu-24.04-g2/latest"
+        well_known_image_name = "ubuntu-24.04-g2" # not specifying the version --> latest
       }
     ]
     os_profile = {
