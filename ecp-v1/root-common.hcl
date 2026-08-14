@@ -404,7 +404,7 @@ terraform {
       version = "${local.tf_provider_azurecaf_version}"
     }
 %{if contains(
-  ["ado-mpool", "az-alz-connectivity-virtual-wan", "az-alz-connectivity-hub-spoke", "az-alz-management-resources", "az-connectivity-management"],
+  ["az-alz-connectivity-virtual-wan", "az-alz-connectivity-hub-spoke", "az-alz-management-resources", "az-connectivity-management"],
   basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
     azurerm = {
@@ -413,7 +413,7 @@ terraform {
     }
 %{endif}
 %{if contains(
-  ["az-launchpad-main", "az-launchpad-network", "az-launchpad-backend", "az-devcenter"],
+  ["az-launchpad-main", "az-launchpad-network", "az-launchpad-backend", "az-devcenter", "ado-mpool"],
   basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
     azurerm = {
