@@ -105,16 +105,16 @@ locals {
   tf_provider_modtm_version = "~> 0.4"
 
   tf_module_avm-ptn-alz_version                                    = "0.21.0"
-  tf_module_avm-ptn-alz-connectivity-virtual-wan_version           = "0.16.1"
-  tf_module_avm-ptn-alz-connectivity-hub-and-spoke-vnet_version    = "0.17.3"
+  tf_module_avm-ptn-alz-connectivity-virtual-wan_version           = "0.17.1"
+  tf_module_avm-ptn-alz-connectivity-hub-and-spoke-vnet_version    = "0.17.4"
   tf_module_avm-ptn-alz-management_version                         = "0.9.0"
   tf_module_avm-ptn-network-private-link-private-dns-zones_version = "0.23.2"
-  tf_module_avm-ptn-alz-sub-vending_version                        = "0.2.1"
+  tf_module_avm-ptn-alz-sub-vending_version                        = "0.3.1"
   tf_module_avm-res-network-natgateway_version                     = "0.3.2"
   tf_module_avm-res-network-bastionhost_version                    = "0.9.0"
   # tf_module_avm-res-network-virtualnetwork_version               = "0.19.0"
   # tf_module_avm-res-network-publicipaddress_version                = "0.2.1"
-  tf_module_avm-res-storage-storageaccount_version                 = "0.7.3"
+  tf_module_avm-res-storage-storageaccount_version                 = "0.8.1"
   tf_module_avm-utl-regions_version                                = "0.12.0"
   
   
@@ -388,21 +388,24 @@ terraform {
       source  = "aztfmod/azurecaf"
       version = "${local.tf_provider_azurecaf_version}"
     }
-# units still needing azurerm 4.x for some resources (mostly AVM modules)
 %{if contains(
-  ["az-alz-management-resources", "az-alz-connectivity-virtual-wan", "az-alz-connectivity-hub-spoke", "az-connectivity-management"],
+  ["az-alz-management-resources", "az-alz-connectivity-virtual-wan", "az-alz-connectivity-hub-spoke"],
   basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
+    # units still needing azurerm 4.x for some resources (mostly AVM modules)
+    #    - avm-ptn-alz-management: v0.9.0
+    #    - avm-ptn-alz-connectivity-virtual-wan: v0.17.1
+    #    - avm-ptn-alz-connectivity-hub-and-spoke-vnet: v0.17.4
     azurerm = {
       source  = "hashicorp/azurerm"
       version = "${local.tf_provider_azurerm_version_4}"
     }
 %{endif}
-# units fully azurerm 5.x compatible
 %{if contains(
-  ["az-launchpad-bootstrap-finalizer", "az-launchpad-main", "az-launchpad-network", "az-launchpad-backend", "az-devcenter", "ado-mpool", "az-ecp-parent"],
+  ["az-launchpad-bootstrap-finalizer", "az-launchpad-main", "az-launchpad-network", "az-launchpad-backend", "az-devcenter", "ado-mpool", "az-ecp-parent", "az-connectivity-management"],
   basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
+    # units fully azurerm 5.x compatible
     azurerm = {
       source  = "hashicorp/azurerm"
       version = "${local.tf_provider_azurerm_version_5}"
@@ -479,8 +482,8 @@ terraform {
       version = "${local.tf_provider_time_version}"
     }
 %{endif}
-  # subscription vending
 %{if strcontains(replace(get_terragrunt_dir(), "\\", "/"), "/level3/vending/")}
+    # subscription vending
     azapi = {
       source  = "azure/azapi"
       version = "${local.tf_provider_azapi_version}"
@@ -493,9 +496,11 @@ terraform {
       source  = "microsoft/azuredevops"
       version = "${local.tf_provider_azuredevops_version}"
     }
+    # modules still needing azurerm 4.x
+    #    - avm-res-network-bastionhost: v0.9.0
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "${local.tf_provider_azurerm_version_5}"
+      version = "${local.tf_provider_azurerm_version_4}"
     }
 %{endif}
   }
