@@ -67,15 +67,13 @@ locals {
   ecp_environment_stage = local.merged_locals.ecp_deployment_env
   ecp_environment_name  = lower("${local.merged_locals.ecp_deployment_code}-${substr(local.merged_locals.ecp_deployment_env, 0, 1)}${local.merged_locals.ecp_deployment_number}")
 
-  ecp_configuration_repo         = "github.com/rafabu/enterprise-cloud-platform-conf.git"
-  ecp_configuration_repo_version = "main"
-
+  ecp_configuration_repo = "github.com/rafabu/enterprise-cloud-platform-conf.git"
   ecp_azure_modules_repo = "github.com/rafabu/enterprise-cloud-platform-azure.git"
-
 
   tfplan_path = get_env("TF_PLAN_PATH", "./")
 
   ############ Versions ############
+  ecp_configuration_repo_version = "feature/azurerm_5.x" # "main"
   ecp_azure_modules_repo_version = "dev" # "v0.5.0-alpha" # "v0.4.1-alpha" # main / dev
 
   tf_version                      = ">= 1.15"
