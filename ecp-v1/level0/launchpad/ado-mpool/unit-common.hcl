@@ -334,31 +334,32 @@ inputs = {
       time_zone = "W. Europe Standard Time"
       # all_week_schedule = 2
       monday_schedule = {
-        "08:30:00" = 2,
-        "18:30:00" = 0
+        "08:00:00" = 2,
+        "18:00:00" = 0
       }
       tuesday_schedule = {
-        "08:30:00" = 2,
-        "18:30:00" = 0
+        "08:00:00" = 2,
+        "18:00:00" = 0
       }
       wednesday_schedule = {
-        "08:30:00" = 2,
-        "18:30:00" = 0
+        "08:00:00" = 2,
+        "18:00:00" = 0
       }
       thursday_schedule = {
-        "08:30:00" = 2,
-        "18:30:00" = 0
+        "08:00:00" = 2,
+        "18:00:00" = 0
       }
       friday_schedule = {
-        "08:30:00" = 2,
-        "18:30:00" = 0
+        "08:00:00" = 2,
+        "18:00:00" = 0
       }
       saturday_schedule = {}
       sunday_schedule   = {}
     }
   }
   managed_devops_pool_vmss_fabric_profile = {
-    sku_name = "Standard_D2as_v5" # D2as_v5 is currently more economic than D2as_v6
+    # sku_name = "Standard_D2as_v5" # D2as_v5 is currently more economic than D2as_v6
+    sku_name = "Standard_D2ds_v5"
     image = [
       {
         aliases               = ["ubuntu-24.04", "ubuntu-24.04-g2", "ubuntu-latest", "ubuntu-24.04-g2/latest"]
