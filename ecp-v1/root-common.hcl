@@ -366,7 +366,7 @@ generate "versions" {
   if_exists = "overwrite"
   contents = <<EOF
 terraform {
-  required_version = "${local.tf_version}"
+  required_version = "${local.tf_required_version}"
 
   required_providers {
 %{if contains(

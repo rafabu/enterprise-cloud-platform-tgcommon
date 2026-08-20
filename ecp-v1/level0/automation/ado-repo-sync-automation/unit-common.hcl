@@ -196,6 +196,8 @@ inputs = {
       ]
       content_replacements = {
         "<ecp_environment_name>" = "${dependency.l0-lp-az-lp-main.outputs.ecp_environment_name}"
+        "<ecp_terragrunt_version>" = "${dependency.l0-lp-az-lp-main.outputs.ecp_automation_terragrunt_version}"
+        "<ecp_terraform_version>" = "${dependency.l0-lp-az-lp-main.outputs.ecp_automation_terraform_version}"
       }
     }
   }
