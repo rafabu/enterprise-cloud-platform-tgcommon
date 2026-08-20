@@ -76,8 +76,8 @@ locals {
   ecp_configuration_repo_version = "feature/azurerm_5.x" # "main"
   ecp_azure_modules_repo_version = "dev" # "v0.5.0-alpha" # "v0.4.1-alpha" # main / dev
 
-  tg_version_automation = "1.1.1" # pin terragrunt version for pipelines (interactive execution will use the latest installed version)
-  tf_version_automation = "1.15.9" # pin terraform version for pipelines (interactive execution will use the latest installed version)
+  tg_version_automation = "1.1.1" # pin terragrunt version for pipelines (interactive execution will use the installed version)
+  tf_version_automation = "1.15.9" # pin terraform version for pipelines (interactive execution will use the installed version)
 
   tf_required_version = ">= 1.15" # for versions.tf file generated
   
