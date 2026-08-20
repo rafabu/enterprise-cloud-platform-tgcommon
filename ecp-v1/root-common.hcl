@@ -129,9 +129,9 @@ locals {
 
 terraform {
   # 'ref': unlike the examples in the Terragrunt documentation, the ref parameter doesn't come at the end of the path. If set there, it will break (last examined with terragrunt v1.1.3)
+  #        e.g. like "git::github.com/rafabu/enterprise-cloud-platform-azure.git?ref=dev/modules-tf//launchpad-bootstrap-helper"
   source = "git::${local.ecp_azure_modules_repo}?ref=${local.ecp_azure_modules_repo_version}/modules-tf//${local.unit_common_vars.locals.azure_tf_module_folder}"
   
-
   # Force Terraform to keep trying to acquire a lock for
   # up to 20 minutes if someone else already has the lock
   extra_arguments "retry_lock" {
