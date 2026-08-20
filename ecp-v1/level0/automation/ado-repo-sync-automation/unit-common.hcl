@@ -15,6 +15,8 @@ dependency "l0-lp-az-lp-main" {
       location = "westeurope"
     }
     ecp_environment_name                           = "mock-environment"
+    ecp_automation_terragrunt_version              = "mock-terragrunt-version"
+    ecp_automation_terraform_version               = "mock-terraform-version"
     ecp_azure_devops_automation_repository_name    = "mock.automation"
     ecp_azure_devops_configuration_repository_name = "mock.configuration"
     azuredevops_organization_name                  = "mock-ado-org"
