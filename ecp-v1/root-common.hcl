@@ -505,7 +505,7 @@ terraform {
     #     avm-res-network-virtualnetwork (v0.17.1) which requires azurerm 4.x
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "${local.tf_provider_azurerm_version_5}" # "${local.tf_provider_azurerm_version_4}"
+      version = "${local.tf_provider_azurerm_version_4}"
     }
 %{endif}
   }
