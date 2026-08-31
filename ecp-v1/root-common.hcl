@@ -347,17 +347,18 @@ provider "azuread" {
 provider "azuredevops" {
   org_service_url = "https://dev.azure.com/$${var.ecp_azure_devops_organization_name}"
 }
-# vending does not use azurerm
-# provider "azurerm" {
-#   tenant_id       = "${local.merged_locals.ecp_entra_tenant_id}"
-#   # uses launchpad's subscription - modules create their own, instanced provider for the landing zone
-#   subscription_id = "${local.ecp_launchpad_subscription_id}"
+# vending still references azurerm in module avm-ptn-alz-sub-vending (v0.3.1) via
+#     avm-res-network-virtualnetwork (v0.17.1) which requires azurerm 4.x
+provider "azurerm" {
+  tenant_id       = "${local.merged_locals.ecp_entra_tenant_id}"
+  # uses launchpad's subscription - modules create their own, instanced provider for the landing zone
+  subscription_id = "${local.ecp_launchpad_subscription_id}"
 
-#   environment         = "public"
-#   storage_use_azuread = true
+  environment         = "public"
+  storage_use_azuread = true
 
-#   features {}
-# }
+  features {}
+}
 %{endif}
 EOF
 }
@@ -500,11 +501,12 @@ terraform {
       source  = "microsoft/azuredevops"
       version = "${local.tf_provider_azuredevops_version}"
     }
-    # vending does not use azurerm
-    # azurerm = {
-    #   source  = "hashicorp/azurerm"
-    #   version = "${local.tf_provider_azurerm_version_5}" # "${local.tf_provider_azurerm_version_4}"
-    # }
+    # vending still references azurerm in module avm-ptn-alz-sub-vending (v0.3.1) via
+    #     avm-res-network-virtualnetwork (v0.17.1) which requires azurerm 4.x
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "${local.tf_provider_azurerm_version_5}" # "${local.tf_provider_azurerm_version_4}"
+    }
 %{endif}
   }
 }
