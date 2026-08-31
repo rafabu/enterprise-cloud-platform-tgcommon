@@ -84,7 +84,7 @@ locals {
   tf_provider_azuread_version     = "~> 3.9"
   tf_provider_azurecaf_version    = "~> 1.2"
   tf_provider_azurerm_version_4   = "~> 4.81"
-  tf_provider_azurerm_version_5   = "~> 5.1"
+  tf_provider_azurerm_version_5   = "~> 5.3"
   tf_provider_azapi_version       = "~> 2.12"
   tf_provider_azuredevops_version = "~> 1.16"
   tf_provider_external_version    = "~> 2.4"
@@ -115,7 +115,7 @@ locals {
   tf_module_avm-res-network-natgateway_version                     = "0.3.2"
   # tf_module_avm-res-network-virtualnetwork_version               = "0.19.0"
   # tf_module_avm-res-network-publicipaddress_version                = "0.2.1"
-  tf_module_avm-res-storage-storageaccount_version                 = "0.8.1"
+  tf_module_avm-res-storage-storageaccount_version                 = "0.9.0"
   tf_module_avm-utl-regions_version                                = "0.12.0"
   
   
@@ -347,16 +347,17 @@ provider "azuread" {
 provider "azuredevops" {
   org_service_url = "https://dev.azure.com/$${var.ecp_azure_devops_organization_name}"
 }
-provider "azurerm" {
-  tenant_id       = "${local.merged_locals.ecp_entra_tenant_id}"
-  # uses launchpad's subscription - modules create their own, instanced provider for the landing zone
-  subscription_id = "${local.ecp_launchpad_subscription_id}"
+# vending does not use azurerm
+# provider "azurerm" {
+#   tenant_id       = "${local.merged_locals.ecp_entra_tenant_id}"
+#   # uses launchpad's subscription - modules create their own, instanced provider for the landing zone
+#   subscription_id = "${local.ecp_launchpad_subscription_id}"
 
-  environment         = "public"
-  storage_use_azuread = true
+#   environment         = "public"
+#   storage_use_azuread = true
 
-  features {}
-}
+#   features {}
+# }
 %{endif}
 EOF
 }
@@ -499,12 +500,11 @@ terraform {
       source  = "microsoft/azuredevops"
       version = "${local.tf_provider_azuredevops_version}"
     }
-    # modules still needing azurerm 4.x
-    #    - avm-res-network-bastionhost: v0.9.0
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "${local.tf_provider_azurerm_version_4}"
-    }
+    # vending does not use azurerm
+    # azurerm = {
+    #   source  = "hashicorp/azurerm"
+    #   version = "${local.tf_provider_azurerm_version_5}" # "${local.tf_provider_azurerm_version_4}"
+    # }
 %{endif}
   }
 }
