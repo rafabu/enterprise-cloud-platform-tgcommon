@@ -62,12 +62,6 @@ dependency "az-privatelink-privatedns-zones" {
 }
 
 locals {
-  ecp_deployment_area             = "ecpa"
-  ecp_deployment_unit             = "mgmt"
-  ecp_resource_name_random_length = 0
-
-  azure_tf_module_folder = "az-alz-base"
-
   alz_library_path_shared = format("%s/lib/ecp-lib/platform/alz-artefacts/", replace(get_repo_root(), "\\", "/"))
   alz_library_path_unit   = "${replace(get_terragrunt_dir(), "\\", "/")}/lib/"
   # folder where rendered template alz library files are places (temporarily)

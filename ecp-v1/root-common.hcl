@@ -1,13 +1,13 @@
 
-
 locals {
   # Read all the locals from the different levels to enable overridable locals e.g. for backend configuration
-  root_vars        = read_terragrunt_config(format("%s/../../../../root.hcl", replace(get_terragrunt_dir(), "\\", "/")))
-  env_vars         = read_terragrunt_config(format("%s/../../../env.hcl", replace(get_terragrunt_dir(), "\\", "/")))
-  level_vars       = read_terragrunt_config(format("%s/../../level.hcl", replace(get_terragrunt_dir(), "\\", "/")))
-  area_vars        = read_terragrunt_config(format("%s/../area.hcl", replace(get_terragrunt_dir(), "\\", "/")))
-  unit_common_path = format(
-   "%s/lib/terragrunt-common/ecp-v1/%s/unit-common.hcl",
+  root_locals        = read_terragrunt_config(format("%s/../../../../root.hcl", replace(get_terragrunt_dir(), "\\", "/"))).locals
+  env_locals         = read_terragrunt_config(format("%s/../../../env.hcl", replace(get_terragrunt_dir(), "\\", "/"))).locals
+  level_locals      = read_terragrunt_config(format("%s/../../level.hcl", replace(get_terragrunt_dir(), "\\", "/"))).locals
+  area_locals        = read_terragrunt_config(format("%s/../area.hcl", replace(get_terragrunt_dir(), "\\", "/"))).locals
+  versions_locals    = read_terragrunt_config("${replace(get_parent_terragrunt_dir(), "\\", "/")}/root-versions.hcl").locals
+  unit_config_path = format(
+   "%s/lib/terragrunt-common/ecp-v1/%s/unit-config.hcl",
    replace(get_repo_root(), "\\", "/"),
    can(regex("(?:^|/)level3/vending/[^/]+$", replace(get_terragrunt_dir(), "\\", "/")))
    # vending: collapse to the shared unit -> "<level3>/vending/az-alz-vending-subscription"
@@ -18,15 +18,15 @@ locals {
    # default: last three folders -> "<level>/<area>/<unit>"
    : regexall("^.*(?:/)(.+?(?:/).+?(?:/).+?)$", replace(get_terragrunt_dir(), "\\", "/"))[0][0]
   )
-  unit_common_vars = read_terragrunt_config(local.unit_common_path)
-
+  unit_config_locals = read_terragrunt_config(local.unit_config_path).locals
 
   merged_locals = merge(
-    local.root_vars.locals,
-    local.env_vars.locals,
-    local.level_vars.locals,
-    local.area_vars.locals,
-    local.unit_common_vars.locals
+    local.root_locals,
+    # local.versions_vars.locals,
+    local.env_locals,
+    local.level_locals,
+    local.area_locals,
+    local.unit_config_locals
   )
 
   terraform_command = get_terraform_command()
@@ -43,20 +43,6 @@ locals {
 
   deployment_unit_default = "main"
 
-  ######## Merged ECP Data Object ########
-  ecp_deployment_data_object = {
-    deployment_code            = local.merged_locals.ecp_deployment_code
-    deployment_env             = local.merged_locals.ecp_deployment_env
-    deployment_number          = local.merged_locals.ecp_deployment_number
-    deployment_area            = local.merged_locals.ecp_deployment_area
-    deployment_unit            = try(local.merged_locals.ecp_deployment_unit, local.deployment_unit_default)
-    environment_name           = lower("${local.merged_locals.ecp_deployment_code}-${substr(local.merged_locals.ecp_deployment_env, 0, 1)}${local.merged_locals.ecp_deployment_number}")
-    launchpad_subscription_id  = local.merged_locals.ecp_launchpad_subscription_id
-    management_subscription_id = local.merged_locals.ecp_management_subscription_id
-    # launchpad_resource_group_name  = local.merged_locals.ecp_launchpad_resource_group_name
-    # launchpad_storage_account_name = local.merged_locals.ecp_launchpad_storage_account_name
-  }
-
   ######## Launchpad ########
   ecp_launchpad_subscription_id    = coalesce(local.merged_locals.ecp_launchpad_subscription_id, "00000000-0000-0000-0000-000000000000") # from env.hcl normally
   ecp_management_subscription_id   = local.merged_locals.ecp_management_subscription_id
@@ -72,60 +58,12 @@ locals {
 
   tfplan_path = get_env("TF_PLAN_PATH", "./")
 
-  ############ Versions ############
-  ecp_configuration_repo_version = "feature/azurerm_5.x" # "main"
-  ecp_azure_modules_repo_version = "dev" # "v0.5.0-alpha" # "v0.4.1-alpha" # main / dev
-
-  tg_version_automation = "1.1.1" # pin terragrunt version for pipelines (interactive execution will use the installed version)
-  tf_version_automation = "1.15.9" # pin terraform version for pipelines (interactive execution will use the installed version)
-
-  tf_required_version = ">= 1.15" # for versions.tf file generated
-  
-  tf_provider_azuread_version     = "~> 3.9"
-  tf_provider_azurecaf_version    = "~> 1.2"
-  tf_provider_azurerm_version_4   = "~> 4.81"
-  tf_provider_azurerm_version_5   = "~> 5.3"
-  tf_provider_azapi_version       = "~> 2.12"
-  tf_provider_azuredevops_version = "~> 1.16"
-  tf_provider_external_version    = "~> 2.4"
-  tf_provider_http_version        = "~> 3.6"
-  tf_provider_local_version       = "~> 2.9"
-  tf_provider_random_version      = "~> 3.9"
-  tf_provider_msgraph_version     = "~> 0.4"
-  tf_provider_time_version        = "~> 0.14"
-  # ALZ
-  tf_provider_alz_version = "~> 0.21"
-
-  # refresh to newer ALZ / SLZ / AMBA
-  #     IMPORTANT !!!!!
-  #     --> also update "alz_library_metadata.json" to reference the same version of ALZ / SLZ
-  tf_provider_alz_alz_lib_version  = "2026.04.2"
-  tf_provider_alz_slz_lib_version  = "2026.04.3"
-  tf_provider_alz_amba_lib_version = "2026.01.1"
-
-  # Azure Verified Modules
-  tf_provider_modtm_version = "~> 0.4"
-
-  tf_module_avm-ptn-alz_version                                    = "0.21.0"
-  tf_module_avm-ptn-alz-connectivity-virtual-wan_version           = "0.17.1"
-  tf_module_avm-ptn-alz-connectivity-hub-and-spoke-vnet_version    = "0.17.4"
-  tf_module_avm-ptn-alz-management_version                         = "0.9.0"
-  tf_module_avm-ptn-network-private-link-private-dns-zones_version = "0.23.2"
-  tf_module_avm-ptn-alz-sub-vending_version                        = "0.3.1"
-  tf_module_avm-res-network-natgateway_version                     = "0.3.2"
-  # tf_module_avm-res-network-virtualnetwork_version               = "0.19.0"
-  # tf_module_avm-res-network-publicipaddress_version                = "0.2.1"
-  tf_module_avm-res-storage-storageaccount_version                 = "0.9.0"
-  tf_module_avm-utl-regions_version                                = "0.12.0"
-  
-  
-
+ 
   ############ Tags ############
   root_common_azure_tags = {
     # "hidden-ecpTgUnitRootCommon" = format("%s/root-common.hcl", replace(get_parent_terragrunt_dir(), "\\", "/"))
     createdBy = "ecp-terraform"
   }
-
 }
 
 # remote state logic is in each unit-common.hcl file
@@ -134,13 +72,12 @@ locals {
 terraform {
   # 'ref': unlike the examples in the Terragrunt documentation, the ref parameter doesn't come at the end of the path. If set there, it will break (last examined with terragrunt v1.1.3)
   #        e.g. like "git::github.com/rafabu/enterprise-cloud-platform-azure.git?ref=dev/modules-tf//launchpad-bootstrap-helper"
-  source = "git::${local.ecp_azure_modules_repo}?ref=${local.ecp_azure_modules_repo_version}/modules-tf//${local.unit_common_vars.locals.azure_tf_module_folder}"
+  source = "git::${local.ecp_azure_modules_repo}?ref=${local.versions_locals.ecp_azure_modules_repo_version}/modules-tf//${local.unit_config_locals.azure_tf_module_folder}"
   
   # Force Terraform to keep trying to acquire a lock for
   # up to 20 minutes if someone else already has the lock
   extra_arguments "retry_lock" {
     commands = get_terraform_commands_that_need_locking()
-
     arguments = [
       "-lock-timeout=20m"
     ]
@@ -186,7 +123,7 @@ provider "alz" {
   library_references = [
     {
       path = "platform/alz"
-      ref  = "${local.tf_provider_alz_alz_lib_version}"
+      ref  = "${local.versions_locals.tf_provider_alz_alz_lib_version}"
     },
     # load additional ALZ artifacts via library
     {
@@ -368,7 +305,7 @@ generate "versions" {
   if_exists = "overwrite"
   contents = <<EOF
 terraform {
-  required_version = "${local.tf_required_version}"
+  required_version = "${local.versions_locals.tf_required_version}"
 
   required_providers {
 %{if contains(
@@ -377,7 +314,7 @@ terraform {
   )}
     alz = {
       source  = "azure/alz"
-      version = "${local.tf_provider_alz_version}"
+      version = "${local.versions_locals.tf_provider_alz_version}"
     }
 %{endif}
 %{if contains(
@@ -386,12 +323,12 @@ terraform {
   )}
     azuread = {
       source  = "hashicorp/azuread"
-      version = "${local.tf_provider_azuread_version}"
+      version = "${local.versions_locals.tf_provider_azuread_version}"
     }
 %{endif}
     azurecaf = {
       source  = "aztfmod/azurecaf"
-      version = "${local.tf_provider_azurecaf_version}"
+      version = "${local.versions_locals.tf_provider_azurecaf_version}"
     }
 %{if contains(
   ["az-alz-management-resources", "az-alz-connectivity-virtual-wan", "az-alz-connectivity-hub-spoke"],
@@ -403,7 +340,7 @@ terraform {
     #    - avm-ptn-alz-connectivity-hub-and-spoke-vnet: v0.17.4
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "${local.tf_provider_azurerm_version_4}"
+      version = "${local.versions_locals.tf_provider_azurerm_version_4}"
     }
 %{endif}
 %{if contains(
@@ -413,7 +350,7 @@ terraform {
     # units fully azurerm 5.x compatible
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "${local.tf_provider_azurerm_version_5}"
+      version = "${local.versions_locals.tf_provider_azurerm_version_5}"
     }
 %{endif}
 %{if contains(
@@ -422,7 +359,7 @@ terraform {
   )}
     azapi = {
       source  = "azure/azapi"
-      version = "${local.tf_provider_azapi_version}"
+      version = "${local.versions_locals.tf_provider_azapi_version}"
     }
 %{endif}
 %{if contains(
@@ -431,16 +368,16 @@ terraform {
   )}
     azuredevops = {
       source  = "microsoft/azuredevops"
-      version = "${local.tf_provider_azuredevops_version}"
+      version = "${local.versions_locals.tf_provider_azuredevops_version}"
     }
 %{endif}
     local = {
       source  = "hashicorp/local"
-      version = "${local.tf_provider_local_version}"
+      version = "${local.versions_locals.tf_provider_local_version}"
     }
     random = {
       source  = "hashicorp/random"
-      version = "${local.tf_provider_random_version}"
+      version = "${local.versions_locals.tf_provider_random_version}"
     }
 %{if contains(
   ["entraid-policies"],
@@ -448,7 +385,7 @@ terraform {
   )}
     msgraph = {
       source  = "Microsoft/msgraph"
-      version = "${local.tf_provider_msgraph_version}"
+      version = "${local.versions_locals.tf_provider_msgraph_version}"
     }
 %{endif}
 %{if contains(
@@ -457,7 +394,7 @@ terraform {
   )}
     external = {
       source  = "hashicorp/external"
-      version = "${local.tf_provider_external_version}"
+      version = "${local.versions_locals.tf_provider_external_version}"
     }
 %{endif}
 %{if contains(
@@ -466,7 +403,7 @@ terraform {
   )}
     http = {
       source  = "hashicorp/http"
-      version = "${local.tf_provider_http_version}"
+      version = "${local.versions_locals.tf_provider_http_version}"
     }
 %{endif}
 %{if contains(
@@ -475,7 +412,7 @@ terraform {
   )}
     modtm = {
       source  = "azure/modtm"
-      version = "${local.tf_provider_modtm_version}"
+      version = "${local.versions_locals.tf_provider_modtm_version}"
     }
 %{endif}
 %{if contains(
@@ -484,28 +421,28 @@ terraform {
 )}
     time = {
       source  = "hashicorp/time"
-      version = "${local.tf_provider_time_version}"
+      version = "${local.versions_locals.tf_provider_time_version}"
     }
 %{endif}
 %{if strcontains(replace(get_terragrunt_dir(), "\\", "/"), "/level3/vending/")}
     # subscription vending
     azapi = {
       source  = "azure/azapi"
-      version = "${local.tf_provider_azapi_version}"
+      version = "${local.versions_locals.tf_provider_azapi_version}"
     }
     azuread = {
       source  = "hashicorp/azuread"
-      version = "${local.tf_provider_azuread_version}"
+      version = "${local.versions_locals.tf_provider_azuread_version}"
     }
     azuredevops = {
       source  = "microsoft/azuredevops"
-      version = "${local.tf_provider_azuredevops_version}"
+      version = "${local.versions_locals.tf_provider_azuredevops_version}"
     }
     # vending still references azurerm in module avm-ptn-alz-sub-vending (v0.3.1) via
     #     avm-res-network-virtualnetwork (v0.17.1) which requires azurerm 4.x
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "${local.tf_provider_azurerm_version_4}"
+      version = "${local.versions_locals.tf_provider_azurerm_version_4}"
     }
 %{endif}
   }
@@ -557,8 +494,8 @@ EOF
 
 inputs = {
 
-  ecp_automation_terragrunt_version = local.tg_version_automation
-  ecp_automation_terraform_version  = local.tf_version_automation
+  ecp_automation_terragrunt_version = local.versions_locals.tg_version_automation
+  ecp_automation_terraform_version  = local.versions_locals.tf_version_automation
 
   azure_location = local.ecp_azure_main_location
   azure_resource_name_elements = {
@@ -588,7 +525,7 @@ inputs = {
   ecp_azure_root_parent_management_group_id      = local.ecp_azure_root_parent_management_group_id
 
   ecp_configuration_repo         = local.ecp_configuration_repo
-  ecp_configuration_repo_version = local.ecp_configuration_repo_version
+  ecp_configuration_repo_version = local.versions_locals.ecp_configuration_repo_version
   # extract relative path from git repo root to root.hcl file (and remove leading slash if any)
   ecp_configuration_repo_deployment_root_path = replace(replace(replace(dirname(abspath(format("%s/../../../../root.hcl", replace(get_terragrunt_dir(), "\\", "/")))), "\\", "/"), replace(get_repo_root(), "\\", "/"), ""), "/^//", "")
 
@@ -604,13 +541,13 @@ inputs = {
   }
 
   # terraform module versions
-  avm-ptn-alz_version                                    = local.tf_module_avm-ptn-alz_version
-  avm-ptn-alz-connectivity-virtual-wan_version           = local.tf_module_avm-ptn-alz-connectivity-virtual-wan_version
-  avm-ptn-alz-connectivity-hub-and-spoke-vnet_version    = local.tf_module_avm-ptn-alz-connectivity-hub-and-spoke-vnet_version
-  avm-ptn-alz-management_version                         = local.tf_module_avm-ptn-alz-management_version
-  avm-ptn-alz-sub-vending_version                        = local.tf_module_avm-ptn-alz-sub-vending_version
-  avm-ptn-network-private-link-private-dns-zones_version = local.tf_module_avm-ptn-network-private-link-private-dns-zones_version
-  avm-utl-regions_version                                = local.tf_module_avm-utl-regions_version
-  avm-res-storage-storageaccount_version                 = local.tf_module_avm-res-storage-storageaccount_version
-  avm-res-network-natgateway_version                     = local.tf_module_avm-res-network-natgateway_version
+  avm-ptn-alz_version                                    = local.versions_locals.tf_module_avm-ptn-alz_version
+  avm-ptn-alz-connectivity-virtual-wan_version           = local.versions_locals.tf_module_avm-ptn-alz-connectivity-virtual-wan_version
+  avm-ptn-alz-connectivity-hub-and-spoke-vnet_version    = local.versions_locals.tf_module_avm-ptn-alz-connectivity-hub-and-spoke-vnet_version
+  avm-ptn-alz-management_version                         = local.versions_locals.tf_module_avm-ptn-alz-management_version
+  avm-ptn-alz-sub-vending_version                        = local.versions_locals.tf_module_avm-ptn-alz-sub-vending_version
+  avm-ptn-network-private-link-private-dns-zones_version = local.versions_locals.tf_module_avm-ptn-network-private-link-private-dns-zones_version
+  avm-utl-regions_version                                = local.versions_locals.tf_module_avm-utl-regions_version
+  avm-res-storage-storageaccount_version                 = local.versions_locals.tf_module_avm-res-storage-storageaccount_version
+  avm-res-network-natgateway_version                     = local.versions_locals.tf_module_avm-res-network-natgateway_version
 }
