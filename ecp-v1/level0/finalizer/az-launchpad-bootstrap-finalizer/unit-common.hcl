@@ -49,8 +49,6 @@ dependency "l0-lp-ado-mpool" {
 }
 
 locals {
-  azure_tf_module_folder = "launchpad-bootstrap-finalizer"
-
   ################# bootstrap-helper unit output #################
   TG_DOWNLOAD_DIR = replace(coalesce(
     try(get_env("TG_DOWNLOAD_DIR"), null),
