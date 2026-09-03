@@ -86,6 +86,14 @@ dependency "l2-con-az-con-vwan" {
         address_prefix = "192.0.2.0/24"
       }
     }
+    azure_virtual_wan_hub_resource_details_by_location = {
+      westeurope = {
+        id                  = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualHubs/mock-vhub"
+        name                = "mock-vhub"
+        location            = "westeurope"
+        address_prefix = "192.0.2.0/24"
+      }
+    }
   }
   # DANGER ZONE WORKAROUND HERE
   # add "apply" and "destroy" to mock but ONLY UNTIL AFTER https://github.com/gruntwork-io/terragrunt/issues/5993 gets fixed
@@ -94,12 +102,6 @@ dependency "l2-con-az-con-vwan" {
 }
 
 locals {
-  #ecp_deployment_area             = "" # vending uses its own naming convention
-  # ecp_deployment_unit             = "" # vending uses its own naming convention
-  # ecp_resource_name_random_length = 0
-
-  azure_tf_module_folder = "az-alz-vending-subscription"
-
   library_path_shared = format("%s/lib/ecp-lib", replace(get_repo_root(), "\\", "/"))
   library_path_unit   = "${replace(get_terragrunt_dir(), "\\", "/")}/lib"
 

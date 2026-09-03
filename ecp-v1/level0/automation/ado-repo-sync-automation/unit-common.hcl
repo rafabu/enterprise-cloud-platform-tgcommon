@@ -15,6 +15,8 @@ dependency "l0-lp-az-lp-main" {
       location = "westeurope"
     }
     ecp_environment_name                           = "mock-environment"
+    ecp_automation_terragrunt_version              = "mock-terragrunt-version"
+    ecp_automation_terraform_version               = "mock-terraform-version"
     ecp_azure_devops_automation_repository_name    = "mock.automation"
     ecp_azure_devops_configuration_repository_name = "mock.configuration"
     azuredevops_organization_name                  = "mock-ado-org"
@@ -26,11 +28,6 @@ dependency "l0-lp-az-lp-main" {
 }
 
 locals {
-  ecp_deployment_unit             = "ado-automation"
-  ecp_resource_name_random_length = 0
-
-  azure_tf_module_folder = "ado-repo-sync"
-
   library_path_shared = format("%s/lib/ecp-lib", replace(get_repo_root(), "\\", "/"))
   library_path_unit   = "${replace(get_terragrunt_dir(), "\\", "/")}/lib"
 
@@ -196,6 +193,8 @@ inputs = {
       ]
       content_replacements = {
         "<ecp_environment_name>" = "${dependency.l0-lp-az-lp-main.outputs.ecp_environment_name}"
+        "<ecp_terragrunt_version>" = "${dependency.l0-lp-az-lp-main.outputs.ecp_automation_terragrunt_version}"
+        "<ecp_terraform_version>" = "${dependency.l0-lp-az-lp-main.outputs.ecp_automation_terraform_version}"
       }
     }
   }

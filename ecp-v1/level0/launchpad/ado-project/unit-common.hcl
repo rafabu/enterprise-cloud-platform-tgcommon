@@ -86,11 +86,6 @@ dependency "l0-lp-az-lp-main" {
 }
 
 locals {
-  ecp_deployment_unit             = "ado-project"
-  ecp_resource_name_random_length = 0
-
-  azure_tf_module_folder = "ado-project"
-
   ################# bootstrap-helper unit output #################
   TG_DOWNLOAD_DIR = replace(coalesce(
     try(get_env("TG_DOWNLOAD_DIR"), null),
