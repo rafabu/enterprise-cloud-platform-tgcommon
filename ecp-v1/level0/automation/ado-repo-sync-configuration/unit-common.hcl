@@ -68,15 +68,15 @@ locals {
     container_name       = local.bootstrap_helper_output.backend_storage_accounts["l0"].tf_backend_container
     use_azuread_auth     = true
     key                  = "${basename(path_relative_to_include())}.tfstate"
-    } : {
-    path = local.bootstrap_local_backend_path
+
     # ECP fully provisions the backend during initial run with backend/* modules
     #     and also handles state migration
     skip_resource_group_creation = true
     skip_storage_account_creation = true
     skip_container_creation = true
     skip_versioning = true
-    assign_blob_data_role = false
+    } : {
+    path = local.bootstrap_local_backend_path
   }
 
   ################# tags #################
