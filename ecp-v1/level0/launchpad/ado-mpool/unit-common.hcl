@@ -197,6 +197,13 @@ locals {
     key                  = "${basename(path_relative_to_include())}.tfstate"
     } : {
     path = local.bootstrap_local_backend_path
+    # ECP fully provisions the backend during initial run with backend/* modules
+    #     and also handles state migration
+    skip_resource_group_creation = true
+    skip_storage_account_creation = true
+    skip_container_creation = true
+    skip_versioning = true
+    assign_blob_data_role = false
   }
   # do we need to deploy a NAT gateway?
   launchpad_network_island_mode = try(local.bootstrap_helper_output.actor_network_information.ecp_launchpad_network_island_mode, true)
