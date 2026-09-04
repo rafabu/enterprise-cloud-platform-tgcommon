@@ -20,10 +20,8 @@ dependency "l1-con-az-privatedns" {
       "ecp_is_cool_mock" = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/privateDnsZones/privatelink.ecpiscool.mock"
     }
   }
-  # DANGER ZONE WORKAROUND HERE
-  # add "apply" and "destroy" to mock but ONLY UNTIL AFTER https://github.com/gruntwork-io/terragrunt/issues/5993 gets fixed
-  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan", "apply", "destroy"]
-  mock_outputs_merge_strategy_with_state  = "shallow"
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
+  mock_outputs_merge_strategy_with_state  = "deep_map_only"
 }
 
 dependency "l2-con-az-con-bastion" {
@@ -61,10 +59,8 @@ dependency "l2-con-az-con-bastion" {
     }
     bastion_host_reader_permission_group_object_id = "00000000-0000-0000-0000-000000000000"
   }
-  # DANGER ZONE WORKAROUND HERE
-  # add "apply" and "destroy" to mock but ONLY UNTIL AFTER https://github.com/gruntwork-io/terragrunt/issues/5993 gets fixed
-  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan", "apply", "destroy"]
-  mock_outputs_merge_strategy_with_state  = "shallow"
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
+  mock_outputs_merge_strategy_with_state  = "deep_map_only"
 }
 
 dependency "l2-con-az-con-vwan" {
@@ -95,10 +91,8 @@ dependency "l2-con-az-con-vwan" {
       }
     }
   }
-  # DANGER ZONE WORKAROUND HERE
-  # add "apply" and "destroy" to mock but ONLY UNTIL AFTER https://github.com/gruntwork-io/terragrunt/issues/5993 gets fixed
-  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan", "apply", "destroy"]
-  mock_outputs_merge_strategy_with_state  = "shallow"
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
+  mock_outputs_merge_strategy_with_state  = "deep_map_only"
 }
 
 locals {

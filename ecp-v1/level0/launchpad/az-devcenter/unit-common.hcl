@@ -13,10 +13,8 @@ dependency "l0-lp-az-main" {
       location = "westeurope"
     }
   }
-  # DANGER ZONE WORKAROUND HERE
-  # add "apply" and "destroy" to mock but ONLY UNTIL AFTER https://github.com/gruntwork-io/terragrunt/issues/5993 gets fixed
-  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan", "apply", "destroy"]
-  mock_outputs_merge_strategy_with_state  = "shallow"
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
+  mock_outputs_merge_strategy_with_state  = "deep_map_only"
 }
 
 dependency "l0-lp-az-net" {
@@ -50,10 +48,8 @@ dependency "l0-lp-az-net" {
       }
     }
   }
-  # DANGER ZONE WORKAROUND HERE
-  # add "apply" and "destroy" to mock but ONLY UNTIL AFTER https://github.com/gruntwork-io/terragrunt/issues/5993 gets fixed
-  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan", "apply", "destroy"]
-  mock_outputs_merge_strategy_with_state  = "shallow"
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
+  mock_outputs_merge_strategy_with_state  = "deep_map_only"
 }
 
 dependency "l0-lp-az-lp-backend" {
@@ -112,10 +108,8 @@ dependency "l0-lp-az-lp-backend" {
       }
     }
   }
-  # DANGER ZONE WORKAROUND HERE
-  # add "apply" and "destroy" to mock but ONLY UNTIL AFTER https://github.com/gruntwork-io/terragrunt/issues/5993 gets fixed
-  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan", "apply", "destroy"]
-  mock_outputs_merge_strategy_with_state  = "shallow"
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
+  mock_outputs_merge_strategy_with_state  = "deep_map_only"
 }
 
 locals {

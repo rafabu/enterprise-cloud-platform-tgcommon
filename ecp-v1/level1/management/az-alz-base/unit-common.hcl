@@ -20,10 +20,8 @@ dependency "az-ecp-parent" {
     role_group_reader_name       = "mock-role-group-reader"
     role_group_reader_id         = "00000000-0000-0000-0000-000000000000"
   }
-  # DANGER ZONE WORKAROUND HERE
-  # add "apply" and "destroy" to mock but ONLY UNTIL AFTER https://github.com/gruntwork-io/terragrunt/issues/5993 gets fixed
-  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan", "apply", "destroy"]
-  mock_outputs_merge_strategy_with_state  = "shallow"
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
+  mock_outputs_merge_strategy_with_state  = "deep_map_only"
 }
 
 dependency "az-alz-management-resources" {
@@ -37,10 +35,8 @@ dependency "az-alz-management-resources" {
     ama_defender_sqls_data_collection_rule_id   = "00000000-0000-0000-0000-000000000000"
     ama_vm_insights_data_collection_rule_id     = "00000000-0000-0000-0000-000000000000"
   }
-  # DANGER ZONE WORKAROUND HERE
-  # add "apply" and "destroy" to mock but ONLY UNTIL AFTER https://github.com/gruntwork-io/terragrunt/issues/5993 gets fixed
-  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan", "apply", "destroy"]
-  mock_outputs_merge_strategy_with_state  = "shallow"
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
+  mock_outputs_merge_strategy_with_state  = "deep_map_only"
 }
 
 dependency "az-privatelink-privatedns-zones" {
@@ -55,10 +51,8 @@ dependency "az-privatelink-privatedns-zones" {
       azure_ai_cog_svcs  = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/placeholder/providers/Microsoft.Network/privateDnsZones//providers/Microsoft.Network/privateDnsZones/privatelink.cognitiveservices.azure.com"
     }
   }
-  # DANGER ZONE WORKAROUND HERE
-  # add "apply" and "destroy" to mock but ONLY UNTIL AFTER https://github.com/gruntwork-io/terragrunt/issues/5993 gets fixed
-  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan", "apply", "destroy"]
-  mock_outputs_merge_strategy_with_state  = "shallow"
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
+  mock_outputs_merge_strategy_with_state  = "deep_map_only"
 }
 
 locals {
