@@ -45,7 +45,7 @@ if ($env:TG_CTX_COMMAND -eq "plan") {
     $tfOutputANAfterUnknown =$tfPlanOutput.output_changes.actor_network_information.after_unknown
     $tfOutputANMerged = Merge-Objects -Object1 $tfOutputANAfterUnknown -Object2 $tfOutputANAfter
     $tfOutputANMerged = Merge-Objects -Object1 $tfOutputANMerged -Object2 $tfOutputANPlanned
-    
+
     # backend_resource_group
     $tfOutputBRGPlanned  =  $tfPlanOutput.planned_values.outputs.backend_resource_group.value
     $tfOutputBRGAfter = $tfPlanOutput.output_changes.backend_resource_group.after

@@ -87,10 +87,10 @@ locals {
 
     # ECP fully provisions the backend during initial run with backend/* modules
     #     and also handles state migration
-    skip_resource_group_creation = true
+    skip_resource_group_creation  = true
     skip_storage_account_creation = true
-    skip_container_creation = true
-    skip_versioning = true
+    skip_container_creation       = true
+    skip_versioning               = true
   }
 }
 

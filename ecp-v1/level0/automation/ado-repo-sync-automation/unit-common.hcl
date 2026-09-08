@@ -74,10 +74,10 @@ locals {
 
     # ECP fully provisions the backend during initial run with backend/* modules
     #     and also handles state migration
-    skip_resource_group_creation = true
+    skip_resource_group_creation  = true
     skip_storage_account_creation = true
-    skip_container_creation = true
-    skip_versioning = true
+    skip_container_creation       = true
+    skip_versioning               = true
     } : {
     path = local.bootstrap_local_backend_path
   }
@@ -148,7 +148,7 @@ if ("true" -eq "${local.bootstrap_backend_type_changed}") {
     if ("azurerm" -eq "${local.backend_type}") {
         if (Test-Path "${local.bootstrap_local_backend_path}") {
             Write-Output "      remote backend changed from 'local' to 'azurerm'; copying local state to remote now..."
-            Write-Output "      uploading '${local.bootstrap_local_backend_path}' to '${basename(path_relative_to_include())}.tfstate' on ${try(local.bootstrap_helper_output.backend_storage_accounts["l0"].name, "unknown storage account")}'"  
+            Write-Output "      uploading '${local.bootstrap_local_backend_path}' to '${basename(path_relative_to_include())}.tfstate' on ${try(local.bootstrap_helper_output.backend_storage_accounts["l0"].name, "unknown storage account")}'"
             $uploadResult = az storage blob upload --account-name ${try(local.bootstrap_helper_output.backend_storage_accounts["l0"].name, "unknown storage account")} --container-name ${try(local.bootstrap_helper_output.backend_storage_accounts["l0"].tf_backend_container, "unknown container")} --file "${local.bootstrap_local_backend_path}" --name "${basename(path_relative_to_include())}.tfstate" --overwrite --auth-mode "login" --no-progress 2>&1
             if ($LASTEXITCODE -eq 0) {
                 Write-Output "      state file uploaded successfully to remote backend"
@@ -197,9 +197,9 @@ inputs = {
         "**/ecp-debug-adopool-analysis.yaml"
       ]
       content_replacements = {
-        "<ecp_environment_name>" = "${dependency.l0-lp-az-lp-main.outputs.ecp_environment_name}"
+        "<ecp_environment_name>"   = "${dependency.l0-lp-az-lp-main.outputs.ecp_environment_name}"
         "<ecp_terragrunt_version>" = "${dependency.l0-lp-az-lp-main.outputs.ecp_automation_terragrunt_version}"
-        "<ecp_terraform_version>" = "${dependency.l0-lp-az-lp-main.outputs.ecp_automation_terraform_version}"
+        "<ecp_terraform_version>"  = "${dependency.l0-lp-az-lp-main.outputs.ecp_automation_terraform_version}"
       }
     }
   }

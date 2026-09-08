@@ -66,7 +66,7 @@ dependency "l2-con-az-con-bastion" {
 dependency "l2-con-az-con-vwan" {
   config_path = format("%s/../../../level2/connectivity/az-alz-connectivity-virtual-wan", replace(get_original_terragrunt_dir(), "\\", "/"))
   mock_outputs = {
-    azure_virtual_wan_name = "mock-vwan"
+    azure_virtual_wan_name        = "mock-vwan"
     azure_virtual_wan_resource_id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualWans/mock-vwan"
     azure_virtual_wan_hub_resource_ids = {
       main = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualHubs/mock-vhub"
@@ -76,17 +76,17 @@ dependency "l2-con-az-con-vwan" {
     }
     azure_virtual_wan_hub_resource_details = {
       main = {
-        id                  = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualHubs/mock-vhub"
-        name                = "mock-vhub"
-        location            = "westeurope"
+        id             = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualHubs/mock-vhub"
+        name           = "mock-vhub"
+        location       = "westeurope"
         address_prefix = "192.0.2.0/24"
       }
     }
     azure_virtual_wan_hub_resource_details_by_location = {
       westeurope = {
-        id                  = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualHubs/mock-vhub"
-        name                = "mock-vhub"
-        location            = "westeurope"
+        id             = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualHubs/mock-vhub"
+        name           = "mock-vhub"
+        location       = "westeurope"
         address_prefix = "192.0.2.0/24"
       }
     }
@@ -203,10 +203,10 @@ locals {
 
     # ECP fully provisions the backend during initial run with backend/* modules
     #     and also handles state migration
-    skip_resource_group_creation = true
+    skip_resource_group_creation  = true
     skip_storage_account_creation = true
-    skip_container_creation = true
-    skip_versioning = true
+    skip_container_creation       = true
+    skip_versioning               = true
   }
 
   ################# tags #################
@@ -248,13 +248,13 @@ inputs = {
   # }
 
   vwan_hub_resources_by_location = dependency.l2-con-az-con-vwan.outputs.azure_virtual_wan_hub_resource_details_by_location
-  vwan_resource_id = dependency.l2-con-az-con-vwan.outputs.azure_virtual_wan_resource_id
+  vwan_resource_id               = dependency.l2-con-az-con-vwan.outputs.azure_virtual_wan_resource_id
 
-  bastion_vnet_id = dependency.l2-con-az-con-bastion.outputs.virtual_networks["main"].id
+  bastion_vnet_id     = dependency.l2-con-az-con-bastion.outputs.virtual_networks["main"].id
   bastion_resource_id = dependency.l2-con-az-con-bastion.outputs.bastion_hosts["main"].id
 
   private_dns_zone_resource_group_id = dependency.l1-con-az-privatedns.outputs.private_link_resource_group_id
-  private_dns_zone_resource_ids = dependency.l1-con-az-privatedns.outputs.private_link_private_dns_zones_resource_ids
+  private_dns_zone_resource_ids      = dependency.l1-con-az-privatedns.outputs.private_link_private_dns_zones_resource_ids
 
   additional_entra_id_group_members = {
     bastion = {

@@ -1,22 +1,22 @@
 
 locals {
   # Read all the locals from the different levels to enable overridable locals e.g. for backend configuration
-  root_locals        = read_terragrunt_config(format("%s/../../../../root.hcl", replace(get_terragrunt_dir(), "\\", "/"))).locals
-  env_locals         = read_terragrunt_config(format("%s/../../../env.hcl", replace(get_terragrunt_dir(), "\\", "/"))).locals
-  level_locals      = read_terragrunt_config(format("%s/../../level.hcl", replace(get_terragrunt_dir(), "\\", "/"))).locals
-  area_locals        = read_terragrunt_config(format("%s/../area.hcl", replace(get_terragrunt_dir(), "\\", "/"))).locals
-  versions_locals    = read_terragrunt_config("${replace(get_parent_terragrunt_dir(), "\\", "/")}/root-versions.hcl").locals
+  root_locals     = read_terragrunt_config(format("%s/../../../../root.hcl", replace(get_terragrunt_dir(), "\\", "/"))).locals
+  env_locals      = read_terragrunt_config(format("%s/../../../env.hcl", replace(get_terragrunt_dir(), "\\", "/"))).locals
+  level_locals    = read_terragrunt_config(format("%s/../../level.hcl", replace(get_terragrunt_dir(), "\\", "/"))).locals
+  area_locals     = read_terragrunt_config(format("%s/../area.hcl", replace(get_terragrunt_dir(), "\\", "/"))).locals
+  versions_locals = read_terragrunt_config("${replace(get_parent_terragrunt_dir(), "\\", "/")}/root-versions.hcl").locals
   unit_config_path = format(
-   "%s/lib/terragrunt-common/ecp-v1/%s/unit-config.hcl",
-   replace(get_repo_root(), "\\", "/"),
-   can(regex("(?:^|/)level3/vending/[^/]+$", replace(get_terragrunt_dir(), "\\", "/")))
-   # vending: collapse to the shared unit -> "<level3>/vending/az-alz-vending-subscription"
-   ? format(
-     "%s/az-alz-vending-subscription",
-     regexall("^.*(?:/)(.+?(?:/).+?)(?:/).+?$", replace(get_terragrunt_dir(), "\\", "/"))[0][0]
-   )
-   # default: last three folders -> "<level>/<area>/<unit>"
-   : regexall("^.*(?:/)(.+?(?:/).+?(?:/).+?)$", replace(get_terragrunt_dir(), "\\", "/"))[0][0]
+    "%s/lib/terragrunt-common/ecp-v1/%s/unit-config.hcl",
+    replace(get_repo_root(), "\\", "/"),
+    can(regex("(?:^|/)level3/vending/[^/]+$", replace(get_terragrunt_dir(), "\\", "/")))
+    # vending: collapse to the shared unit -> "<level3>/vending/az-alz-vending-subscription"
+    ? format(
+      "%s/az-alz-vending-subscription",
+      regexall("^.*(?:/)(.+?(?:/).+?)(?:/).+?$", replace(get_terragrunt_dir(), "\\", "/"))[0][0]
+    )
+    # default: last three folders -> "<level>/<area>/<unit>"
+    : regexall("^.*(?:/)(.+?(?:/).+?(?:/).+?)$", replace(get_terragrunt_dir(), "\\", "/"))[0][0]
   )
   unit_config_locals = read_terragrunt_config(local.unit_config_path).locals
 
@@ -58,7 +58,7 @@ locals {
 
   tfplan_path = get_env("TF_PLAN_PATH", "./")
 
- 
+
   ############ Tags ############
   root_common_azure_tags = {
     # "hidden-ecpTgUnitRootCommon" = format("%s/root-common.hcl", replace(get_parent_terragrunt_dir(), "\\", "/"))
@@ -73,7 +73,7 @@ terraform {
   # 'ref': unlike the examples in the Terragrunt documentation, the ref parameter doesn't come at the end of the path. If set there, it will break (last examined with terragrunt v1.1.3)
   #        e.g. like "git::github.com/rafabu/enterprise-cloud-platform-azure.git?ref=dev/modules-tf//launchpad-bootstrap-helper"
   source = "git::${local.ecp_azure_modules_repo}?ref=${local.versions_locals.ecp_azure_modules_repo_version}/modules-tf//${local.unit_config_locals.azure_tf_module_folder}"
-  
+
   # Force Terraform to keep trying to acquire a lock for
   # up to 20 minutes if someone else already has the lock
   extra_arguments "retry_lock" {
@@ -481,7 +481,7 @@ import {
 # prevent destruction of pre-created parent management group
 # removed {
 #   from = module.alz.azapi_resource.management_groups_level_0 # ["${local.ecp_environment_name}-mg-ecpa-deployment"]
-  
+
 #   lifecycle {
 #     destroy = false  # Keep the resource in Azure when destroying
 #   }

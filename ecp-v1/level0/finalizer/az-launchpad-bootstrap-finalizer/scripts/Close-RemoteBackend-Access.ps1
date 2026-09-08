@@ -1,5 +1,5 @@
 param(
-    
+
     [string]$ipInRangeString,
     [string]$publicIp,
     [string]$objectId,
@@ -112,7 +112,7 @@ Write-Output "INFO: TG_CTX_COMMAND: $env:TG_CTX_COMMAND"
 $ipInRange = if ("true" -eq $ipInRangeString) { $true } else { $false }
 $ecpIdentity = if ("true" -eq $ecpIdentityString) { $true } else { $false }
 
-# ForEach-Object -Parallel 
+# ForEach-Object -Parallel
 $levels = @(
     @{
         Level          = "l0";

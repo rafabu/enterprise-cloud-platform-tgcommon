@@ -157,7 +157,7 @@ if ($tgWriteCommands -inotcontains $env:TG_CTX_COMMAND) {
     $tfOutputANAfterUnknown = $tfPlanOutput.output_changes.actor_network_information.after_unknown
     $tfOutputANMerged = Merge-Objects -Object1 $tfOutputANAfterUnknown -Object2 $tfOutputANAfter
     $tfOutputANMerged = Merge-Objects -Object1 $tfOutputANMerged -Object2 $tfOutputANPlanned
-    
+
     # backend_resource_group
     $tfOutputBRGPlanned = $tfPlanOutput.planned_values.outputs.backend_resource_group.value
     $tfOutputBRGAfter = $tfPlanOutput.output_changes.backend_resource_group.after
@@ -228,7 +228,7 @@ $subscriptionIdl3 = $tfOutput.backend_storage_accounts.value.l3.subscription_id
 $accountNamel3 = $tfOutput.backend_storage_accounts.value.l3.name
 $blobPeResolutionl3 = $tfOutput.backend_storage_accounts.value.l3.ecp_terraform_backend_private_endpoint_resolution_valid
 
-# ForEach-Object -Parallel 
+# ForEach-Object -Parallel
 $levels = @(
     @{ Level = "l0"; ResourceExists = $resourceExists; SubscriptionId = $subscriptionId; AccountName = $accountName; BlobPeResolution = $blobPeResolution; }
     @{ Level = "l1"; ResourceExists = $resourceExistsl1; SubscriptionId = $subscriptionIdl1; AccountName = $accountNamel1; BlobPeResolution = $blobPeResolutionl1; }
