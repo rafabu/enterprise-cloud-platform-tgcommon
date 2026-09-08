@@ -11,7 +11,7 @@ locals {
   tf_provider_azuread_version     = "~> 3.9"
   tf_provider_azurecaf_version    = "~> 1.2"
   tf_provider_azurerm_version_4   = "~> 4.81"
-  tf_provider_azurerm_version_5   = "~> 5.3"
+  tf_provider_azurerm_version_5   = "~> 5.4"
   tf_provider_azapi_version       = "~> 2.12"
   tf_provider_azuredevops_version = "~> 1.16"
   tf_provider_external_version    = "~> 2.4"
