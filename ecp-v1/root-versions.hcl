@@ -39,7 +39,7 @@ locals {
   tf_module_avm-ptn-alz-connectivity-hub-and-spoke-vnet_version    = "0.17.5"
   tf_module_avm-ptn-alz-management_version                         = "0.9.0"
   tf_module_avm-ptn-network-private-link-private-dns-zones_version = "0.23.2"
-  tf_module_avm-ptn-alz-sub-vending_version                        = "0.3.1"
+  tf_module_avm-ptn-alz-sub-vending_version                        = "0.3.2"
   tf_module_avm-res-network-natgateway_version                     = "0.3.2"
   # tf_module_avm-res-network-virtualnetwork_version               = "0.22.2"
   # tf_module_avm-res-network-publicipaddress_version                = "0.2.1"
