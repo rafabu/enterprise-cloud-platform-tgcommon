@@ -35,7 +35,7 @@ locals {
   tf_provider_modtm_version = "~> 0.4"
 
   tf_module_avm-ptn-alz_version                                    = "0.21.0"
-  tf_module_avm-ptn-alz-connectivity-virtual-wan_version           = "0.17.1"
+  tf_module_avm-ptn-alz-connectivity-virtual-wan_version           = "0.17.2"
   tf_module_avm-ptn-alz-connectivity-hub-and-spoke-vnet_version    = "0.17.5"
   tf_module_avm-ptn-alz-management_version                         = "0.9.0"
   tf_module_avm-ptn-network-private-link-private-dns-zones_version = "0.23.2"

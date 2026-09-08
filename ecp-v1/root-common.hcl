@@ -336,8 +336,8 @@ terraform {
   )}
     # units still needing azurerm 4.x for some resources (mostly AVM modules)
     #    - avm-ptn-alz-management: v0.9.0
-    #    - avm-ptn-alz-connectivity-virtual-wan: v0.17.1
-    #    - avm-ptn-alz-connectivity-hub-and-spoke-vnet: v0.17.4
+    #    - avm-ptn-alz-connectivity-virtual-wan: v0.17.2
+    #    - avm-ptn-alz-connectivity-hub-and-spoke-vnet: v0.17.5
     azurerm = {
       source  = "hashicorp/azurerm"
       version = "${local.versions_locals.tf_provider_azurerm_version_4}"
