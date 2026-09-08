@@ -438,11 +438,10 @@ terraform {
       source  = "microsoft/azuredevops"
       version = "${local.versions_locals.tf_provider_azuredevops_version}"
     }
-    # vending still references azurerm in module avm-ptn-alz-sub-vending (v0.3.1) via
-    #     avm-res-network-virtualnetwork (v0.17.1) which requires azurerm 4.x
+    # vending avm-ptn-alz-sub-vending (v0.3.2) no longer requires azurerm - hence we can reference azurerm 5
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "${local.versions_locals.tf_provider_azurerm_version_4}"
+      version = "${local.versions_locals.tf_provider_azurerm_version_5}"
     }
 %{endif}
   }
