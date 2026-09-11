@@ -192,7 +192,7 @@ SCRIPT
   after_hook "Close-RemoteBackend-Access" {
     commands = [
       "apply",
-      # "destroy",  # during destroy the remote state should no longer be present
+      # "destroy",  # after destroy the remote state should no longer be present ;-)
       "force-unlock",
       "import",
       # "init",
