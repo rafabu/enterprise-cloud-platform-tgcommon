@@ -2,7 +2,7 @@ param(
     [string]$unitName
 )
 
-function Merge-Objects {
+function Merge-Object {
     param (
         [object]$Object1,
         [object]$Object2
@@ -33,46 +33,46 @@ if ($env:TG_CTX_COMMAND -eq "plan") {
     $tfPlanOutput = (terraform show -no-color -json az-launchpad-bootstrap-helper.tfplan | ConvertFrom-Json)
 
     # actor_identity
-    $tfOutputAIPlanned  =  $tfPlanOutput.planned_values.outputs.actor_identity.value
+    $tfOutputAIPlanned = $tfPlanOutput.planned_values.outputs.actor_identity.value
     $tfOutputAIAfter = $tfPlanOutput.output_changes.actor_identity.after
-    $tfOutputAIAfterUnknown =$tfPlanOutput.output_changes.actor_identity.after_unknown
-    $tfOutputAIMerged = Merge-Objects -Object1 $tfOutputAIAfterUnknown -Object2 $tfOutputAIAfter
-    $tfOutputAIMerged = Merge-Objects -Object1 $tfOutputAIMerged -Object2 $tfOutputAIPlanned
+    $tfOutputAIAfterUnknown = $tfPlanOutput.output_changes.actor_identity.after_unknown
+    $tfOutputAIMerged = Merge-Object -Object1 $tfOutputAIAfterUnknown -Object2 $tfOutputAIAfter
+    $tfOutputAIMerged = Merge-Object -Object1 $tfOutputAIMerged -Object2 $tfOutputAIPlanned
 
     # actor_network_information
-    $tfOutputANPlanned  =  $tfPlanOutput.planned_values.outputs.actor_network_information.value
+    $tfOutputANPlanned = $tfPlanOutput.planned_values.outputs.actor_network_information.value
     $tfOutputANAfter = $tfPlanOutput.output_changes.actor_network_information.after
-    $tfOutputANAfterUnknown =$tfPlanOutput.output_changes.actor_network_information.after_unknown
-    $tfOutputANMerged = Merge-Objects -Object1 $tfOutputANAfterUnknown -Object2 $tfOutputANAfter
-    $tfOutputANMerged = Merge-Objects -Object1 $tfOutputANMerged -Object2 $tfOutputANPlanned
+    $tfOutputANAfterUnknown = $tfPlanOutput.output_changes.actor_network_information.after_unknown
+    $tfOutputANMerged = Merge-Object -Object1 $tfOutputANAfterUnknown -Object2 $tfOutputANAfter
+    $tfOutputANMerged = Merge-Object -Object1 $tfOutputANMerged -Object2 $tfOutputANPlanned
 
     # backend_resource_group
-    $tfOutputBRGPlanned  =  $tfPlanOutput.planned_values.outputs.backend_resource_group.value
+    $tfOutputBRGPlanned = $tfPlanOutput.planned_values.outputs.backend_resource_group.value
     $tfOutputBRGAfter = $tfPlanOutput.output_changes.backend_resource_group.after
-    $tfOutputBRGAfterUnknown =$tfPlanOutput.output_changes.backend_resource_group.after_unknown
-    $tfOutputBRGMerged = Merge-Objects -Object1 $tfOutputBRGAfterUnknown -Object2 $tfOutputBRGAfter
-    $tfOutputBRGMerged = Merge-Objects -Object1 $tfOutputBRGMerged -Object2 $tfOutputBRGPlanned
+    $tfOutputBRGAfterUnknown = $tfPlanOutput.output_changes.backend_resource_group.after_unknown
+    $tfOutputBRGMerged = Merge-Object -Object1 $tfOutputBRGAfterUnknown -Object2 $tfOutputBRGAfter
+    $tfOutputBRGMerged = Merge-Object -Object1 $tfOutputBRGMerged -Object2 $tfOutputBRGPlanned
 
     # backend_storage_accounts
-    $tfOutputBSPlanned  =  $tfPlanOutput.planned_values.outputs.backend_storage_accounts.value
+    $tfOutputBSPlanned = $tfPlanOutput.planned_values.outputs.backend_storage_accounts.value
     $tfOutputBSAfter = $tfPlanOutput.output_changes.backend_storage_accounts.after
-    $tfOutputBSAfterUnknown =$tfPlanOutput.output_changes.backend_storage_accounts.after_unknown
-    $tfOutputBSMerged = Merge-Objects -Object1 $tfOutputBSAfterUnknown -Object2 $tfOutputBSAfter
-    $tfOutputBSMerged = Merge-Objects -Object1 $tfOutputBSMerged -Object2 $tfOutputBSPlanned
+    $tfOutputBSAfterUnknown = $tfPlanOutput.output_changes.backend_storage_accounts.after_unknown
+    $tfOutputBSMerged = Merge-Object -Object1 $tfOutputBSAfterUnknown -Object2 $tfOutputBSAfter
+    $tfOutputBSMerged = Merge-Object -Object1 $tfOutputBSMerged -Object2 $tfOutputBSPlanned
 
     $terraform_output = @{
         "actor_identity"            = @{
-          "value" = $tfOutputAIMerged
-          };
+            "value" = $tfOutputAIMerged
+        };
         "actor_network_information" = @{
-          "value" = $tfOutputANMerged
-          };
+            "value" = $tfOutputANMerged
+        };
         "backend_resource_group"    = @{
-          "value" = $tfOutputBRGMerged
-          };
+            "value" = $tfOutputBRGMerged
+        };
         "backend_storage_accounts"  = @{
-          "value" = $tfOutputBSMerged
-          }
+            "value" = $tfOutputBSMerged
+        }
     }
 }
 elseif ($env:TG_CTX_COMMAND -eq "apply") {

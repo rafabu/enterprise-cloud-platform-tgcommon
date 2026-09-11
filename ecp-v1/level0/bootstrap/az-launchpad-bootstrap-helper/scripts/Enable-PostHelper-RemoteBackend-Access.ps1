@@ -1,4 +1,7 @@
-function Merge-Objects {
+[CmdletBinding(SupportsShouldProcess)]
+param()
+
+function Merge-Object {
     param (
         [object]$Object1,
         [object]$Object2
@@ -14,6 +17,7 @@ function Merge-Objects {
 }
 
 function Set-StorageAccountAccess {
+    [CmdletBinding(SupportsShouldProcess)]
     param(
         [string]$ecpLevel,
         [string]$subscriptionId,
@@ -48,10 +52,15 @@ function Set-StorageAccountAccess {
             Write-Output "INFO: $ecpLevel - checking if access to storage account $accountName via public IP $publicIp is allowed..."
             if ($sa.publicNetworkAccess -ne "Enabled") {
                 Write-Output "     Public network access is $($sa.publicNetworkAccess). Enabling..."
-                az storage account update `
-                    --subscription $subscriptionId `
-                    --name $accountName `
-                    --public-network-access Enabled | Out-Null
+                if ($PSCmdlet.ShouldProcess(
+                        "storage account '$accountName'",
+                        "public-network-access 'Enabled'"
+                    )) {
+                    az storage account update `
+                        --subscription $subscriptionId `
+                        --name $accountName `
+                        --public-network-access Enabled | Out-Null
+                }
             }
             else {
                 Write-Output "     public network access is already Enabled. No change needed."
@@ -67,12 +76,17 @@ function Set-StorageAccountAccess {
             }
             else {
                 Write-Output "     IP $publicIp is being added to network-rule of storage account $accountName..."
-                az storage account network-rule add `
-                    --subscription $subscriptionId `
-                    --account-name $accountName `
-                    --ip-address $publicIp | Out-Null
-                Write-Output "     added..."
-                $waitNeeded = $true
+                if ($PSCmdlet.ShouldProcess(
+                        "storage account '$accountName'",
+                        "network-rule add --ip-address $publicIp"
+                    )) {
+                    az storage account network-rule add `
+                        --subscription $subscriptionId `
+                        --account-name $accountName `
+                        --ip-address $publicIp | Out-Null
+                    Write-Output "     added..."
+                    $waitNeeded = $true
+                }
             }
         }
         elseif ("true" -eq $ipInRange) {
@@ -97,19 +111,24 @@ function Set-StorageAccountAccess {
                 -o tsv
 
             if ($assignment) {
-                Write-Host "    identity $displayName already has role '$roleName' on $accountName (terraform command: '$env:TG_CTX_COMMAND')"
+                Write-Output "    identity $displayName already has role '$roleName' on $accountName (terraform command: '$env:TG_CTX_COMMAND')"
             }
             else {
-                Write-Host "     assigning role '$roleName' to $displayName on $accountName..."
-                az role assignment create `
-                    --subscription $subscriptionId `
-                    --description "ECP_BOOTSTRAP_HELPER" `
-                    --assignee-object-id $objectId `
-                    --assignee-principal-type $principalType `
-                    --role "$roleName" `
-                    --scope $sa.id | Out-Null
-                Write-Output "     added..."
-                $waitNeeded = $true
+                Write-Output "     assigning role '$roleName' to $displayName on $accountName..."
+                if ($PSCmdlet.ShouldProcess(
+                        "storage account '$accountName'",
+                        "role assignment create --role '$roleName'"
+                    )) {
+                    az role assignment create `
+                        --subscription $subscriptionId `
+                        --description "ECP_BOOTSTRAP_HELPER" `
+                        --assignee-object-id $objectId `
+                        --assignee-principal-type $principalType `
+                        --role "$roleName" `
+                        --scope $sa.id | Out-Null
+                    Write-Output "     added..."
+                    $waitNeeded = $true
+                }
             }
         }
         else {
@@ -148,29 +167,29 @@ if ($tgWriteCommands -inotcontains $env:TG_CTX_COMMAND) {
     $tfOutputAIPlanned = $tfPlanOutput.planned_values.outputs.actor_identity.value
     $tfOutputAIAfter = $tfPlanOutput.output_changes.actor_identity.after
     $tfOutputAIAfterUnknown = $tfPlanOutput.output_changes.actor_identity.after_unknown
-    $tfOutputAIMerged = Merge-Objects -Object1 $tfOutputAIAfterUnknown -Object2 $tfOutputAIAfter
-    $tfOutputAIMerged = Merge-Objects -Object1 $tfOutputAIMerged -Object2 $tfOutputAIPlanned
+    $tfOutputAIMerged = Merge-Object -Object1 $tfOutputAIAfterUnknown -Object2 $tfOutputAIAfter
+    $tfOutputAIMerged = Merge-Object -Object1 $tfOutputAIMerged -Object2 $tfOutputAIPlanned
 
     # actor_network_information
     $tfOutputANPlanned = $tfPlanOutput.planned_values.outputs.actor_network_information.value
     $tfOutputANAfter = $tfPlanOutput.output_changes.actor_network_information.after
     $tfOutputANAfterUnknown = $tfPlanOutput.output_changes.actor_network_information.after_unknown
-    $tfOutputANMerged = Merge-Objects -Object1 $tfOutputANAfterUnknown -Object2 $tfOutputANAfter
-    $tfOutputANMerged = Merge-Objects -Object1 $tfOutputANMerged -Object2 $tfOutputANPlanned
+    $tfOutputANMerged = Merge-Object -Object1 $tfOutputANAfterUnknown -Object2 $tfOutputANAfter
+    $tfOutputANMerged = Merge-Object -Object1 $tfOutputANMerged -Object2 $tfOutputANPlanned
 
     # backend_resource_group
     $tfOutputBRGPlanned = $tfPlanOutput.planned_values.outputs.backend_resource_group.value
     $tfOutputBRGAfter = $tfPlanOutput.output_changes.backend_resource_group.after
     $tfOutputBRGAfterUnknown = $tfPlanOutput.output_changes.backend_resource_group.after_unknown
-    $tfOutputBRGMerged = Merge-Objects -Object1 $tfOutputBRGAfterUnknown -Object2 $tfOutputBRGAfter
-    $tfOutputBRGMerged = Merge-Objects -Object1 $tfOutputBRGMerged -Object2 $tfOutputBRGPlanned
+    $tfOutputBRGMerged = Merge-Object -Object1 $tfOutputBRGAfterUnknown -Object2 $tfOutputBRGAfter
+    $tfOutputBRGMerged = Merge-Object -Object1 $tfOutputBRGMerged -Object2 $tfOutputBRGPlanned
 
     # backend_storage_accounts
     $tfOutputBSPlanned = $tfPlanOutput.planned_values.outputs.backend_storage_accounts.value
     $tfOutputBSAfter = $tfPlanOutput.output_changes.backend_storage_accounts.after
     $tfOutputBSAfterUnknown = $tfPlanOutput.output_changes.backend_storage_accounts.after_unknown
-    $tfOutputBSMerged = Merge-Objects -Object1 $tfOutputBSAfterUnknown -Object2 $tfOutputBSAfter
-    $tfOutputBSMerged = Merge-Objects -Object1 $tfOutputBSMerged -Object2 $tfOutputBSPlanned
+    $tfOutputBSMerged = Merge-Object -Object1 $tfOutputBSAfterUnknown -Object2 $tfOutputBSAfter
+    $tfOutputBSMerged = Merge-Object -Object1 $tfOutputBSMerged -Object2 $tfOutputBSPlanned
 
     $tfOutput = @{
         "actor_identity"            = @{
@@ -264,5 +283,6 @@ $levels | ForEach-Object -Parallel {
         -displayName     $using:sharedDisplayName `
         -objectId        $using:sharedObjectId `
         -principalType   $using:sharedPrincipalType `
-        -roleName        $using:sharedRoleName
+        -roleName        $using:sharedRoleName `
+        -WhatIf:$using:WhatIfPreference
 }

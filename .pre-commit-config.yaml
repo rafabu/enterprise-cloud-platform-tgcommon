@@ -23,11 +23,67 @@ repos:
       - id: terragrunt-hcl-fmt
       - id: markdown-link-check    # requires installation:  npm install -g markdown-link-check
 
-  # - repo: https://github.com/antonbabenko/pre-commit-terraform
-  #   rev: v1.109.1
-  #   hooks:
-  #     - id: terraform_fmt
-  #     - id: terraform_validate
-  #     # - id: terraform_tflint # requires installation:
+  # PowerShell Scripts
+  - repo: local
+    hooks:
+      - id: powershell-analyze
+        name: PSScriptAnalyzer
+        language: unsupported # system-level executables
+        entry: >-
+          pwsh -NoProfile -NonInteractive -Command '
+            & {
+            #Requires -Modules PSScriptAnalyzer -PSEdition Core
+            param(
+              [Parameter(ValueFromRemainingArguments)]
+              [string[]]$filePaths
+            )
+
+            $diagnostics = foreach ($path in $filePaths) {
+              $providerPath = (Resolve-Path -LiteralPath $path).ProviderPath
+              Invoke-ScriptAnalyzer -Path $providerPath
+            }
+
+            if ($diagnostics) {
+              $diagnostics | Format-Table -AutoSize | Out-String | Write-Host
+              exit 1
+            }
+          } @args
+          '
+        files: \.ps(?:1|m1|d1)$
+        verbose: false
+
+      - id: powershell-format
+        name: PSScriptAnalyzer Formatter
+        language: unsupported # system-level executables
+        entry: >-
+          pwsh -NoProfile -NonInteractive -Command '
+           & {
+            #Requires -Modules PSScriptAnalyzer -PSEdition Core
+            param(
+              [Parameter(ValueFromRemainingArguments)]
+              [string[]]$filePaths
+            )
+
+            $encoding = [System.Text.UTF8Encoding]::new($false)
+
+            foreach ($path in $filePaths) {
+              $resolvedpath = (Resolve-Path -LiteralPath $path).ProviderPath
+              $original = [System.IO.File]::ReadAllText($resolvedpath)
+              if ($original.Length -eq 0) {
+                continue
+              }
+              else {
+                Write-Output "INFO: Invoke-Formatter on file $resolvedpath"
+                $formatted = Invoke-Formatter -ScriptDefinition $original -Settings CodeFormatting
+                if ($original -cne $formatted) {
+                  Write-Output "INFO: Write formatted content to file $resolvedpath"
+                  [System.IO.File]::WriteAllText($resolvedpath, $formatted, $encoding)
+                }
+              }
+            }
+          } @args
+          '
+        files: \.ps1$
+        verbose: false
 
 minimum_pre_commit_version: '4.6.0'

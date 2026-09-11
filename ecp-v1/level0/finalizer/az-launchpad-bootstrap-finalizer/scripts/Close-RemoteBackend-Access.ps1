@@ -1,5 +1,5 @@
+[CmdletBinding(SupportsShouldProcess)]
 param(
-
     [string]$ipInRangeString,
     [string]$publicIp,
     [string]$objectId,
@@ -16,6 +16,7 @@ param(
 )
 
 function Remove-StorageAccountAccess {
+    [CmdletBinding(SupportsShouldProcess)]
     param(
         [string]$ecpLevel,
         [bool]$resourceExists,
@@ -46,21 +47,31 @@ function Remove-StorageAccountAccess {
                 -o tsv
             if ($rules -contains $publicIp) {
                 Write-Output "     Remove $publicIp from network-rule of storage account $accountName..."
-                az storage account network-rule remove `
-                    --subscription $subscriptionId `
-                    --account-name $accountName `
-                    --ip-address $publicIp | Out-Null
-                Write-Output "     removed..."
+                if ($PSCmdlet.ShouldProcess(
+                        "storage account '$accountName'",
+                        "network-rule remove $publicIp"
+                    )) {
+                    az storage account network-rule remove `
+                        --subscription $subscriptionId `
+                        --account-name $accountName `
+                        --ip-address $publicIp | Out-Null
+                    Write-Output "     removed..."
+                }
             }
             else {
                 Write-Output "    $publicIp not in network-rule of storage account $accountName."
             }
             if ($sa.publicNetworkAccess -eq "Enabled") {
                 Write-Output "     Disable public network access again..."
-                az storage account update `
-                    --subscription $subscriptionId `
-                    --name $accountName `
-                    --public-network-access Disabled | Out-Null
+                if ($PSCmdlet.ShouldProcess(
+                        "storage account '$accountName'",
+                        "public-network-access 'Disabled'"
+                    )) {
+                    az storage account update `
+                        --subscription $subscriptionId `
+                        --name $accountName `
+                        --public-network-access Disabled | Out-Null
+                }
             }
             else {
                 Write-Output "     Public network access already disabled."
@@ -88,7 +99,7 @@ function Remove-StorageAccountAccess {
                 -o JSON | ConvertFrom-Json | Where-Object { $_.description -eq "ECP_BOOTSTRAP_HELPER" }
 
             foreach ($assignment in $assignments) {
-                Write-Host "    Removing $objectId access with role '$assignment.roleDefinitionId' on $accountName"
+                Write-Output "    Removing $objectId access with role '$assignment.roleDefinitionId' on $accountName"
                 az role assignment delete `
                     --subscription $subscriptionId ` `
                     --ids $assignment.id | Out-Null
