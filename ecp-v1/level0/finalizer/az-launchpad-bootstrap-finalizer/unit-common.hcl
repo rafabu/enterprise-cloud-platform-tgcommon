@@ -212,14 +212,17 @@ SCRIPT
       "-resourceExistsString", "${local.bootstrap_helper_output.backend_storage_accounts["l0"].ecp_resource_exists}",
       "-resourceExistsStringl1", "${local.bootstrap_helper_output.backend_storage_accounts["l1"].ecp_resource_exists}",
       "-resourceExistsStringl2", "${local.bootstrap_helper_output.backend_storage_accounts["l2"].ecp_resource_exists}",
+      "-resourceExistsStringl3", "${local.bootstrap_helper_output.backend_storage_accounts["l3"].ecp_resource_exists}",
       "-ipInRangeString", "${local.bootstrap_helper_output.actor_network_information.is_local_ip_within_ecp_launchpad}",
       "-publicIp", "${local.bootstrap_helper_output.actor_network_information.public_ip}",
       "-subscriptionId", "${local.bootstrap_helper_output.backend_storage_accounts["l0"].subscription_id}",
       "-subscriptionIdl1", "${local.bootstrap_helper_output.backend_storage_accounts["l1"].subscription_id}",
       "-subscriptionIdl2", "${local.bootstrap_helper_output.backend_storage_accounts["l2"].subscription_id}",
+      "-subscriptionIdl3", "${local.bootstrap_helper_output.backend_storage_accounts["l3"].subscription_id}",
       "-accountName", "${local.bootstrap_helper_output.backend_storage_accounts["l0"].name}",
       "-accountNamel1", "${local.bootstrap_helper_output.backend_storage_accounts["l1"].name}",
       "-accountNamel2", "${local.bootstrap_helper_output.backend_storage_accounts["l2"].name}",
+      "-accountNamel3", "${local.bootstrap_helper_output.backend_storage_accounts["l3"].name}",
       "-objectId", "${local.bootstrap_helper_output.actor_identity.object_id}",
       "-ecpIdentityString", "${local.bootstrap_helper_output.actor_identity.is_ecp_launchpad_identity}"
     ]

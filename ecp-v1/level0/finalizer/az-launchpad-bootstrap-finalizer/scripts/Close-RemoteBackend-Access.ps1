@@ -7,12 +7,15 @@ param(
     [string]$resourceExistsString,
     [string]$resourceExistsStringl1,
     [string]$resourceExistsStringl2,
+    [string]$resourceExistsStringl3,
     [string]$subscriptionId,
     [string]$subscriptionIdl1,
     [string]$subscriptionIdl2,
+    [string]$subscriptionIdl3,
     [string]$accountName,
     [string]$accountNamel1,
-    [string]$accountNamel2
+    [string]$accountNamel2,
+    [string]$accountNamel3
 )
 
 function Remove-StorageAccountAccess {
@@ -142,6 +145,12 @@ $levels = @(
         ResourceExists = if ("true" -eq $resourceExistsStringl2) { $true } else { $false };
         SubscriptionId = $subscriptionIdl2;
         AccountName    = $accountNamel2
+    }
+    @{
+        Level          = "l3";
+        ResourceExists = if ("true" -eq $resourceExistsStringl3) { $true } else { $false };
+        SubscriptionId = $subscriptionIdl3;
+        AccountName    = $accountNamel3
     }
 )
 
