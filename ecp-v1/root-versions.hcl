@@ -3,15 +3,15 @@ locals {
   ecp_configuration_repo_version = "feature/troubleshoot-mock-on-apply" # "main" # "feature/xxxxx"
   ecp_azure_modules_repo_version = "v0.5.1-alpha"                       # "dev"
 
-  tg_version_automation = "1.1.4"  # pin terragrunt version for pipelines (interactive execution will use the installed version)
-  tf_version_automation = "1.16.1" # pin terraform version for pipelines (interactive execution will use the installed version)
+  tg_version_automation = "1.1.5"  # pin terragrunt version for pipelines (interactive execution will use the installed version)
+  tf_version_automation = "1.16.2" # pin terraform version for pipelines (interactive execution will use the installed version)
 
   tf_required_version = ">= 1.15" # for versions.tf file generated
 
   tf_provider_azuread_version     = "~> 3.9"
   tf_provider_azurecaf_version    = "~> 1.2"
   tf_provider_azurerm_version_4   = "~> 4.81"
-  tf_provider_azurerm_version_5   = "~> 5.4"
+  tf_provider_azurerm_version_5   = "~> 5.5"
   tf_provider_azapi_version       = "~> 2.12"
   tf_provider_azuredevops_version = "~> 1.16"
   tf_provider_external_version    = "~> 2.4"
