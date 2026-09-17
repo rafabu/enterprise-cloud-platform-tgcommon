@@ -23,6 +23,8 @@ repos:
       - id: markdown-link-check    # requires installation:  npm install -g markdown-link-check
 
   # PowerShell Scripts
+  # requires PowerShell Core and PSScriptAnalyzer module:
+  #     Install-module -Name PSScriptAnalyzer -Repository PSGallery
   - repo: local
     hooks:
       - id: powershell-analyze
