@@ -50,6 +50,10 @@ locals {
   ecp_identity_subscription_id     = coalesce(local.merged_locals.ecp_identity_subscription_id, "00000000-0000-0000-0000-000000000000")
   ecp_security_subscription_id     = coalesce(local.merged_locals.ecp_security_subscription_id, "00000000-0000-0000-0000-000000000000")
 
+  ecp_launchpad_subscription_id_provider  = local.ecp_launchpad_subscription_id == "00000000-0000-0000-0000-000000000000" ? ecp_management_subscription_id : local.ecp_launchpad_subscription_id
+  ecp_management_subscription_id_provider = local.ecp_management_subscription_id # the management group subscription must always be defined
+
+
   ecp_environment_stage = local.merged_locals.ecp_deployment_env
   ecp_environment_name  = lower("${local.merged_locals.ecp_deployment_code}-${substr(local.merged_locals.ecp_deployment_env, 0, 1)}${local.merged_locals.ecp_deployment_number}")
 
@@ -118,7 +122,7 @@ generate "provider" {
   )}
 provider "alz" {
   tenant_id       = "${local.merged_locals.ecp_entra_tenant_id}"
-  subscription_id = "${local.ecp_management_subscription_id}"
+  subscription_id = "${local.ecp_management_subscription_id_provider}"
   environment         = "public"
   library_references = [
     {
@@ -143,7 +147,7 @@ provider "alz" {
   )}
 provider "azapi" {
   tenant_id       = "${local.merged_locals.ecp_entra_tenant_id}"
-  subscription_id = "${local.ecp_launchpad_subscription_id}"
+  subscription_id = "${local.ecp_launchpad_subscription_id_provider}"
 
   environment         = "public"
 }
@@ -177,7 +181,7 @@ provider "azurerm" {
   alias  = "launchpad"
 
   tenant_id       = "${local.merged_locals.ecp_entra_tenant_id}"
-  subscription_id = "${local.ecp_launchpad_subscription_id}"
+  subscription_id = "${local.ecp_launchpad_subscription_id_provider}"
 
   environment         = "public"
   storage_use_azuread = true
@@ -195,7 +199,7 @@ provider "azurerm" {
   alias  = "launchpad"
 
   tenant_id       = "${local.merged_locals.ecp_entra_tenant_id}"
-  subscription_id = "${local.ecp_launchpad_subscription_id}"
+  subscription_id = "${local.ecp_launchpad_subscription_id_provider}"
 
   environment         = "public"
   storage_use_azuread = true
@@ -236,7 +240,7 @@ provider "azurerm" {
 provider "azurerm" {
   alias  = "management"
   tenant_id       = "${local.merged_locals.ecp_entra_tenant_id}"
-  subscription_id = "${local.ecp_management_subscription_id}"
+  subscription_id = "${local.ecp_management_subscription_id_provider}"
 
   environment         = "public"
   storage_use_azuread = true
@@ -274,7 +278,7 @@ provider "time" {}
 %{if strcontains(replace(get_terragrunt_dir(), "\\", "/"), "/level3/vending/")}
 provider "azapi" {
   tenant_id       = "${local.merged_locals.ecp_entra_tenant_id}"
-  subscription_id = "${local.ecp_launchpad_subscription_id}"
+  subscription_id = "${local.ecp_launchpad_subscription_id_provider}"
 
   environment         = "public"
 }
@@ -289,7 +293,7 @@ provider "azuredevops" {
 provider "azurerm" {
   tenant_id       = "${local.merged_locals.ecp_entra_tenant_id}"
   # uses launchpad's subscription - modules create their own, instanced provider for the landing zone
-  subscription_id = "${local.ecp_launchpad_subscription_id}"
+  subscription_id = "${local.ecp_launchpad_subscription_id_provider}"
 
   environment         = "public"
   storage_use_azuread = true
