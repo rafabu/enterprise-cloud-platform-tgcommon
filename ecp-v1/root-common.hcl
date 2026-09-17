@@ -50,7 +50,7 @@ locals {
   ecp_identity_subscription_id     = coalesce(local.merged_locals.ecp_identity_subscription_id, "00000000-0000-0000-0000-000000000000")
   ecp_security_subscription_id     = coalesce(local.merged_locals.ecp_security_subscription_id, "00000000-0000-0000-0000-000000000000")
 
-  ecp_launchpad_subscription_id_provider  = local.ecp_launchpad_subscription_id == "00000000-0000-0000-0000-000000000000" ? ecp_management_subscription_id : local.ecp_launchpad_subscription_id
+  ecp_launchpad_subscription_id_provider  = local.ecp_launchpad_subscription_id == "00000000-0000-0000-0000-000000000000" ? local.ecp_management_subscription_id : local.ecp_launchpad_subscription_id
   ecp_management_subscription_id_provider = local.ecp_management_subscription_id # the management group subscription must always be defined
 
 
