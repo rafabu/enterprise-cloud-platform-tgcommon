@@ -1,7 +1,7 @@
 ############ Versions ############
 locals {
   ecp_configuration_repo_version = "feature/troubleshoot-mock-on-apply" # "main" # "feature/xxxxx"
-  ecp_azure_modules_repo_version = "v0.5.1-alpha"                       # "dev"
+  ecp_azure_modules_repo_version = "dev"                                # "v0.5.1-alpha"
 
   tg_version_automation = "1.1.5"  # pin terragrunt version for pipelines (interactive execution will use the installed version)
   tf_version_automation = "1.16.3" # pin terraform version for pipelines (interactive execution will use the installed version)
