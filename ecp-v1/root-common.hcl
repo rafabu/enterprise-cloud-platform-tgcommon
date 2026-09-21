@@ -50,9 +50,11 @@ locals {
   ecp_identity_subscription_id     = coalesce(local.merged_locals.ecp_identity_subscription_id, "00000000-0000-0000-0000-000000000000")
   ecp_security_subscription_id     = coalesce(local.merged_locals.ecp_security_subscription_id, "00000000-0000-0000-0000-000000000000")
 
-  ecp_launchpad_subscription_id_provider  = local.ecp_launchpad_subscription_id == "00000000-0000-0000-0000-000000000000" ? local.ecp_management_subscription_id : local.ecp_launchpad_subscription_id
-  ecp_management_subscription_id_provider = local.ecp_management_subscription_id # the management group subscription must always be defined
-
+  ecp_launchpad_subscription_id_provider    = local.ecp_launchpad_subscription_id == "00000000-0000-0000-0000-000000000000" ? local.ecp_management_subscription_id : local.ecp_launchpad_subscription_id
+  ecp_management_subscription_id_provider   = local.ecp_management_subscription_id # the management group subscription must always be defined
+  ecp_connectivity_subscription_id_provider = local.ecp_connectivity_subscription_id == "00000000-0000-0000-0000-000000000000" ? local.ecp_management_subscription_id : local.ecp_connectivity_subscription_id
+  ecp_identity_subscription_id_provider     = local.ecp_identity_subscription_id == "00000000-0000-0000-0000-000000000000" ? local.ecp_management_subscription_id : local.ecp_identity_subscription_id
+  ecp_security_subscription_id_provider     = local.ecp_security_subscription_id == "00000000-0000-0000-0000-000000000000" ? local.ecp_management_subscription_id : local.ecp_security_subscription_id
 
   ecp_environment_stage = local.merged_locals.ecp_deployment_env
   ecp_environment_name  = lower("${local.merged_locals.ecp_deployment_code}-${substr(local.merged_locals.ecp_deployment_env, 0, 1)}${local.merged_locals.ecp_deployment_number}")
@@ -224,7 +226,7 @@ provider "azurerm" {
   alias  = "connectivity"
 
   tenant_id       = "${local.merged_locals.ecp_entra_tenant_id}"
-  subscription_id = "${local.ecp_connectivity_subscription_id}"
+  subscription_id = "${local.ecp_connectivity_subscription_id_provider}"
 
   environment         = "public"
   storage_use_azuread = true
@@ -515,12 +517,11 @@ inputs = {
   ecp_network_main_ipv4_address_space = local.ecp_network_main_ipv4_address_space
 
   # ECP Platform Azure Subscriptions variables
-  ecp_management_subscription_id = local.ecp_management_subscription_id_provider
-  ecp_launchpad_subscription_id  = local.ecp_launchpad_subscription_id_provider
-  # leave raw subscription IDs for ident, conn & sec so AZ MG hierarchy becomes flexible
-  ecp_identity_subscription_id     = local.ecp_identity_subscription_id
-  ecp_security_subscription_id     = local.ecp_security_subscription_id
-  ecp_connectivity_subscription_id = local.ecp_connectivity_subscription_id
+  ecp_management_subscription_id   = local.ecp_management_subscription_id_provider
+  ecp_launchpad_subscription_id    = local.ecp_launchpad_subscription_id_provider
+  ecp_identity_subscription_id     = local.ecp_identity_subscription_id_provider
+  ecp_security_subscription_id     = local.ecp_security_subscription_id_provider
+  ecp_connectivity_subscription_id = local.ecp_connectivity_subscription_id_provider
 
   ecp_azure_devops_organization_name             = local.ecp_azure_devops_organization_name
   ecp_azure_devops_project_name                  = local.ecp_azure_devops_project_name
