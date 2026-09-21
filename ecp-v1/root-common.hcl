@@ -188,6 +188,8 @@ provider "azurerm" {
   environment         = "public"
   storage_use_azuread = true
 
+  resource_provider_registrations = "none"
+
   features {}
 }
 %{endif}
@@ -207,6 +209,7 @@ provider "azurerm" {
   storage_use_azuread = true
 
   resource_provider_registrations = "core"
+
   # add all required providers for the launchpad subscription to hosts its resources
   resource_providers_to_register = [
     "Microsoft.DevCenter",
@@ -231,6 +234,8 @@ provider "azurerm" {
   environment         = "public"
   storage_use_azuread = true
 
+  resource_provider_registrations = "none"
+
   features {}
 }
 %{endif}
@@ -246,6 +251,8 @@ provider "azurerm" {
 
   environment         = "public"
   storage_use_azuread = true
+
+  resource_provider_registrations = "none"
 
   features {}
 }
@@ -299,6 +306,8 @@ provider "azurerm" {
 
   environment         = "public"
   storage_use_azuread = true
+
+  resource_provider_registrations = "none"
 
   features {}
 }
