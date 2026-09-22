@@ -97,4 +97,6 @@ inputs = {
     workloadName        = "ecpasec"
     workloadDescription = "ecpa security"
   }
+
+  terraform_command = get_terraform_command()
 }
