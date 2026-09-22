@@ -164,7 +164,7 @@ SCRIPT
 Write-Output "INFO: TG_CTX_COMMAND: $env:TG_CTX_COMMAND"
 
 $dependentUnits = @(
-    "az-launchpad-bootstrap-helper",
+    # "az-launchpad-bootstrap-helper",
     "az-launchpad-main",
     "az-launchpad-network",
     "az-launchpad-backend"
