@@ -13,12 +13,12 @@ dependencies {
 dependency "az-ecp-parent" {
   config_path = format("%s/../../ecproot/az-ecp-parent", replace(get_original_terragrunt_dir(), "\\", "/"))
   mock_outputs = {
-    # parent_management_group_name = "mock-mg"
-    parent_management_group_id  = "/providers/Microsoft.Management/managementGroups/mock-mg"
-    role_group_contributor_name = "mock-role-group-contributor"
-    role_group_contributor_id   = "00000000-0000-0000-0000-000000000000"
-    role_group_reader_name      = "mock-role-group-reader"
-    role_group_reader_id        = "00000000-0000-0000-0000-000000000000"
+    parent_management_group_name = "mock-mg"
+    parent_management_group_id   = "/providers/Microsoft.Management/managementGroups/mock-mg"
+    role_group_contributor_name  = "mock-role-group-contributor"
+    role_group_contributor_id    = "00000000-0000-0000-0000-000000000000"
+    role_group_reader_name       = "mock-role-group-reader"
+    role_group_reader_id         = "00000000-0000-0000-0000-000000000000"
   }
   mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
   mock_outputs_merge_strategy_with_state  = "deep_map_only"
@@ -128,7 +128,7 @@ remote_state {
 inputs = {
   azure_tags = local.unit_common_azure_tags
 
-  alz_parent_management_group_resource_id = "/providers/Microsoft.Management/managementGroups/${dependency.az-ecp-parent.outputs.parent_management_group_name}"
+  alz_parent_management_group_resource_id = dependency.az-ecp-parent.outputs.parent_management_group_id
 
   # additional ALZ library paths (for ALZ provider configuration)
   alz_library_path_shared_rendered = local.alz_library_path_shared_rendered
