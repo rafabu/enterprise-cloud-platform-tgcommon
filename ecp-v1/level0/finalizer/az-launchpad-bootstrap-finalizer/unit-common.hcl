@@ -72,7 +72,7 @@ locals {
   # assure local state resides in bootstrap-helper folder
   bootstrap_local_backend_path = "${local.bootstrap_helper_folder}/${basename(path_relative_to_include())}.tfstate"
 
-  backend_type = local.backend_config_present ? "azurerm" : try(local.bootstrap_helper_output.backend_storage_accounts["l0"].ecp_resource_exists == true && get_terraform_command() != "destroy" ? "azurerm" : "local", "local")
+  backend_type = local.backend_config_present ? "azurerm" : try(local.bootstrap_helper_output.backend_storage_accounts["l0"].ecp_resource_exists == true ? "azurerm" : "local", "local")
   backend_config = local.backend_config_present ? {
     subscription_id      = get_env("ECP_TG_BACKEND_LEVEL0_SUBSCRIPTION_ID")
     resource_group_name  = get_env("ECP_TG_BACKEND_LEVEL0_RESOURCE_GROUP_NAME")
