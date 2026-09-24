@@ -43,12 +43,14 @@ dependency "az-privatelink-privatedns-zones" {
   config_path = format("%s/../../connectivity/az-privatelink-privatedns-zones", replace(get_original_terragrunt_dir(), "\\", "/"))
   mock_outputs = {
     private_link_private_dns_zones_resource_ids = [
-      "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/placeholder/providers/Microsoft.Network/privateDnsZones/providers/Microsoft.Network/privateDnsZones/privatelink.azurecr.io",
-      "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/placeholder/providers/Microsoft.Network/privateDnsZones/providers/Microsoft.Network/privateDnsZones/privatelink.cognitiveservices.azure.com"
+      # [sic]: double slash and repetition in privateDnsZones//providers (matches behaviour in Azure Landing Zones Library's 'Deploy-Private-DNS-Zones.alz_policy_assignment.json')
+      #     last checked with version 2026.08.1
+      "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/placeholder/providers/Microsoft.Network/privateDnsZones//providers/Microsoft.Network/privateDnsZones/privatelink.azurecr.io",
+      "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/placeholder/providers/Microsoft.Network/privateDnsZones//providers/Microsoft.Network/privateDnsZones/privatelink.cognitiveservices.azure.com"
     ]
     private_link_private_dns_zones = {
-      azure_acr_registry = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/placeholder/providers/Microsoft.Network/privateDnsZones/providers/Microsoft.Network/privateDnsZones/privatelink.azurecr.io"
-      azure_ai_cog_svcs  = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/placeholder/providers/Microsoft.Network/privateDnsZones/providers/Microsoft.Network/privateDnsZones/privatelink.cognitiveservices.azure.com"
+      azure_acr_registry = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/placeholder/providers/Microsoft.Network/privateDnsZones//providers/Microsoft.Network/privateDnsZones/privatelink.azurecr.io"
+      azure_ai_cog_svcs  = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/placeholder/providers/Microsoft.Network/privateDnsZones//providers/Microsoft.Network/privateDnsZones/privatelink.cognitiveservices.azure.com"
     }
   }
   mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
