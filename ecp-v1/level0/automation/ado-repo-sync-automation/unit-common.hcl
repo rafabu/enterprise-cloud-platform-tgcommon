@@ -110,6 +110,7 @@ terraform {
     ]
     execute = [
       "pwsh",
+      "-NoLogo", "-NoProfile", "-NonInteractive",
       "-Command",
       <<-SCRIPT
 Write-Output "INFO: TG_CTX_COMMAND: $env:TG_CTX_COMMAND"
@@ -138,6 +139,7 @@ SCRIPT
     ]
     execute = [
       "pwsh",
+      "-NoLogo", "-NoProfile", "-NonInteractive",
       "-Command",
       <<-SCRIPT
 Write-Output "INFO: TG_CTX_COMMAND: $env:TG_CTX_COMMAND"

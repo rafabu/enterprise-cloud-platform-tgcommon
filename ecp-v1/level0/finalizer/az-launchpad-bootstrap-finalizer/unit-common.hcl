@@ -126,6 +126,7 @@ terraform {
     ]
     execute = [
       "pwsh",
+      "-NoLogo", "-NoProfile", "-NonInteractive",
       "-Command",
       <<-SCRIPT
 Write-Output "INFO: TG_CTX_COMMAND: $env:TG_CTX_COMMAND"
@@ -154,6 +155,7 @@ SCRIPT
     ]
     execute = [
       "pwsh",
+      "-NoLogo", "-NoProfile", "-NonInteractive",
       "-Command",
       <<-SCRIPT
 Write-Output "INFO: TG_CTX_COMMAND: $env:TG_CTX_COMMAND"
@@ -206,7 +208,7 @@ SCRIPT
     ]
     execute = [
       "pwsh",
-      # "-Command",
+      "-NoLogo", "-NoProfile", "-NonInteractive",
       "-File",
       "${replace(get_parent_terragrunt_dir(), "\\", "/")}/scripts/Close-RemoteBackend-Access.ps1",
       "-resourceExistsString", "${local.bootstrap_helper_output.backend_storage_accounts["l0"].ecp_resource_exists}",

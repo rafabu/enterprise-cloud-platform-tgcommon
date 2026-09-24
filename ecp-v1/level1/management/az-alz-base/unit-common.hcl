@@ -43,15 +43,9 @@ dependency "az-privatelink-privatedns-zones" {
   config_path = format("%s/../../connectivity/az-privatelink-privatedns-zones", replace(get_original_terragrunt_dir(), "\\", "/"))
   mock_outputs = {
     private_link_private_dns_zones_resource_ids = [
-      # [sic]: double slash and repetition in privateDnsZones//providers (matches behaviour in Azure Landing Zones Library's 'Deploy-Private-DNS-Zones.alz_policy_assignment.json')
-      #     last checked with version 2026.08.1
-      # "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/placeholder/providers/Microsoft.Network/privateDnsZones//providers/Microsoft.Network/privateDnsZones/privatelink.azurecr.io",
-      # "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/placeholder/providers/Microsoft.Network/privateDnsZones//providers/Microsoft.Network/privateDnsZones/privatelink.cognitiveservices.azure.com",
       "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/placeholder/providers/Microsoft.Network/privateDnsZones/privatelink.blob.core.windows.net"
     ]
     private_link_private_dns_zones = {
-      # azure_acr_registry = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/placeholder/providers/Microsoft.Network/privateDnsZones//providers/Microsoft.Network/privateDnsZones/privatelink.azurecr.io"
-      # azure_ai_cog_svcs  = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/placeholder/providers/Microsoft.Network/privateDnsZones//providers/Microsoft.Network/privateDnsZones/privatelink.cognitiveservices.azure.com"
       azure_storage_blob = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/placeholder/providers/Microsoft.Network/privateDnsZones/privatelink.blob.core.windows.net"
     }
   }
@@ -60,9 +54,8 @@ dependency "az-privatelink-privatedns-zones" {
 }
 
 locals {
-  alz_library_path_shared = format("%s/lib/ecp-lib/platform/alz-artefacts/", replace(get_repo_root(), "\\", "/"))
-  alz_library_path_unit   = "${replace(get_terragrunt_dir(), "\\", "/")}/lib/"
-  # folder where rendered template alz library files are places (temporarily)
+  alz_library_path_shared          = format("%s/lib/ecp-lib/platform/alz-artefacts/", replace(get_repo_root(), "\\", "/"))
+  alz_library_path_unit            = "${replace(get_terragrunt_dir(), "\\", "/")}/lib/"
   alz_library_path_shared_rendered = "${trimsuffix(local.TG_DOWNLOAD_DIR, "/")}/${uuidv5("dns", "${local.alz_library_path_shared}")}/"
 
   ################# terragrunt specifics #################
@@ -116,6 +109,24 @@ locals {
   ################# tags #################
   unit_common_azure_tags = {
     # "hidden-ecpTgUnitCommon" = format("%s/unit-common.hcl", replace(get_parent_terragrunt_dir(), "\\", "/"))
+  }
+}
+
+terraform {
+  # in order to successfully DESTROY on freshly initialized agents, make sure
+  #     the shared ALZ library is present locally. terragrunt dependencies only work forward ;-)
+  before_hook "assure-shared-library-render-on-destroy" {
+    commands = [
+      "destroy"
+    ]
+    execute = [
+      "pwsh",
+      "-NoLogo", "-NoProfile", "-NonInteractive",
+      "-Command",
+      # "terragrunt run plan --non-interactive --working-dir D:/Repos/isol-ecp/enterprise-cloud-platform-conf/deployments/managed/rabu-m365-sandbox/dev/level1/management/az-alz-shared-library-render"
+      "terragrunt run plan --non-interactive --working-dir ${replace(get_original_terragrunt_dir(), "\\", "/")}/../az-alz-shared-library-render"
+    ]
+    run_on_error = false
   }
 }
 
