@@ -52,7 +52,7 @@ dependency "az-privatelink-privatedns-zones" {
     private_link_private_dns_zones = {
       # azure_acr_registry = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/placeholder/providers/Microsoft.Network/privateDnsZones//providers/Microsoft.Network/privateDnsZones/privatelink.azurecr.io"
       # azure_ai_cog_svcs  = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/placeholder/providers/Microsoft.Network/privateDnsZones//providers/Microsoft.Network/privateDnsZones/privatelink.cognitiveservices.azure.com"
-      azure_blob_storage = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/placeholder/providers/Microsoft.Network/privateDnsZones/privatelink.blob.core.windows.net"
+      azure_storage_blob = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/placeholder/providers/Microsoft.Network/privateDnsZones/privatelink.blob.core.windows.net"
     }
   }
   mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
