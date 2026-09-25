@@ -5,6 +5,8 @@ dependencies {
     ] : [],
     [
       # add additional dependencies here as required
+      format("%s/../../../level1/management/az-alz-base", replace(get_original_terragrunt_dir(), "\\", "/")),
+
     ]
   )))
 }
