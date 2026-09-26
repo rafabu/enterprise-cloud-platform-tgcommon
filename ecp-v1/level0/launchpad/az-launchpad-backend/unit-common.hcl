@@ -186,8 +186,8 @@ if ("true" -eq "${try(local.bootstrap_helper_output.backend_storage_accounts["l0
         }
   }
   # must use terraform here - as we're working in the cache folder at this moment (terragrunt would re-initialize everything)
-  Write-Output "     reconfigure unit to work with local state now (terraform init -migrate-state)"
-  terraform init -migrate-state -input=false -force-copy # | Out-Null
+  Write-Output "   reconfigure unit to work with local state now (terraform init -migrate-state)"
+  terraform init -migrate-state -input=false -force-copy | Out-Null
 }
 else {
   Write-Output "INFO: remote backend not deployed yet; skipping backup of dependent units' states"
