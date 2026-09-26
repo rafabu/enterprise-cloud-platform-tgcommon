@@ -35,7 +35,7 @@ dependency "l0-lp-az-net" {
       }
     }
   }
-  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan", "destroy"]
   mock_outputs_merge_strategy_with_state  = "deep_map_only"
 }
 
@@ -95,7 +95,7 @@ dependency "l0-lp-az-backend" {
       }
     }
   }
-  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan", "destroy"]
   mock_outputs_merge_strategy_with_state  = "deep_map_only"
 }
 
@@ -115,14 +115,14 @@ dependency "l0-lp-az-devcenter" {
       resource_group_name = "mock-rg"
     }
   }
-  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan", "destroy"]
   mock_outputs_merge_strategy_with_state  = "deep_map_only"
 }
 
 dependency "l0-lp-az-ado-project" {
   config_path                             = format("%s/../ado-project", replace(get_original_terragrunt_dir(), "\\", "/"))
   mock_outputs                            = {}
-  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan", "destroy"]
   mock_outputs_merge_strategy_with_state  = "deep_map_only"
 }
 
