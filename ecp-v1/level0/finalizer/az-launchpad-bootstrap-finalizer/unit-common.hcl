@@ -117,6 +117,21 @@ remote_state {
 
 terraform {
 
+  # in order to successfully DESTROY on freshly initialized agents, make sure
+  #     the shared ALZ library is present locally. terragrunt dependencies only work forward ;-)
+  before_hook "assure-bootstrap-on-destroy" {
+    commands = [
+      "destroy"
+    ]
+    execute = [
+      "pwsh",
+      "-NoLogo", "-NoProfile", "-NonInteractive",
+      "-Command",
+      "terragrunt run plan --non-interactive --working-dir ${replace(get_original_terragrunt_dir(), "\\", "/")}/../../bootstrap/az-launchpad-bootstrap-helper"
+    ]
+    run_on_error = false
+  }
+
   before_hook "reconfigure-backend" {
     commands = [
       "init",

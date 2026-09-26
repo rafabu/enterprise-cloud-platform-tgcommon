@@ -180,13 +180,15 @@ if ("true" -eq "${try(local.bootstrap_helper_output.backend_storage_accounts["l0
     $downloadResult = az storage blob download --account-name ${try(local.bootstrap_helper_output.backend_storage_accounts["l0"].name, "unknown storage account")} --container-name ${try(local.bootstrap_helper_output.backend_storage_accounts["l0"].tf_backend_container, "unknown container")} --file "$unitLocalStateFile" --name "$($unit).tfstate" --overwrite --auth-mode "login" --no-progress 2>&1
         if ($LASTEXITCODE -eq 0) {
             Write-Output "      state file downloaded successfully to local backend at '$unitLocalStateFile'"
+            Write-Output "     reconfigure unit to work with local state now (terraform init -migrate-state)"
+            # terraform -chdir='${replace(get_original_terragrunt_dir(), "\\", "/")}/../$($unit)/' init -migrate-state -input=false -force-copy # | Out-Null
+            terragrunt run init --non-interactive --working-dir ${replace(get_original_terragrunt_dir(), "\\", "/")}/../$($unit)/ -- -migrate-state -force-copy # | Out-Null
         } else {
             Write-Error "      failed to download state file from remote backend. Error: $downloadResult"
             # throw "State file download failed with exit code: $LASTEXITCODE"
         }
   }
-  Write-Output "     reconfigure unit to work with local state now"
-  terraform init -migrate-state | Out-Null
+
 }
 else {
   Write-Output "INFO: remote backend not deployed yet; skipping backup of dependent units' states"
