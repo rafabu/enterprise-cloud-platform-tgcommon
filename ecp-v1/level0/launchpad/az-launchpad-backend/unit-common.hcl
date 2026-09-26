@@ -180,13 +180,12 @@ if ("true" -eq "${try(local.bootstrap_helper_output.backend_storage_accounts["l0
     $downloadResult = az storage blob download --account-name ${try(local.bootstrap_helper_output.backend_storage_accounts["l0"].name, "unknown storage account")} --container-name ${try(local.bootstrap_helper_output.backend_storage_accounts["l0"].tf_backend_container, "unknown container")} --file "$unitLocalStateFile" --name "$($unit).tfstate" --overwrite --auth-mode "login" --no-progress 2>&1
         if ($LASTEXITCODE -eq 0) {
             Write-Output "      state file downloaded successfully to local backend at '$unitLocalStateFile'"
-            Write-Output "     reconfigure unit to work with local state now (terraform init -migrate-state)"
-            # terragrunt run init --non-interactive --working-dir ${replace(get_original_terragrunt_dir(), "\\", "/")}/../$($unit)/ -- -migrate-state -force-copy # | Out-Null
         } else {
             Write-Error "      failed to download state file from remote backend. Error: $downloadResult"
             # throw "State file download failed with exit code: $LASTEXITCODE"
         }
   }
+  # must use terraform here - as we're working in the cache folder at this moment (terragrunt would re-initialize everything)
   Write-Output "     reconfigure unit to work with local state now (terraform init -migrate-state)"
   terraform init -migrate-state -input=false -force-copy # | Out-Null
 }
