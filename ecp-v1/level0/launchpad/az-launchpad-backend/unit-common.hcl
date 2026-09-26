@@ -181,7 +181,8 @@ if ("true" -eq "${try(local.bootstrap_helper_output.backend_storage_accounts["l0
         if ($LASTEXITCODE -eq 0) {
             Write-Output "      state file downloaded successfully to local backend at '$unitLocalStateFile'"
             Write-Output "     reconfigure unit to work with local state now (terraform init -migrate-state)"
-            terraform -chdir=${replace(get_original_terragrunt_dir(), "\\", "/")}/../$($unit)/ init -migrate-state -input=false -force-copy # | Out-Null
+            terraform init -migrate-state -input=false -force-copy # | Out-Null
+            # terraform -chdir=${replace(get_original_terragrunt_dir(), "\\", "/")}/../$($unit)/ init -migrate-state -input=false -force-copy # | Out-Null
             # terragrunt run init --non-interactive --working-dir ${replace(get_original_terragrunt_dir(), "\\", "/")}/../$($unit)/ -- -migrate-state -force-copy # | Out-Null
         } else {
             Write-Error "      failed to download state file from remote backend. Error: $downloadResult"
