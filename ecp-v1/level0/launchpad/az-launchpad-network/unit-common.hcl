@@ -166,32 +166,6 @@ SCRIPT
     run_on_error = false
   }
 
-  # after backend had been destroyed, we need to reconfigure the (hopefully restored to local) backend
-  before_hook "init-migrate-state" {
-    commands = [
-      "destroy"
-    ]
-    execute = [
-      "pwsh",
-      "-NoLogo", "-NoProfile", "-NonInteractive",
-      "-Command",
-      <<-SCRIPT
-Write-Output "INFO: TG_CTX_COMMAND: $env:TG_CTX_COMMAND"
-
-# read this as did exist on the last, previous run of bootstrapper (BEFORE backend was destroyed)
-if ("true" -eq "${try(local.bootstrap_helper_output.backend_storage_accounts["l0"].ecp_resource_exists, "false")}") {
-  # must use terraform here - as we're working in the cache folder at this moment (terragrunt would re-initialize everything)
-  Write-Output "INFO: reconfigure unit to work with local state now (terraform init -migrate-state)"
-  terraform init -migrate-state -input=false -force-copy | Out-Null
-}
-else {
-  Write-Output "INFO: remote backend wasn't not deployed yet; no need to reconfigure"
-}
-SCRIPT
-    ]
-    run_on_error = false
-  }
-
   before_hook "Copy-TerraformStateToRemote" {
     commands = [
       "apply",
