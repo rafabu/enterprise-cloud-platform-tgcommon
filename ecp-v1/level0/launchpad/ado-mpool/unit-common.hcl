@@ -5,7 +5,7 @@ dependencies {
   ]
 }
 
-dependency "l0-lp-az-lp-backend" {
+dependency "l0-az-lp-backend" {
   config_path = format("%s/../az-launchpad-backend", replace(get_original_terragrunt_dir(), "\\", "/"))
   mock_outputs = {
     resource_group_launchpad = {
@@ -99,7 +99,7 @@ dependency "l0-lp-az-lp-backend" {
   mock_outputs_merge_strategy_with_state  = "deep_map_only"
 }
 
-dependency "l0-lp-az-devcenter" {
+dependency "l0-az-devcenter" {
   config_path = format("%s/../az-devcenter", replace(get_original_terragrunt_dir(), "\\", "/"))
   mock_outputs = {
     dev_center = {
@@ -298,7 +298,7 @@ SCRIPT
 inputs = {
   azure_tags = local.unit_common_azure_tags
 
-  virtual_network_id = dependency.l0-lp-az-lp-backend.outputs.virtual_networks.l0-launchpad-main.id
+  virtual_network_id = dependency.l0-az-lp-backend.outputs.virtual_networks.l0-launchpad-main.id
 
   # load merged vnet artefact objects
   virtual_network_subnet_definitions = local.virtualNetworkSubnet_definition_merged
@@ -311,11 +311,11 @@ inputs = {
     "l0-launchpad-ado-mpool-platform"
   ]
 
-  backend_storage_accounts = dependency.l0-lp-az-lp-backend.outputs.storage_accounts
+  backend_storage_accounts = dependency.l0-az-lp-backend.outputs.storage_accounts
 
   workload_identity_type = "userAssignedIdentity" # "serviceprincipal"
 
-  dev_center_project_resource_id = dependency.l0-lp-az-devcenter.outputs.dev_center_project.id
+  dev_center_project_resource_id = dependency.l0-az-devcenter.outputs.dev_center_project.id
 
   managed_devops_pool_maximum_concurrency = 2
   managed_devops_pool_stateless_agent_profile = {
