@@ -42,10 +42,12 @@ dependency "l0-az-lp-backend" {
     }
     storage_accounts = {
       l0 = {
-        ecp_level = "l0"
-        id        = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Storage/storageAccounts/mocksal0"
-        name      = "mocksal0"
-        location  = "westeurope"
+        ecp_level           = "l0"
+        subscription_id     = "00000000-0000-0000-0000-000000000000"
+        resource_group_name = "mock-rg"
+        id                  = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Storage/storageAccounts/mocksal0"
+        name                = "mocksal0"
+        location            = "westeurope"
         private_endpoint_blob = {
           fqdn               = "mocksal0.blob.core.windows.net"
           private_ip_address = "192.0.2.4"
@@ -57,10 +59,12 @@ dependency "l0-az-lp-backend" {
         tf_backend_container = "tfstate"
       }
       l1 = {
-        ecp_level = "l1"
-        id        = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Storage/storageAccounts/mocksal1"
-        name      = "mocksal1"
-        location  = "westeurope"
+        ecp_level           = "l1"
+        subscription_id     = "00000000-0000-0000-0000-000000000000"
+        resource_group_name = "mock-rg"
+        id                  = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Storage/storageAccounts/mocksal1"
+        name                = "mocksal1"
+        location            = "westeurope"
         private_endpoint_blob = {
           fqdn               = "mocksal1.blob.core.windows.net"
           private_ip_address = "192.0.2.5"
@@ -72,13 +76,32 @@ dependency "l0-az-lp-backend" {
         tf_backend_container = "tfstate"
       }
       l2 = {
-        ecp_level = "l2"
-        id        = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Storage/storageAccounts/mocksal2"
-        name      = "mocksal2"
-        location  = "westeurope"
+        ecp_level           = "l2"
+        subscription_id     = "00000000-0000-0000-0000-000000000000"
+        resource_group_name = "mock-rg"
+        id                  = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Storage/storageAccounts/mocksal2"
+        name                = "mocksal2"
+        location            = "westeurope"
         private_endpoint_blob = {
           fqdn               = "mocksal2.blob.core.windows.net"
           private_ip_address = "192.0.2.6"
+          subnet_id          = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualNetworks/mock-vnet/subnets/mock"
+          subresource_names = [
+            "blob",
+          ]
+        }
+        tf_backend_container = "tfstate"
+      }
+      l3 = {
+        ecp_level           = "l3"
+        subscription_id     = "00000000-0000-0000-0000-000000000000"
+        resource_group_name = "mock-rg"
+        id                  = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Storage/storageAccounts/mocksal3"
+        name                = "mocksal3"
+        location            = "westeurope"
+        private_endpoint_blob = {
+          fqdn               = "mocksal3.blob.core.windows.net"
+          private_ip_address = "192.0.2.7"
           subnet_id          = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualNetworks/mock-vnet/subnets/mock"
           subresource_names = [
             "blob",
