@@ -176,7 +176,7 @@ provider "azuredevops" {
 %{endif}
 
 %{if contains(
-  ["ado-mpool", "az-ecp-parent", "az-devcenter", "az-launchpad-bootstrap-finalizer", "az-launchpad-backend"],
+  ["ado-mpool", "az-ecp-parent", "az-devcenter", "az-launchpad-bootstrap-finalizer"],
   basename(replace(get_terragrunt_dir(), "\\", "/"))
   )}
 provider "azurerm" {
