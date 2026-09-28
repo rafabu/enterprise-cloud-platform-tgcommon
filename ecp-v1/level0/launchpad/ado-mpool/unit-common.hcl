@@ -86,6 +86,13 @@ dependency "l0-lp-az-lp-backend" {
         tf_backend_container = "tfstate"
       }
     }
+    ecp_environment_name                           = "mock"
+    ecp_azure_devops_automation_repository_name    = "mock-repo-automation"
+    ecp_azure_devops_configuration_repository_name = "mock-repo-configuration"
+    ecp_configuration_repo_deployment_root_path    = "mock/deployment/root/path"
+    azuredevops_organization_name                  = "mock"
+    ecp_automation_terragrunt_version              = "0.0.0"
+    ecp_configuration_terragrunt_version           = "0.0.0"
   }
   mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
   mock_outputs_merge_strategy_with_state  = "deep_map_only"
