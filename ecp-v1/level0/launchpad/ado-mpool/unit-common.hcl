@@ -4,12 +4,17 @@ dependencies {
   ]
 }
 
-dependency "l0-lp-az-net" {
-  config_path = format("%s/../az-launchpad-network", replace(get_original_terragrunt_dir(), "\\", "/"))
+dependency "l0-lp-az-lp-backend" {
+  config_path = format("%s/../az-launchpad-backend", replace(get_original_terragrunt_dir(), "\\", "/"))
   mock_outputs = {
-    resource_group = {
-      id       = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg"
-      name     = "mock-rg"
+    resource_group_launchpad = {
+      id       = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg-lp"
+      name     = "mock-rg-lp"
+      location = "westeurope"
+    }
+    resource_group_tf_backend = {
+      id       = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg-be"
+      name     = "mock-rg-be"
       location = "westeurope"
     }
     virtual_networks = {
@@ -33,19 +38,6 @@ dependency "l0-lp-az-net" {
           "192.0.2.0/24"
         ]
       }
-    }
-  }
-  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan", "destroy"]
-  mock_outputs_merge_strategy_with_state  = "deep_map_only"
-}
-
-dependency "l0-lp-az-backend" {
-  config_path = format("%s/../az-launchpad-backend", replace(get_original_terragrunt_dir(), "\\", "/"))
-  mock_outputs = {
-    resource_group = {
-      id       = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg"
-      name     = "mock-rg"
-      location = "westeurope"
     }
     storage_accounts = {
       l0 = {
@@ -95,7 +87,7 @@ dependency "l0-lp-az-backend" {
       }
     }
   }
-  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan", "destroy"]
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
   mock_outputs_merge_strategy_with_state  = "deep_map_only"
 }
 
@@ -305,7 +297,7 @@ SCRIPT
 inputs = {
   azure_tags = local.unit_common_azure_tags
 
-  virtual_network_id = dependency.l0-lp-az-net.outputs.virtual_networks.l0-launchpad-main.id
+  virtual_network_id = dependency.l0-lp-az-backend.outputs.virtual_networks.l0-launchpad-main.id
 
   # load merged vnet artefact objects
   virtual_network_subnet_definitions = local.virtualNetworkSubnet_definition_merged

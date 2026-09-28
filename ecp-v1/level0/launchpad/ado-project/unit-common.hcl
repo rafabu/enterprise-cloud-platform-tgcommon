@@ -7,10 +7,37 @@ dependencies {
 dependency "l0-lp-az-lp-backend" {
   config_path = format("%s/../az-launchpad-backend", replace(get_original_terragrunt_dir(), "\\", "/"))
   mock_outputs = {
-    resource_group = {
-      id       = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg"
-      name     = "mock-rg"
+    resource_group_launchpad = {
+      id       = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg-lp"
+      name     = "mock-rg-lp"
       location = "westeurope"
+    }
+    resource_group_tf_backend = {
+      id       = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg-be"
+      name     = "mock-rg-be"
+      location = "westeurope"
+    }
+    virtual_networks = {
+      l0-launchpad-main = {
+        id                  = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualNetworks/mock-vnet"
+        name                = "mock-vnet"
+        resource_group_name = "mock-rg"
+        location            = "westeurope"
+        address_space = [
+          "192.0.2.0/24"
+        ]
+      }
+    }
+    virtual_network_subnets = {
+      l0-launchpad-main-default = {
+        id                   = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualNetworks/mock-vnet/subnets/mock"
+        name                 = "mock"
+        resource_group_name  = "mock-rg"
+        virtual_network_name = "mock-vnet"
+        address_prefixes = [
+          "192.0.2.0/24"
+        ]
+      }
     }
     storage_accounts = {
       l0 = {
@@ -59,23 +86,6 @@ dependency "l0-lp-az-lp-backend" {
         tf_backend_container = "tfstate"
       }
     }
-  }
-  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
-  mock_outputs_merge_strategy_with_state  = "deep_map_only"
-}
-
-dependency "l0-lp-az-lp-main" {
-  config_path = format("%s/../az-launchpad-main", replace(get_original_terragrunt_dir(), "\\", "/"))
-  mock_outputs = {
-    resource_group = {
-      id       = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg"
-      name     = "mock-rg"
-      location = "westeurope"
-    }
-    ecp_environment_name                           = "mock-environment"
-    ecp_azure_devops_automation_repository_name    = "mock.automation"
-    ecp_azure_devops_configuration_repository_name = "mock.configuration"
-    azuredevops_organization_name                  = "mock-ado-org"
   }
   mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
   mock_outputs_merge_strategy_with_state  = "deep_map_only"
@@ -231,7 +241,7 @@ inputs = {
   azure_tags = local.unit_common_azure_tags
 
   ecp_azure_devops_repository_names = distinct(compact([
-    dependency.l0-lp-az-lp-main.outputs.ecp_azure_devops_automation_repository_name,
-    dependency.l0-lp-az-lp-main.outputs.ecp_azure_devops_configuration_repository_name
+    dependency.l0-lp-az-lp-backend.outputs.ecp_azure_devops_automation_repository_name,
+    dependency.l0-lp-az-lp-backend.outputs.ecp_azure_devops_configuration_repository_name
   ]))
 }
