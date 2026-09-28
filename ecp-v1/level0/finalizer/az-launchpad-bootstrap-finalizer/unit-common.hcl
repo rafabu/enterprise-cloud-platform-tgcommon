@@ -170,6 +170,8 @@ if ("true" -eq "${local.bootstrap_backend_type_changed}") {
                 terraform init -migrate-state | Out-Null
                 Write-Output "      removing local state file '${local.bootstrap_local_backend_path}'"
                 Move-Item -Path "${local.bootstrap_local_backend_path}" -Destination "${local.bootstrap_local_backend_path}.backup" -Force -ErrorAction SilentlyContinue
+                Write-Output "     running 'terraform init -reconfigure'"
+                terraform init -reconfigure | Out-Null
             } else {
                 Write-Error "      failed to upload state file to remote backend. Error: $uploadResult"
                 throw "State file upload failed with exit code: $LASTEXITCODE"
@@ -177,6 +179,8 @@ if ("true" -eq "${local.bootstrap_backend_type_changed}") {
         }
         else {
             Write-Output "      local state file '${local.bootstrap_local_backend_path}' does not exist; skipping upload to remote backend"
+            Write-Output "     running 'terraform init -reconfigure'"
+            terraform init -reconfigure | Out-Null
         }
     }
 }
