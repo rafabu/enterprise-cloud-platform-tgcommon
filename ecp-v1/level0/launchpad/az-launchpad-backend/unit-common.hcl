@@ -4,54 +4,108 @@ dependencies {
   ]
 }
 
-dependency "l0-lp-az-lp-main" {
-  config_path = format("%s/../az-launchpad-main", replace(get_original_terragrunt_dir(), "\\", "/"))
-  mock_outputs = {
-    resource_group = {
-      id       = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg"
-      name     = "mock-rg"
-      location = "westeurope"
-    }
-    ecp_environment_name                           = "mock-environment"
-    ecp_azure_devops_automation_repository_name    = "mock.automation"
-    ecp_azure_devops_configuration_repository_name = "mock.configuration"
-    azuredevops_organization_name                  = "mock-ado-org"
-  }
-  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
-  mock_outputs_merge_strategy_with_state  = "deep_map_only"
-}
+# dependency "l0-lp-az-lp-main" {
+#   config_path = format("%s/../az-launchpad-main", replace(get_original_terragrunt_dir(), "\\", "/"))
+#   mock_outputs = {
+#     resource_group = {
+#       id       = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg"
+#       name     = "mock-rg"
+#       location = "westeurope"
+#     }
+#     ecp_environment_name                           = "mock-environment"
+#     ecp_azure_devops_automation_repository_name    = "mock.automation"
+#     ecp_azure_devops_configuration_repository_name = "mock.configuration"
+#     azuredevops_organization_name                  = "mock-ado-org"
+#   }
+#   mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
+#   mock_outputs_merge_strategy_with_state  = "deep_map_only"
+# }
 
-dependency "l0-lp-az-lp-net" {
-  config_path = format("%s/../az-launchpad-network", replace(get_original_terragrunt_dir(), "\\", "/"))
-  mock_outputs = {
-    virtual_networks = {
-      l0-launchpad-main = {
-        id                  = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualNetworks/mock-vnet"
-        name                = "mock-vnet"
-        resource_group_name = "mock-rg"
-        location            = "westeurope"
-        address_space = [
-          "192.0.2.0/24"
-        ]
-      }
-    }
-    virtual_network_subnets = {
-      l0-launchpad-main-default = {
-        id                   = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualNetworks/mock-vnet/subnets/mock"
-        name                 = "mock"
-        resource_group_name  = "mock-rg"
-        virtual_network_name = "mock-vnet"
-        address_prefixes = [
-          "192.0.2.0/24"
-        ]
-      }
-    }
-  }
-  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
-  mock_outputs_merge_strategy_with_state  = "deep_map_only"
-}
+# dependency "l0-lp-az-lp-net" {
+#   config_path = format("%s/../az-launchpad-network", replace(get_original_terragrunt_dir(), "\\", "/"))
+#   mock_outputs = {
+#     virtual_networks = {
+#       l0-launchpad-main = {
+#         id                  = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualNetworks/mock-vnet"
+#         name                = "mock-vnet"
+#         resource_group_name = "mock-rg"
+#         location            = "westeurope"
+#         address_space = [
+#           "192.0.2.0/24"
+#         ]
+#       }
+#     }
+#     virtual_network_subnets = {
+#       l0-launchpad-main-default = {
+#         id                   = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualNetworks/mock-vnet/subnets/mock"
+#         name                 = "mock"
+#         resource_group_name  = "mock-rg"
+#         virtual_network_name = "mock-vnet"
+#         address_prefixes = [
+#           "192.0.2.0/24"
+#         ]
+#       }
+#     }
+#   }
+#   mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
+#   mock_outputs_merge_strategy_with_state  = "deep_map_only"
+# }
 
 locals {
+
+  library_path_shared = format("%s/lib/ecp-lib", replace(get_repo_root(), "\\", "/"))
+  library_path_unit   = "${replace(get_terragrunt_dir(), "\\", "/")}/lib"
+
+  ################# virtual network artefacts #################
+  # exclude the ones named in the *.exclude.json
+  library_virtualNetworks_path_shared    = "${local.library_path_shared}/platform/ecp-artefacts/ms-azure/network/virtualNetworks"
+  library_virtualNetworks_path_unit      = "${local.library_path_unit}/virtualNetworks"
+  library_virtualNetworks_filter         = "*.virtualNetwork.json"
+  library_virtualNetworks_exclude_filter = "*.virtualNetwork.exclude.json"
+
+  # load JSON artefact files and bring them into hcl map of objects as input to the terraform module
+  virtualNetwork_definition_shared = try({
+    for fileName in fileset(local.library_virtualNetworks_path_shared, local.library_virtualNetworks_filter) : jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_shared, fileName))).artefactName => jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_shared, fileName)))
+  }, {})
+  virtualNetwork_definition_unit = try({
+    for fileName in fileset(local.library_virtualNetworks_path_unit, local.library_virtualNetworks_filter) : jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_unit, fileName))).artefactName => jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_unit, fileName)))
+  }, {})
+  virtualNetwork_definition_exclude_unit = try({
+    for fileName in fileset(local.library_virtualNetworks_path_unit, local.library_virtualNetworks_exclude_filter) : jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_unit, fileName))).artefactName => jsondecode(file(format("%s/%s", local.library_virtualNetworks_path_unit, fileName)))
+  }, {})
+  virtualNetwork_definition_merged = merge(
+    {
+      for key, val in local.virtualNetwork_definition_shared : key => val
+      if(contains(keys(local.virtualNetwork_definition_exclude_unit), key) == false)
+    },
+    local.virtualNetwork_definition_unit
+  )
+
+  ################# virtual network subnet artefacts #################
+  # exclude the ones named in the *.exclude.json
+  library_virtualNetworkSubnets_path_shared    = "${local.library_path_shared}/platform/ecp-artefacts/ms-azure/network/virtualNetworkSubnets"
+  library_virtualNetworkSubnets_path_unit      = "${local.library_path_unit}/virtualNetworkSubnets"
+  library_virtualNetworkSubnets_filter         = "*.virtualNetworkSubnet.json"
+  library_virtualNetworkSubnets_exclude_filter = "*.virtualNetworkSubnet.exclude.json"
+
+  # load JSON artefact files and bring them into hcl map of objects as input to the terraform module
+  virtualNetworkSubnet_definition_shared = try({
+    for fileName in fileset(local.library_virtualNetworkSubnets_path_shared, local.library_virtualNetworkSubnets_filter) : jsondecode(file(format("%s/%s", local.library_virtualNetworkSubnets_path_shared, fileName))).artefactName => jsondecode(file(format("%s/%s", local.library_virtualNetworkSubnets_path_shared, fileName)))
+  }, {})
+  virtualNetworkSubnet_definition_unit = try({
+    for fileName in fileset(local.library_virtualNetworkSubnets_path_unit, local.library_virtualNetworkSubnets_filter) : jsondecode(file(format("%s/%s", local.library_virtualNetworkSubnets_path_unit, fileName))).artefactName => jsondecode(file(format("%s/%s", local.library_virtualNetworkSubnets_path_unit, fileName)))
+  }, {})
+  virtualNetworkSubnet_definition_exclude_unit = try({
+    for fileName in fileset(local.library_virtualNetworkSubnets_path_unit, local.library_virtualNetworkSubnets_exclude_filter) : jsondecode(file(format("%s/%s", local.library_virtualNetworkSubnets_path_unit, fileName))).artefactName => jsondecode(file(format("%s/%s", local.library_virtualNetworkSubnets_path_unit, fileName)))
+  }, {})
+  virtualNetworkSubnet_definition_merged = merge(
+    {
+      for key, val in local.virtualNetworkSubnet_definition_shared : key => val
+      if(contains(keys(local.virtualNetworkSubnet_definition_exclude_unit), key) == false)
+    },
+    local.virtualNetworkSubnet_definition_unit
+  )
+
   ################# bootstrap-helper unit output #################
   TG_DOWNLOAD_DIR = replace(coalesce(
     try(get_env("TG_DOWNLOAD_DIR"), null),
@@ -254,7 +308,19 @@ SCRIPT
 inputs = {
   azure_tags = local.unit_common_azure_tags
 
-  virtual_subnet_id = dependency.l0-lp-az-lp-net.outputs.virtual_network_subnets.l0-launchpad-main-default.id
+  ### virtual_subnet_id = dependency.l0-lp-az-lp-net.outputs.virtual_network_subnets.l0-launchpad-main-default.id
+
+  # load merged vnet artefact objects
+  virtual_network_definitions        = local.virtualNetwork_definition_merged
+  virtual_network_subnet_definitions = local.virtualNetworkSubnet_definition_merged
+
+  # define which artefacts from the libraries we need to create
+  virtual_network_artefact_names = [
+    "l0-launchpad-main"
+  ]
+  subnet_artefact_names = [
+    "l0-launchpad-main-default"
+  ]
 
   # if running from outside ECP network, storage account must allow (temporary) public network access
   storage_account_public_network_access_enabled = local.bootstrap_is_local_ip_within_ecp_launchpad == true ? false : true
