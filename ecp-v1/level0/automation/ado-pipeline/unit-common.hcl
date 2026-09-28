@@ -330,9 +330,9 @@ inputs = {
     "ECP-YAML-Pipeline-Example-Enabled"
   ]
 
-  ecp_environment_name = dependency.l0-az-lp-bootstrap.outputs.ecp_environment_name
+  ecp_environment_name = dependency.l0-az-lp-backend.outputs.ecp_environment_name
 
-  ecp_azure_devops_repository_name = dependency.l0-az-lp-bootstrap.outputs.ecp_azure_devops_automation_repository_name
+  ecp_azure_devops_repository_name = dependency.l0-az-lp-backend.outputs.ecp_azure_devops_automation_repository_name
 
   ecp_azure_devops_pool_name = dependency.l0-ado-mpool.outputs.managed_devops_pool.name
 }
