@@ -8,9 +8,19 @@ dependencies {
   )))
 }
 
-dependency "l0-lp-az-lp-net" {
-  config_path = format("%s/../../../level0/launchpad/az-launchpad-network", replace(get_original_terragrunt_dir(), "\\", "/"))
+dependency "l0-az-lp-backend" {
+  config_path = format("%s/../az-launchpad-backend", replace(get_original_terragrunt_dir(), "\\", "/"))
   mock_outputs = {
+    resource_group_launchpad = {
+      id       = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg-lp"
+      name     = "mock-rg-lp"
+      location = "westeurope"
+    }
+    resource_group_tf_backend = {
+      id       = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg-be"
+      name     = "mock-rg-be"
+      location = "westeurope"
+    }
     virtual_networks = {
       l0-launchpad-main = {
         id                  = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualNetworks/mock-vnet"
@@ -33,6 +43,83 @@ dependency "l0-lp-az-lp-net" {
         ]
       }
     }
+    storage_accounts = {
+      l0 = {
+        ecp_level           = "l0"
+        subscription_id     = "00000000-0000-0000-0000-000000000000"
+        resource_group_name = "mock-rg"
+        id                  = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Storage/storageAccounts/mocksal0"
+        name                = "mocksal0"
+        location            = "westeurope"
+        private_endpoint_blob = {
+          fqdn               = "mocksal0.blob.core.windows.net"
+          private_ip_address = "192.0.2.4"
+          subnet_id          = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualNetworks/mock-vnet/subnets/mock"
+          subresource_names = [
+            "blob",
+          ]
+        }
+        tf_backend_container = "tfstate"
+      }
+      l1 = {
+        ecp_level           = "l1"
+        subscription_id     = "00000000-0000-0000-0000-000000000000"
+        resource_group_name = "mock-rg"
+        id                  = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Storage/storageAccounts/mocksal1"
+        name                = "mocksal1"
+        location            = "westeurope"
+        private_endpoint_blob = {
+          fqdn               = "mocksal1.blob.core.windows.net"
+          private_ip_address = "192.0.2.5"
+          subnet_id          = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualNetworks/mock-vnet/subnets/mock"
+          subresource_names = [
+            "blob",
+          ]
+        }
+        tf_backend_container = "tfstate"
+      }
+      l2 = {
+        ecp_level           = "l2"
+        subscription_id     = "00000000-0000-0000-0000-000000000000"
+        resource_group_name = "mock-rg"
+        id                  = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Storage/storageAccounts/mocksal2"
+        name                = "mocksal2"
+        location            = "westeurope"
+        private_endpoint_blob = {
+          fqdn               = "mocksal2.blob.core.windows.net"
+          private_ip_address = "192.0.2.6"
+          subnet_id          = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualNetworks/mock-vnet/subnets/mock"
+          subresource_names = [
+            "blob",
+          ]
+        }
+        tf_backend_container = "tfstate"
+      }
+      l3 = {
+        ecp_level           = "l3"
+        subscription_id     = "00000000-0000-0000-0000-000000000000"
+        resource_group_name = "mock-rg"
+        id                  = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Storage/storageAccounts/mocksal3"
+        name                = "mocksal3"
+        location            = "westeurope"
+        private_endpoint_blob = {
+          fqdn               = "mocksal3.blob.core.windows.net"
+          private_ip_address = "192.0.2.7"
+          subnet_id          = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualNetworks/mock-vnet/subnets/mock"
+          subresource_names = [
+            "blob",
+          ]
+        }
+        tf_backend_container = "tfstate"
+      }
+    }
+    ecp_environment_name                           = "mock"
+    ecp_azure_devops_automation_repository_name    = "mock-repo-automation"
+    ecp_azure_devops_configuration_repository_name = "mock-repo-configuration"
+    ecp_configuration_repo_deployment_root_path    = "mock/deployment/root/path"
+    azuredevops_organization_name                  = "mock"
+    ecp_automation_terragrunt_version              = "0.0.0"
+    ecp_configuration_terragrunt_version           = "0.0.0"
   }
   mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
   mock_outputs_merge_strategy_with_state  = "deep_map_only"
@@ -439,7 +526,7 @@ inputs = {
     "l2-connectivity-default-vwan-hub" = {
       virtual_network_connections = {
         ecpa-launchpad = {
-          remote_virtual_network_id = dependency.l0-lp-az-lp-net.outputs.virtual_networks["l0-launchpad-main"].id
+          remote_virtual_network_id = dependency.l0-az-lp-backend.outputs.virtual_networks["l0-launchpad-main"].id
           # internet_security_enabled (route via Azure firewall) has been superseded by routing_intent
           internet_security_enabled = false
           # only connect at main location
