@@ -4,53 +4,6 @@ dependencies {
   ]
 }
 
-# dependency "l0-lp-az-lp-main" {
-#   config_path = format("%s/../az-launchpad-main", replace(get_original_terragrunt_dir(), "\\", "/"))
-#   mock_outputs = {
-#     resource_group = {
-#       id       = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg"
-#       name     = "mock-rg"
-#       location = "westeurope"
-#     }
-#     ecp_environment_name                           = "mock-environment"
-#     ecp_azure_devops_automation_repository_name    = "mock.automation"
-#     ecp_azure_devops_configuration_repository_name = "mock.configuration"
-#     azuredevops_organization_name                  = "mock-ado-org"
-#   }
-#   mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
-#   mock_outputs_merge_strategy_with_state  = "deep_map_only"
-# }
-
-# dependency "l0-lp-az-lp-net" {
-#   config_path = format("%s/../az-launchpad-network", replace(get_original_terragrunt_dir(), "\\", "/"))
-#   mock_outputs = {
-#     virtual_networks = {
-#       l0-launchpad-main = {
-#         id                  = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualNetworks/mock-vnet"
-#         name                = "mock-vnet"
-#         resource_group_name = "mock-rg"
-#         location            = "westeurope"
-#         address_space = [
-#           "192.0.2.0/24"
-#         ]
-#       }
-#     }
-#     virtual_network_subnets = {
-#       l0-launchpad-main-default = {
-#         id                   = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualNetworks/mock-vnet/subnets/mock"
-#         name                 = "mock"
-#         resource_group_name  = "mock-rg"
-#         virtual_network_name = "mock-vnet"
-#         address_prefixes = [
-#           "192.0.2.0/24"
-#         ]
-#       }
-#     }
-#   }
-#   mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
-#   mock_outputs_merge_strategy_with_state  = "deep_map_only"
-# }
-
 locals {
 
   library_path_shared = format("%s/lib/ecp-lib", replace(get_repo_root(), "\\", "/"))
@@ -220,9 +173,6 @@ SCRIPT
 Write-Output "INFO: TG_CTX_COMMAND: $env:TG_CTX_COMMAND"
 
 $dependentUnits = @(
-    # "az-launchpad-bootstrap-helper",
-    "az-launchpad-main",
-    "az-launchpad-network",
     "az-launchpad-backend"
 )
 
