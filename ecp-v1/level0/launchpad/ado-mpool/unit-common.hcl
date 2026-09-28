@@ -116,7 +116,7 @@ dependency "l0-az-lp-backend" {
     ecp_configuration_repo_deployment_root_path    = "mock/deployment/root/path"
     azuredevops_organization_name                  = "mock"
     ecp_automation_terragrunt_version              = "0.0.0"
-    ecp_configuration_terragrunt_version           = "0.0.0"
+    ecp_automation_terraform_version               = "0.0.0"
   }
   mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
   mock_outputs_merge_strategy_with_state  = "deep_map_only"
