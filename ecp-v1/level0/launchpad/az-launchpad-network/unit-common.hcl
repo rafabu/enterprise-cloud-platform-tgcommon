@@ -145,6 +145,27 @@ remote_state {
 
 terraform {
 
+  before_hook "reconfigure-backend" {
+    commands = [
+      "init",
+      # "plan",
+      # "apply",
+      # "destroy"
+    ]
+    execute = [
+      "pwsh",
+      "-NoLogo", "-NoProfile", "-NonInteractive",
+      "-Command",
+      <<-SCRIPT
+Write-Output "INFO: TG_CTX_COMMAND: $env:TG_CTX_COMMAND"
+
+Write-Output "     running 'terraform init -reconfigure'"
+terraform init -reconfigure | Out-Null
+SCRIPT
+    ]
+    run_on_error = false
+  }
+
   # after backend had been destroyed, we need to reconfigure the (hopefully restored to local) backend
   before_hook "init-migrate-state" {
     commands = [
@@ -166,27 +187,6 @@ if ("true" -eq "${try(local.bootstrap_helper_output.backend_storage_accounts["l0
 else {
   Write-Output "INFO: remote backend wasn't not deployed yet; no need to reconfigure"
 }
-SCRIPT
-    ]
-    run_on_error = false
-  }
-
-  before_hook "reconfigure-backend" {
-    commands = [
-      "init",
-      # "plan",
-      # "apply",
-      # "destroy"
-    ]
-    execute = [
-      "pwsh",
-      "-NoLogo", "-NoProfile", "-NonInteractive",
-      "-Command",
-      <<-SCRIPT
-Write-Output "INFO: TG_CTX_COMMAND: $env:TG_CTX_COMMAND"
-
-Write-Output "     running 'terraform init -reconfigure'"
-terraform init -reconfigure | Out-Null
 SCRIPT
     ]
     run_on_error = false
