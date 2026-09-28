@@ -1,6 +1,7 @@
 dependencies {
   paths = [
-    format("%s/../../bootstrap/az-launchpad-bootstrap-helper", replace(get_original_terragrunt_dir(), "\\", "/"))
+    format("%s/../../bootstrap/az-launchpad-bootstrap-helper", replace(get_original_terragrunt_dir(), "\\", "/")),
+    format("%s/../ado-project", replace(get_original_terragrunt_dir(), "\\", "/"))
   ]
 }
 
@@ -114,13 +115,6 @@ dependency "l0-lp-az-devcenter" {
       resource_group_name = "mock-rg"
     }
   }
-  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan", "destroy"]
-  mock_outputs_merge_strategy_with_state  = "deep_map_only"
-}
-
-dependency "l0-lp-az-ado-project" {
-  config_path                             = format("%s/../ado-project", replace(get_original_terragrunt_dir(), "\\", "/"))
-  mock_outputs                            = {}
   mock_outputs_allowed_terraform_commands = ["init", "validate", "plan", "destroy"]
   mock_outputs_merge_strategy_with_state  = "deep_map_only"
 }
@@ -304,7 +298,7 @@ SCRIPT
 inputs = {
   azure_tags = local.unit_common_azure_tags
 
-  virtual_network_id = dependency.l0-lp-az-backend.outputs.virtual_networks.l0-launchpad-main.id
+  virtual_network_id = dependency.l0-lp-az-lp-backend.outputs.virtual_networks.l0-launchpad-main.id
 
   # load merged vnet artefact objects
   virtual_network_subnet_definitions = local.virtualNetworkSubnet_definition_merged
@@ -317,7 +311,7 @@ inputs = {
     "l0-launchpad-ado-mpool-platform"
   ]
 
-  backend_storage_accounts = dependency.l0-lp-az-backend.outputs.storage_accounts
+  backend_storage_accounts = dependency.l0-lp-az-lp-backend.outputs.storage_accounts
 
   workload_identity_type = "userAssignedIdentity" # "serviceprincipal"
 
