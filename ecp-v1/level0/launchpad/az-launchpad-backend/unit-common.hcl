@@ -258,8 +258,6 @@ SCRIPT
 inputs = {
   azure_tags = local.unit_common_azure_tags
 
-  ### virtual_subnet_id = dependency.l0-lp-az-lp-net.outputs.virtual_network_subnets.l0-launchpad-main-default.id
-
   # load merged vnet artefact objects
   virtual_network_definitions        = local.virtualNetwork_definition_merged
   virtual_network_subnet_definitions = local.virtualNetworkSubnet_definition_merged

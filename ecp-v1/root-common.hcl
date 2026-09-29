@@ -456,7 +456,8 @@ terraform {
     # vending avm-ptn-alz-sub-vending (v0.3.2) no longer requires azurerm - hence we can reference azurerm 5
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "${local.versions_locals.tf_provider_azurerm_version_5}"
+      # version = "${local.versions_locals.tf_provider_azurerm_version_5}"
+      version = "${local.versions_locals.tf_provider_azurerm_version_4}"
     }
 %{endif}
   }
@@ -564,4 +565,5 @@ inputs = {
   avm-utl-regions_version                                = local.versions_locals.tf_module_avm-utl-regions_version
   avm-res-storage-storageaccount_version                 = local.versions_locals.tf_module_avm-res-storage-storageaccount_version
   avm-res-network-natgateway_version                     = local.versions_locals.tf_module_avm-res-network-natgateway_version
+  avm-utl-roledefinitions_version                        = local.versions_locals.tf_module_avm-utl-roledefinitions_version
 }

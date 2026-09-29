@@ -24,6 +24,20 @@ dependency "l1-con-az-privatedns" {
   mock_outputs_merge_strategy_with_state  = "deep_map_only"
 }
 
+dependency "l1-az-ecp-parent" {
+  config_path = format("%s/../../../level1/ecproot/az-ecp-parent", replace(get_original_terragrunt_dir(), "\\", "/"))
+  mock_outputs = {
+    parent_management_group_name = "mock-mg"
+    parent_management_group_id   = "/providers/Microsoft.Management/managementGroups/mock-mg"
+    role_group_contributor_name  = "mock-role-group-contributor"
+    role_group_contributor_id    = "00000000-0000-0000-0000-000000000000"
+    role_group_reader_name       = "mock-role-group-reader"
+    role_group_reader_id         = "00000000-0000-0000-0000-000000000000"
+  }
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
+  mock_outputs_merge_strategy_with_state  = "deep_map_only"
+}
+
 dependency "l2-con-az-con-bastion" {
   config_path = format("%s/../../../level2/connectivity/az-connectivity-bastion", replace(get_original_terragrunt_dir(), "\\", "/"))
   mock_outputs = {
@@ -228,6 +242,15 @@ remote_state {
 inputs = {
   azure_tags = local.unit_common_azure_tags
 
+  ecp_parent_management_group_id   = dependency.l1-az-ecp-parent.outputs.parent_management_group_id
+  ecp_parent_management_group_name = dependency.l1-az-ecp-parent.outputs.parent_management_group_name
+
+  ecp_azure_devops_managed_devops_pool_name = "ECP-Platform-Pool-rabuzu-m365"
+  ecp_azure_devops_project_name             = "ECP (rabu-d7)"
+  ecp_azure_devops_repository_name          = "ECP.Automation"
+
+  ecp_azure_deployment_service_principal_client_id = "c4527461-c497-4db4-911f-1a1ae4258f11"
+  ecp_azure_deployment_service_principal_object_id = "097fcb81-557b-44e5-8077-a113d634ce3c"
 
 
   # ecp_hub_locations = {}
