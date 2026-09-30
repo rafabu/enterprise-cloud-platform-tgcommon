@@ -140,8 +140,8 @@ function Set-StorageAccountAccess {
     }
     Write-Output ""
     if ($waitNeeded) {
-        Write-Output "INFO: $ecpLevel - Sleep 60 seconds for RBAC and/or SA port rule changes to propagate on $accountName"
-        Start-Sleep -Seconds 60
+        Write-Output "INFO: $ecpLevel - Sleep 30 seconds for RBAC and/or SA port rule changes to propagate on $accountName"
+        Start-Sleep -Seconds 30
     }
 
 }
