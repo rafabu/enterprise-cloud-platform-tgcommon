@@ -8,10 +8,10 @@ locals {
 
   tf_required_version = ">= 1.15" # for versions.tf file generated
 
-  tf_provider_azuread_version     = "~> 3.9"
+  tf_provider_azuread_version     = "~> 3.10"
   tf_provider_azurecaf_version    = "~> 1.2"
   tf_provider_azurerm_version_4   = "~> 4.81"
-  tf_provider_azurerm_version_5   = "~> 5.5"
+  tf_provider_azurerm_version_5   = "~> 5.7"
   tf_provider_azapi_version       = "~> 2.13"
   tf_provider_azuredevops_version = "~> 1.16"
   tf_provider_external_version    = "~> 2.4"
