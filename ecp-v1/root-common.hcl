@@ -126,6 +126,8 @@ provider "alz" {
   tenant_id       = "${local.merged_locals.ecp_entra_tenant_id}"
   subscription_id = "${local.ecp_management_subscription_id_provider}"
   environment         = "public"
+  library_fetch_dependencies = true
+  library_overwrite_enabled = true
   library_references = [
     {
       path = "platform/alz"
@@ -140,6 +142,7 @@ provider "alz" {
       custom_url = "file::$${var.alz_library_path_shared_rendered}?archive=false"
     }
   ]
+  suppress_warning_policy_role_assignments = false
 }
 %{endif}
 
