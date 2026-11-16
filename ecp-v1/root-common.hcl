@@ -41,6 +41,8 @@ locals {
   ecp_azure_devops_configuration_repository_name = "ECP.Configuration"
   ecp_azure_root_parent_management_group_id      = "mg-ecpa-root"
 
+  ecp_azure_devops_pool_type = "ManagedDevOpsPool"
+
   deployment_unit_default = "main"
 
   ######## Launchpad ########
@@ -540,6 +542,8 @@ inputs = {
   ecp_azure_devops_automation_repository_name    = local.ecp_azure_devops_automation_repository_name
   ecp_azure_devops_configuration_repository_name = local.ecp_azure_devops_configuration_repository_name
   ecp_azure_root_parent_management_group_id      = local.ecp_azure_root_parent_management_group_id
+
+  ecp_azure_devops_pool_type = local.ecp_azure_devops_pool_type
 
   ecp_configuration_repo         = local.ecp_configuration_repo
   ecp_configuration_repo_version = local.versions_locals.ecp_configuration_repo_version
