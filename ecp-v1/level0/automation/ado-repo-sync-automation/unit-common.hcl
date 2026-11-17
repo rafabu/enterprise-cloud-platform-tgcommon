@@ -123,6 +123,21 @@ dependency "l0-az-lp-backend" {
   mock_outputs_merge_strategy_with_state  = "deep_map_only"
 }
 
+dependency "l0-ado-mpool" {
+  config_path = format("%s/../../launchpad/ado-mpool", replace(get_original_terragrunt_dir(), "\\", "/"))
+  mock_outputs = {
+    managed_devops_pool = {
+      id                  = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.DevOpsInfrastructure/pools/mock-pool"
+      id_azuredevops      = "0"
+      name                = "mock-pool"
+      resource_group_name = "mock-rg"
+      location            = "westeurope"
+    }
+  }
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan", "destroy"]
+  mock_outputs_merge_strategy_with_state  = "deep_map_only"
+}
+
 locals {
   library_path_shared = format("%s/lib/ecp-lib", replace(get_repo_root(), "\\", "/"))
   library_path_unit   = "${replace(get_terragrunt_dir(), "\\", "/")}/lib"
@@ -301,6 +316,29 @@ inputs = {
         "<ecp_terragrunt_version>" = "${dependency.l0-az-lp-backend.outputs.ecp_automation_terragrunt_version}"
         "<ecp_terraform_version>"  = "${dependency.l0-az-lp-backend.outputs.ecp_automation_terraform_version}"
       }
+    }
+    # if 'Azure Pipelines' - Microsoft Hosted pool is used, we must replace the YAML definition of the VM image to 'vmImage: ubuntu-24.04'
+    "ecp_managed_devops_pool_image_replace" = dependency.l0-ado-mpool.outputs.managed_devops_pool.name == "Azure Pipelines" ? {
+      directory_patterns = [
+        "**/pipelines-ado"
+      ]
+      file_patterns = [
+        "**/ecp-tg-deploy-landing-zone.yaml",
+        "**/ecp-tg-deploy-platform-infrastructure.yaml",
+        "**/ecp-tg-deploy-platform-infrastructure-singlestack.yaml",
+        "**/ecp-debug-adopool-analysis.yaml"
+      ]
+      content_replacements = {
+        "(?im)demands:\\s+- ImageOverride\\s+-equals\\s+ubuntu-24\\.04-g2" = "vmImage: ubuntu-24.04"
+      }
+      name_replacements = {}
+      use_regex         = true
+      } : {
+      directory_patterns   = []
+      file_patterns        = []
+      content_replacements = {}
+      name_replacements    = {}
+      use_regex            = true
     }
   }
 }

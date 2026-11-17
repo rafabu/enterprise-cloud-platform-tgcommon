@@ -39,9 +39,8 @@ locals {
   ecp_azure_devops_project_name                  = "ECP"
   ecp_azure_devops_automation_repository_name    = "ECP.Automation"
   ecp_azure_devops_configuration_repository_name = "ECP.Configuration"
+  ecp_azure_devops_pool_type                     = coalesce(local.merged_locals.ecp_azure_devops_pool_type, "ManagedDevOpsPool")
   ecp_azure_root_parent_management_group_id      = "mg-ecpa-root"
-
-  ecp_azure_devops_pool_type = "ManagedDevOpsPool"
 
   deployment_unit_default = "main"
 
@@ -60,6 +59,7 @@ locals {
 
   ecp_environment_stage = local.merged_locals.ecp_deployment_env
   ecp_environment_name  = lower("${local.merged_locals.ecp_deployment_code}-${substr(local.merged_locals.ecp_deployment_env, 0, 1)}${local.merged_locals.ecp_deployment_number}")
+
 
   ecp_configuration_repo = "github.com/rafabu/enterprise-cloud-platform-conf.git"
   ecp_azure_modules_repo = "github.com/rafabu/enterprise-cloud-platform-azure.git"
