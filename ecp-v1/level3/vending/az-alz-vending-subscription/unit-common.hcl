@@ -10,7 +10,7 @@ dependencies {
 }
 
 dependency "l0-lp-backend" {
-  config_path = format("%s/../../../level1/launchpad/az-launchpad-backend", replace(get_original_terragrunt_dir(), "\\", "/"))
+  config_path = format("%s/../../../level0/launchpad/az-launchpad-backend", replace(get_original_terragrunt_dir(), "\\", "/"))
   mock_outputs = {
     resource_group_launchpad = {
       id       = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg-lp"
@@ -127,7 +127,7 @@ dependency "l0-lp-backend" {
 }
 
 dependency "l0-ado-project" {
-  config_path = format("%s/../../../level1/launchpad/ado-project", replace(get_original_terragrunt_dir(), "\\", "/"))
+  config_path = format("%s/../../../level0/launchpad/ado-project", replace(get_original_terragrunt_dir(), "\\", "/"))
   mock_outputs = {
     azuredevops_project = {
       id          = "00000000-0000-0000-0000-000000000000"
@@ -142,7 +142,7 @@ dependency "l0-ado-project" {
 }
 
 dependency "l0-ado-mpool" {
-  config_path = format("%s/../../../level1/launchpad/ado-mpool", replace(get_original_terragrunt_dir(), "\\", "/"))
+  config_path = format("%s/../../../level0/launchpad/ado-mpool", replace(get_original_terragrunt_dir(), "\\", "/"))
   mock_outputs = {
     managed_devops_pool = {
       id                  = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.DevOpsInfrastructure/pools/mock-pool"
