@@ -9,6 +9,153 @@ dependencies {
   )))
 }
 
+dependency "l0-lp-backend" {
+  config_path = format("%s/../../../level1/launchpad/az-launchpad-backend", replace(get_original_terragrunt_dir(), "\\", "/"))
+  mock_outputs = {
+    resource_group_launchpad = {
+      id       = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg-lp"
+      name     = "mock-rg-lp"
+      location = "westeurope"
+    }
+    resource_group_tf_backend = {
+      id       = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg-be"
+      name     = "mock-rg-be"
+      location = "westeurope"
+    }
+    virtual_networks = {
+      l0-launchpad-main = {
+        id                  = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualNetworks/mock-vnet"
+        name                = "mock-vnet"
+        resource_group_name = "mock-rg"
+        location            = "westeurope"
+        address_space = [
+          "192.0.2.0/24"
+        ]
+      }
+    }
+    virtual_network_subnets = {
+      l0-launchpad-main-default = {
+        id                   = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualNetworks/mock-vnet/subnets/mock"
+        name                 = "mock"
+        resource_group_name  = "mock-rg"
+        virtual_network_name = "mock-vnet"
+        address_prefixes = [
+          "192.0.2.0/24"
+        ]
+      }
+    }
+    storage_accounts = {
+      l0 = {
+        ecp_level           = "l0"
+        subscription_id     = "00000000-0000-0000-0000-000000000000"
+        resource_group_name = "mock-rg"
+        id                  = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Storage/storageAccounts/mocksal0"
+        name                = "mocksal0"
+        location            = "westeurope"
+        private_endpoint_blob = {
+          fqdn               = "mocksal0.blob.core.windows.net"
+          private_ip_address = "192.0.2.4"
+          subnet_id          = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualNetworks/mock-vnet/subnets/mock"
+          subresource_names = [
+            "blob",
+          ]
+        }
+        tf_backend_container = "tfstate"
+      }
+      l1 = {
+        ecp_level           = "l1"
+        subscription_id     = "00000000-0000-0000-0000-000000000000"
+        resource_group_name = "mock-rg"
+        id                  = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Storage/storageAccounts/mocksal1"
+        name                = "mocksal1"
+        location            = "westeurope"
+        private_endpoint_blob = {
+          fqdn               = "mocksal1.blob.core.windows.net"
+          private_ip_address = "192.0.2.5"
+          subnet_id          = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualNetworks/mock-vnet/subnets/mock"
+          subresource_names = [
+            "blob",
+          ]
+        }
+        tf_backend_container = "tfstate"
+      }
+      l2 = {
+        ecp_level           = "l2"
+        subscription_id     = "00000000-0000-0000-0000-000000000000"
+        resource_group_name = "mock-rg"
+        id                  = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Storage/storageAccounts/mocksal2"
+        name                = "mocksal2"
+        location            = "westeurope"
+        private_endpoint_blob = {
+          fqdn               = "mocksal2.blob.core.windows.net"
+          private_ip_address = "192.0.2.6"
+          subnet_id          = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualNetworks/mock-vnet/subnets/mock"
+          subresource_names = [
+            "blob",
+          ]
+        }
+        tf_backend_container = "tfstate"
+      }
+      l3 = {
+        ecp_level           = "l3"
+        subscription_id     = "00000000-0000-0000-0000-000000000000"
+        resource_group_name = "mock-rg"
+        id                  = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Storage/storageAccounts/mocksal3"
+        name                = "mocksal3"
+        location            = "westeurope"
+        private_endpoint_blob = {
+          fqdn               = "mocksal3.blob.core.windows.net"
+          private_ip_address = "192.0.2.7"
+          subnet_id          = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.Network/virtualNetworks/mock-vnet/subnets/mock"
+          subresource_names = [
+            "blob",
+          ]
+        }
+        tf_backend_container = "tfstate"
+      }
+    }
+    ecp_environment_name                           = "mock"
+    ecp_azure_devops_automation_repository_name    = "mock-repo-automation"
+    ecp_azure_devops_configuration_repository_name = "mock-repo-configuration"
+    ecp_configuration_repo_deployment_root_path    = "mock/deployment/root/path"
+    azuredevops_organization_name                  = "mock"
+    ecp_automation_terragrunt_version              = "0.0.0"
+    ecp_automation_terraform_version               = "0.0.0"
+  }
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
+  mock_outputs_merge_strategy_with_state  = "deep_map_only"
+}
+
+dependency "l0-ado-project" {
+  config_path = format("%s/../../../level1/launchpad/ado-project", replace(get_original_terragrunt_dir(), "\\", "/"))
+  mock_outputs = {
+    azuredevops_project = {
+      id          = "8428de5a-7263-449e-9698-52eab2aab118"
+      name        = "MOCK"
+      description = "Mock Enterprise Cloud Platform (ECP) Automation Repository"
+    }
+    azuredevops_git_repositories = {}
+    all_azuredevops_projects     = {}
+  }
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan", "destroy"]
+  mock_outputs_merge_strategy_with_state  = "deep_map_only"
+}
+
+dependency "l0-ado-mpool" {
+  config_path = format("%s/../../../level1/launchpad/ado-mpool", replace(get_original_terragrunt_dir(), "\\", "/"))
+  mock_outputs = {
+    managed_devops_pool = {
+      id                  = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mock-rg/providers/Microsoft.DevOpsInfrastructure/pools/mock-pool"
+      id_azuredevops      = "0"
+      name                = "mock-pool"
+      resource_group_name = "mock-rg"
+      location            = "westeurope"
+    }
+  }
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan", "destroy"]
+  mock_outputs_merge_strategy_with_state  = "deep_map_only"
+}
+
 dependency "l1-con-az-privatedns" {
   config_path = format("%s/../../../level1/connectivity/az-privatelink-privatedns-zones", replace(get_original_terragrunt_dir(), "\\", "/"))
   mock_outputs = {
@@ -245,30 +392,12 @@ inputs = {
   ecp_parent_management_group_id   = dependency.l1-az-ecp-parent.outputs.parent_management_group_id
   ecp_parent_management_group_name = dependency.l1-az-ecp-parent.outputs.parent_management_group_name
 
-  ecp_azure_devops_managed_devops_pool_name = "ECP-Platform-Pool-rabuzu-m365"
-  ecp_azure_devops_project_name             = "ECP (rabu-d7)"
-  ecp_azure_devops_repository_name          = "ECP.Automation"
+  ecp_azure_devops_managed_devops_pool_name = dependency.l0-ado-mpool.outputs.managed_devops_pool.name
+  ecp_azure_devops_project_name             = dependency.l0-ado-project.outputs.azuredevops_project.name
+  ecp_azure_devops_repository_name          = dependency.l0-lp-backend.outputs.ecp_azure_devops_automation_repository_name
 
-  ecp_azure_deployment_service_principal_client_id = "c4527461-c497-4db4-911f-1a1ae4258f11"
-  ecp_azure_deployment_service_principal_object_id = "097fcb81-557b-44e5-8077-a113d634ce3c"
-
-
-  # ecp_hub_locations = {}
-
-  # # load merged vnet artefact objects
-  # virtual_network_artefacts = local.virtualNetwork_definition_merged
-
-  # # load merged vnet subnet artefact objects
-  # virtual_network_subnet_artefacts = local.virtualNetworkSubnet_definition_merged
-
-  # which artefacts are active in this unit
-  # ecp_archetype_definitions = {
-  #   name            = "ecpa-con"
-  #   virtual_network = "l2-connectivity-management-vnet"
-  #   virtual_network_subnet = [
-  #     "l2-connectivity-management-subnet-default"
-  #   ]
-  # }
+  ecp_azure_deployment_service_principal_client_id = dependency.l0-ado-mpool.outputs.service_principals["l0-contribute"].client_id
+  ecp_azure_deployment_service_principal_object_id = dependency.l0-ado-mpool.outputs.service_principals["l0-contribute"].object_id
 
   vwan_hub_resources_by_location = dependency.l2-con-az-con-vwan.outputs.azure_virtual_wan_hub_resource_details_by_location
   vwan_resource_id               = dependency.l2-con-az-con-vwan.outputs.azure_virtual_wan_resource_id
