@@ -130,7 +130,7 @@ dependency "l0-ado-project" {
   config_path = format("%s/../../../level1/launchpad/ado-project", replace(get_original_terragrunt_dir(), "\\", "/"))
   mock_outputs = {
     azuredevops_project = {
-      id          = "8428de5a-7263-449e-9698-52eab2aab118"
+      id          = "00000000-0000-0000-0000-000000000000"
       name        = "MOCK"
       description = "Mock Enterprise Cloud Platform (ECP) Automation Repository"
     }
