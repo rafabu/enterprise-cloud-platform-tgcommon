@@ -340,7 +340,7 @@ inputs = {
 
   dev_center_project_resource_id = dependency.l0-az-devcenter.outputs.dev_center_project.id
 
-  managed_devops_pool_maximum_concurrency = null
+  managed_devops_pool_maximum_concurrency = 2
   managed_devops_pool_stateless_agent_profile = {
     manual_resource_predictions_profile = {
       time_zone = "W. Europe Standard Time"
