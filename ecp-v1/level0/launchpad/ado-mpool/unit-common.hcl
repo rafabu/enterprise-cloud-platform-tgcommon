@@ -340,7 +340,7 @@ inputs = {
 
   dev_center_project_resource_id = dependency.l0-az-devcenter.outputs.dev_center_project.id
 
-  managed_devops_pool_maximum_concurrency = 2
+  managed_devops_pool_maximum_concurrency = null
   managed_devops_pool_stateless_agent_profile = {
     manual_resource_predictions_profile = {
       time_zone = "W. Europe Standard Time"
@@ -370,7 +370,7 @@ inputs = {
     }
   }
   managed_devops_pool_vmss_fabric_profile = {
-    sku_name = "Standard_D2as_v5" # D2as_v5 is currently more economic than D2as_v6
+    sku_name = "Standard_D2as_v5" # D2as_v5 is available on most regions (although a bit dated)
     image = [
       {
         aliases               = ["ubuntu-24.04", "ubuntu-24.04-g2", "ubuntu-latest", "ubuntu-24.04-g2/latest"]
