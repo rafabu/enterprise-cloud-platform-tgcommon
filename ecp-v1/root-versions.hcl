@@ -24,7 +24,7 @@ locals {
   tf_provider_msgraph_version     = "~> 0.6"
   tf_provider_time_version        = "~> 0.14"
   # ALZ
-  tf_provider_alz_version = "~> 0.23"
+  tf_provider_alz_version = "~> 0.22"
 
   # refresh to newer ALZ / SLZ / AMBA
   #     IMPORTANT !!!!!
@@ -37,7 +37,7 @@ locals {
   # Azure Verified Modules
   tf_provider_modtm_version = "~> 0.4"
 
-  tf_module_avm-ptn-alz_version                                    = "0.22.0"
+  tf_module_avm-ptn-alz_version                                    = "0.23.0"
   tf_module_avm-ptn-alz-connectivity-virtual-wan_version           = "0.18.1"
   tf_module_avm-ptn-alz-connectivity-hub-and-spoke-vnet_version    = "0.18.1"
   tf_module_avm-ptn-alz-management_version                         = "0.10.0"
