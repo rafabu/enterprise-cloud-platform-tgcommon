@@ -24,7 +24,7 @@ locals {
   tf_provider_msgraph_version     = "~> 0.6"
   tf_provider_time_version        = "~> 0.14"
   # ALZ
-  tf_provider_alz_version = "~> 0.22"
+  tf_provider_alz_version = "~> 0.23"
 
   # refresh to newer ALZ / SLZ / AMBA
   #     IMPORTANT !!!!!
