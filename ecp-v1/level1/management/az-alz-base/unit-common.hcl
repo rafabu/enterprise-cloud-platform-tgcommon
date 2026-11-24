@@ -4,8 +4,7 @@ dependencies {
       format("%s/../../../level0/bootstrap/az-launchpad-bootstrap-helper", replace(get_original_terragrunt_dir(), "\\", "/"))
     ] : [],
     [
-      format("%s/../../ecproot/az-platform-subscriptions", replace(get_original_terragrunt_dir(), "\\", "/")),
-      format("%s/../az-alz-shared-library-render", replace(get_original_terragrunt_dir(), "\\", "/"))
+      format("%s/../../ecproot/az-platform-subscriptions", replace(get_original_terragrunt_dir(), "\\", "/"))
     ]
   )))
 }
@@ -53,10 +52,20 @@ dependency "az-privatelink-privatedns-zones" {
   mock_outputs_merge_strategy_with_state  = "deep_map_only"
 }
 
+dependency "az-alz-shared-library-render" {
+  config_path = format("%s/../az-alz-shared-library-render", replace(get_original_terragrunt_dir(), "\\", "/"))
+  mock_outputs = {
+    alz_library_path_shared                = "mock-path"
+    alz_library_artefact_templating_result = "mock"
+  }
+  mock_outputs_allowed_terraform_commands = ["init", "validate", "plan"]
+  mock_outputs_merge_strategy_with_state  = "deep_map_only"
+}
+
 locals {
-  alz_library_path_shared          = format("%s/lib/ecp-lib/platform/alz-artefacts/", replace(get_repo_root(), "\\", "/"))
+  alz_library_path_base            = format("%s/lib/ecp-lib/platform/", replace(get_repo_root(), "\\", "/"))
   alz_library_path_unit            = "${replace(get_terragrunt_dir(), "\\", "/")}/lib/"
-  alz_library_path_shared_rendered = "${trimsuffix(local.TG_DOWNLOAD_DIR, "/")}/${uuidv5("dns", "${local.alz_library_path_shared}")}/"
+  alz_library_path_shared_rendered = "${trimsuffix(local.TG_DOWNLOAD_DIR, "/")}/${uuidv5("dns", "${local.alz_library_path_base}")}/"
 
   ################# terragrunt specifics #################
   TG_DOWNLOAD_DIR = replace(coalesce(

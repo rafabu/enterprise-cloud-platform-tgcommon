@@ -9,10 +9,10 @@ dependencies {
 }
 
 locals {
-  alz_library_path_shared = format("%s/lib/ecp-lib/platform/alz-artefacts/", replace(get_repo_root(), "\\", "/"))
-  alz_library_path_unit   = "${replace(get_terragrunt_dir(), "\\", "/")}/lib/"
+  alz_library_path_base = format("%s/lib/ecp-lib/platform/", replace(get_repo_root(), "\\", "/"))
+  alz_library_path_unit = "${replace(get_terragrunt_dir(), "\\", "/")}/lib/"
   # folder where rendered template alz library files are places (temporarily)
-  alz_library_path_shared_rendered = "${trimsuffix(local.TG_DOWNLOAD_DIR, "/")}/${uuidv5("dns", "${local.alz_library_path_shared}")}/"
+  alz_library_path_shared_rendered = "${trimsuffix(local.TG_DOWNLOAD_DIR, "/")}/${uuidv5("dns", "${local.alz_library_path_base}")}/"
 
   ################# terragrunt specifics #################
   TG_DOWNLOAD_DIR = replace(coalesce(
@@ -80,7 +80,6 @@ remote_state {
 
 inputs = {
   # additional ALZ library paths
-  alz_library_path_shared          = local.alz_library_path_shared
-  alz_library_path_unit            = local.alz_library_path_unit
+  alz_library_path_base            = local.alz_library_path_base
   alz_library_path_shared_rendered = local.alz_library_path_shared_rendered
 }

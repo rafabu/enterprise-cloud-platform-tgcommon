@@ -132,14 +132,14 @@ provider "alz" {
   library_overwrite_enabled = true
   library_references = [
     {
-      path = "platform/alz"
-      ref  = "${local.versions_locals.tf_provider_alz_alz_lib_version}"
+      path = "platform/${try(local.merged_locals.ecp_deployment_alz_library, "alz")}"
+      ref = "${try(local.merged_locals.ecp_deployment_alz_library, "alz") == "alz" ? local.versions_locals.tf_provider_alz_alz_lib_version : local.versions_locals.tf_provider_alz_slz_lib_version}"
     },
-    # load additional ALZ artifacts via library
+    # load additional ALZ artifacts via ecp's own library
     {
-      custom_url = "file::${replace(get_repo_root(), "\\", "/")}/lib/ecp-lib/platform/alz-artefacts/?archive=false"
+      custom_url = "file::${replace(get_repo_root(), "\\", "/")}/lib/ecp-lib/platform/${try(local.merged_locals.ecp_deployment_alz_library, "alz")}-artefacts/?archive=false"
     },
-    # template-rendered local path (variable interpreted by terraform, not terragrunt)
+    # template-rendered local path (variable interpreted by terraform, not terragrunt: hence double $ sign)
     {
       custom_url = "file::$${var.alz_library_path_shared_rendered}?archive=false"
     }
@@ -550,6 +550,7 @@ inputs = {
   # extract relative path from git repo root to root.hcl file (and remove leading slash if any)
   ecp_configuration_repo_deployment_root_path = replace(replace(replace(dirname(abspath(format("%s/../../../../root.hcl", replace(get_terragrunt_dir(), "\\", "/")))), "\\", "/"), replace(get_repo_root(), "\\", "/"), ""), "/^//", "")
 
+  ecp_deployment_alz_library = try(local.merged_locals.ecp_deployment_alz_library, "alz")
 
   ##################################################################################
   ###  Level2
