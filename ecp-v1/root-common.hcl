@@ -530,7 +530,7 @@ inputs = {
 
   ecp_network_main_ipv4_address_space = local.ecp_network_main_ipv4_address_space
 
-  slz_allowed_locations = local.merged_locals.ecp_azure_allowed_locations
+  slz_allowed_locations = try(local.merged_locals.ecp_azure_allowed_locations, null)
 
   # ECP Platform Azure Subscriptions variables
   ecp_management_subscription_id   = local.ecp_management_subscription_id_provider
