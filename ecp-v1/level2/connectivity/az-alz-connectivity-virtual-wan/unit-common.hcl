@@ -412,6 +412,76 @@ locals {
   )
 
 
+  ################# firewalls #################
+  # exclude the ones named in the *.exclude.json
+  library_firewall_path_shared    = "${local.library_path_shared}/platform/ecp-artefacts/ms-azure/network/azureFirewalls"
+  library_firewall_path_unit      = "${local.library_path_unit}/azureFirewalls"
+  library_firewall_filter         = "*.azureFirewall.json"
+  library_firewall_exclude_filter = "*.azureFirewall.exclude.json"
+
+  # read JSON artefact files and bring them into a map of
+  # - artefactName
+  #    - filePath
+  firewall_definition_shared = try({
+    for fileName in fileset(local.library_firewall_path_shared, local.library_firewall_filter) : jsondecode(file(format("%s/%s", local.library_firewall_path_shared, fileName))).artefactName => {
+      filePath = format("%s/%s", local.library_firewall_path_shared, fileName)
+      artefact = jsondecode(file(format("%s/%s", local.library_firewall_path_shared, fileName)))
+    }
+  }, {})
+  firewall_definition_unit = try({
+    for fileName in fileset(local.library_firewall_path_unit, local.library_firewall_filter) : jsondecode(file(format("%s/%s", local.library_firewall_path_unit, fileName))).artefactName => {
+      filePath = format("%s/%s", local.library_firewall_path_unit, fileName)
+      artefact = jsondecode(file(format("%s/%s", local.library_firewall_path_unit, fileName)))
+    }
+  }, {})
+  firewall_definition_exclude_unit = try({
+    for fileName in fileset(local.library_firewall_path_unit, local.library_firewall_exclude_filter) : jsondecode(file(format("%s/%s", local.library_firewall_path_unit, fileName))).artefactName => {
+      filePath = format("%s/%s", local.library_firewall_path_unit, fileName)
+    }
+  }, {})
+  firewall_definition_merged = merge(
+    {
+      for key, val in local.firewall_definition_shared : key => val
+      if(contains(keys(local.firewall_definition_exclude_unit), key) == false)
+    },
+    local.firewall_definition_unit
+  )
+
+  ################# firewall-policies #################
+  # exclude the ones named in the *.exclude.json
+  library_firewall_policy_path_shared    = "${local.library_path_shared}/platform/ecp-artefacts/ms-azure/network/firewallPolicies"
+  library_firewall_policy_path_unit      = "${local.library_path_unit}/firewallPolicies"
+  library_firewall_policy_filter         = "*.firewallPolicy.json"
+  library_firewall_policy_exclude_filter = "*.firewallPolicy.exclude.json"
+
+  # read JSON artefact files and bring them into a map of
+  # - artefactName
+  #    - filePath
+  firewall_policy_definition_shared = try({
+    for fileName in fileset(local.library_firewall_policy_path_shared, local.library_firewall_policy_filter) : jsondecode(file(format("%s/%s", local.library_firewall_policy_path_shared, fileName))).artefactName => {
+      filePath = format("%s/%s", local.library_firewall_policy_path_shared, fileName)
+      artefact = jsondecode(file(format("%s/%s", local.library_firewall_policy_path_shared, fileName)))
+    }
+  }, {})
+  firewall_policy_definition_unit = try({
+    for fileName in fileset(local.library_firewall_policy_path_unit, local.library_firewall_policy_filter) : jsondecode(file(format("%s/%s", local.library_firewall_policy_path_unit, fileName))).artefactName => {
+      filePath = format("%s/%s", local.library_firewall_policy_path_unit, fileName)
+      artefact = jsondecode(file(format("%s/%s", local.library_firewall_policy_path_unit, fileName)))
+    }
+  }, {})
+  firewall_policy_definition_exclude_unit = try({
+    for fileName in fileset(local.library_firewall_policy_path_unit, local.library_firewall_policy_exclude_filter) : jsondecode(file(format("%s/%s", local.library_firewall_policy_path_unit, fileName))).artefactName => {
+      filePath = format("%s/%s", local.library_firewall_policy_path_unit, fileName)
+    }
+  }, {})
+  firewall_policy_definition_merged = merge(
+    {
+      for key, val in local.firewall_policy_definition_shared : key => val
+      if(contains(keys(local.firewall_policy_definition_exclude_unit), key) == false)
+    },
+    local.firewall_policy_definition_unit
+  )
+
   ################# terragrunt specifics #################
   TG_DOWNLOAD_DIR = replace(coalesce(
     try(get_env("TG_DOWNLOAD_DIR"), null),
@@ -502,6 +572,12 @@ inputs = {
   # load merged vpnConnection artefact objects
   vpn_connection_artefacts = local.vpnConnection_definition_merged
 
+  # load merged azureFirewall artefact objects
+  firewall_artefacts = local.firewall_definition_merged
+
+  # load merged azureFirewall artefact objects
+  firewall_policy_artefacts = local.firewall_policy_definition_merged
+
   # which artefacts are active in this unit
   ecp_archetype_definitions = {
     name = "ecpa-vwan"
@@ -511,11 +587,13 @@ inputs = {
     virtual_hub = [
       "l2-connectivity-default-vwan-hub"
     ]
-    vpn_gateway    = []
-    vpn_site       = []
-    vpn_connection = []
-    er_gateway     = []
-    er_connection  = []
+    vpn_gateway     = []
+    vpn_site        = []
+    vpn_connection  = []
+    er_gateway      = []
+    er_connection   = []
+    firewall        = []
+    firewall_policy = []
   }
 
   # direct inputs to AVM ALZ vWAN module (merged with artefacts)
@@ -551,6 +629,8 @@ inputs = {
       virtual_network_gateways = {}
       vpn_sites                = {}
       vpn_site_connections     = {}
+      firewall                 = {}
+      firewall_policy          = {}
     }
   }
 
