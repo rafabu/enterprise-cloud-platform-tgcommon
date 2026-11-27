@@ -38,8 +38,8 @@ locals {
   tf_provider_modtm_version = "~> 0.4"
 
   tf_module_avm-ptn-alz_version                                    = "0.23.0"
-  tf_module_avm-ptn-alz-connectivity-virtual-wan_version           = "0.18.1"
-  tf_module_avm-ptn-alz-connectivity-hub-and-spoke-vnet_version    = "0.18.1"
+  tf_module_avm-ptn-alz-connectivity-virtual-wan_version           = "0.18.2"
+  tf_module_avm-ptn-alz-connectivity-hub-and-spoke-vnet_version    = "0.18.4"
   tf_module_avm-ptn-alz-management_version                         = "0.10.0"
   tf_module_avm-ptn-network-private-link-private-dns-zones_version = "0.23.3"
   tf_module_avm-ptn-alz-sub-vending_version                        = "0.3.4"
